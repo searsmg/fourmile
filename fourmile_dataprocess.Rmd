@@ -15,6 +15,7 @@ editor_options:
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
+library(rmdformats)
 library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -99,7 +100,7 @@ daily_p <- prec %>%
 
 precip <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line()  +
   theme_bw() +
-  ggtitle('Daily precip')
+  ggtitle('Daily precip (all)')
 
 ggplotly(precip)
 
@@ -107,7 +108,7 @@ ggplotly(precip)
 precip_datelim <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line() + 
    scale_x_date(limits = as.Date(c('2011-01-01', '2014-01-01'))) +
   theme_bw() +
-  ggtitle('Daily precip')
+  ggtitle('Daily precip (2011-2013)')
 
 ggplotly(precip_datelim)
 
