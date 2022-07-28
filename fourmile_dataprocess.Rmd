@@ -1,0 +1,52 @@
+---
+title: "Fourmile"
+author: "Megan Sears"
+date: "7/27/2022"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: journal
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r open package, include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(ggplot2)
+library(here)
+library(scales)
+library(here)
+```
+
+## Load data
+
+```{r loading data}
+setwd('C:/Users/sears/Documents/Repos/fourmile/data')
+
+#pull in all filenames with composite
+filenames <- list.files('.', pattern='.csv', full.names=F)
+
+#read all the csvs
+dataframes <- lapply(filenames, read_csv)
+
+#name all the csv
+names(dataframes) <- substr(filenames, 1, 4)
+
+#extract csvs from list to global env
+lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
+rm(dataframes)
+
+daily_q <- orun %>%
+  select(-1) %>%
+  filter(!row_number() %in% c(1:9, 11:15)) %>%
+  mutate(names(.) = .[1,]) 
+
+
+
+
+```
+
