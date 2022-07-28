@@ -43,10 +43,23 @@ rm(dataframes)
 daily_q <- orun %>%
   select(-1) %>%
   filter(!row_number() %in% c(1:9, 11:15)) %>%
-  mutate(names(.) = .[1,]) 
+  set_names(as.character(slice(., 1))) %>%
+  slice(-1) %>%
+  replace(.==-9999, NA) %>%
+  rename(ds3 = 2,
+         usgs1 = 3,
+         ds2 = 4,
+         usgs2 = 5,
+         us1 = 6,
+         ds1 = 7) %>%
+  mutate(date = mdy(date)) %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'q_m3s') %>%
+  mutate(q_m3s = as.numeric(q_m3s))
 
+hydro <- ggplot(daily_q, aes(x=date, y=q_m3s, color=site)) + geom_line() +
+  ylim(0,8)
 
-
+ggplotly(hydro)
 
 ```
 
