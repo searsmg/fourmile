@@ -12,6 +12,9 @@ editor_options:
 ---
 
 ```{r open package, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
 library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -22,9 +25,8 @@ library(scales)
 library(here)
 ```
 
-## Load data
 
-```{r loading data}
+```{r loading data, include=FALSE}
 setwd('C:/Users/sears/Documents/Repos/fourmile/data')
 
 #pull in all filenames with composite
@@ -40,6 +42,12 @@ names(dataframes) <- substr(filenames, 1, 4)
 lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
 rm(dataframes)
 
+```
+
+## Hydrographs 
+
+```{r hydrographs, echo=F}
+#daily streamflow
 daily_q <- orun %>%
   select(-1) %>%
   filter(!row_number() %in% c(1:9, 11:15)) %>%
@@ -57,9 +65,63 @@ daily_q <- orun %>%
   mutate(q_m3s = as.numeric(q_m3s))
 
 hydro <- ggplot(daily_q, aes(x=date, y=q_m3s, color=site)) + geom_line() +
-  ylim(0,8)
+  ylim(0,8) + theme_bw() + 
+  ggtitle('Daily streamflow (all)')
 
 ggplotly(hydro)
 
+#look at 2011-2013
+hydro_datelimit <- ggplot(daily_q, aes(x=date, y=q_m3s, color=site)) + geom_line() + 
+  theme_bw() + 
+  scale_x_date(limits = as.Date(c('2011-01-01', '2014-01-01'))) +
+  ylim(0,4) +
+  ggtitle('Daily streamflow (2011-2013)')
+
+ggplotly(hydro_datelimit)
+
+
+```
+
+## Precip
+
+```{r precip, echo=F}
+#daily precip
+daily_p <- prec %>%
+  filter(!row_number() %in% c(1:12, 14:17)) %>%
+  set_names(as.character(slice(., 1))) %>%
+  slice(-1) %>%
+  select(-1) %>%
+  replace(.==-9999, NA) %>%
+  rename(date = 1) %>%
+  mutate(date = mdy(date)) %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'precip_mm') %>%
+  mutate(precip_mm = as.numeric(precip_mm))
+
+precip <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line()  +
+  theme_bw() +
+  ggtitle('Daily precip')
+
+ggplotly(precip)
+
+#look at 2011-2013
+precip_datelim <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line() + 
+   scale_x_date(limits = as.Date(c('2011-01-01', '2014-01-01'))) +
+  theme_bw() +
+  ggtitle('Daily precip')
+
+ggplotly(precip_datelim)
+
+#monthly sums
+monthlyp <- daily_p %>%
+  group_by(site, year(date), month(date)) %>%
+  summarize(precip_mo_mm = sum(precip_mm, na.rm=T),
+            mo_yr = median(date))
+
+mo_precip <- ggplot(monthlyp, aes(mo_yr, precip_mo_mm, color=site)) + geom_col(position ='dodge') +
+  scale_x_date(limits = as.Date(c('2012-06-01', '2014-01-01'))) +
+  ggtitle('Precip - monthly sum') + theme_bw()
+
+ggplotly(mo_precip)
+   
 ```
 
