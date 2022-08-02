@@ -103,52 +103,6 @@ ggplotly(hydro_datelimit)
 
 ```
 
-## Streamflow differencing from USGS1 (outlet)
-
-```{r hydrographs_diff, echo=F}
-#streamflow differencing
-q_diff <- daily_q %>%
-  pivot_wider(names_from = site, values_from = q_m3s) %>%
-  mutate(usgs2_diff = usgs1 - usgs2,
-         us1_diff = usgs1 - us1,
-         ds1_diff = usgs1 - ds1,
-         ds2_diff = usgs1 - ds2,
-         ds3_diff = usgs1 - ds3) %>%
-  select(-c(usgs2, us1, ds1, ds2, ds3, usgs1)) %>%
-  pivot_longer(!date, names_to = 'site', values_to = 'q_m3s')
-
-diff <- ggplot(q_diff, aes(x=date, y=q_m3s, color=site)) + 
-  geom_line() +
-  scale_x_date(limits = as.Date(c('2011-01-01', '2014-08-01'))) +
-  ylim(-1.1,0.6) +
-  theme_bw() + 
-  ggtitle('Daily streamflow difference from USGS1') 
-
-ggplotly(diff)
-
-#streamflow percent
-# q_percent <- daily_q %>%
-#   pivot_wider(names_from = site, values_from = q_m3s) %>%
-#   mutate(usgs2_diff = usgs2 / usgs1,
-#          us1_per = us1 / usgs1,
-#          ds1_per = ds1 / usgs1,
-#          ds2_per = ds2 / usgs1,
-#          ds3_per = ds3 / usgs1) %>%
-#   select(-c(usgs2, us1, ds1, ds2, ds3, usgs1)) %>%
-#   pivot_longer(!date, names_to = 'site', values_to = 'q_m3s')
-# 
-# percent <- ggplot(q_percent, aes(x=date, y=q_m3s*100, color=site)) + 
-#   geom_line() +
-#   labs(y='percent of USGS1') +
-#   ylim(0,1125) +
-#   scale_x_date(limits = as.Date(c('2011-01-01', '2014-08-01'))) +
-#   theme_bw() + 
-#   ggtitle('Daily streamflow percent of USGS1') 
-# 
-# ggplotly(percent)
-
-```
-
 ## Streamflow differencing between each gage
 
 ### DS1 minus US1 (uppermost)
