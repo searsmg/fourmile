@@ -24,6 +24,10 @@ library(ggplot2)
 library(here)
 library(scales)
 library(here)
+library(rgdal)
+library(sp)
+library(sf)
+library(mapview)
 ```
 
 
@@ -45,7 +49,23 @@ rm(dataframes)
 
 ```
 
-## Hydrographs 
+## Gage locations
+
+USGS2 and DS2 have the same coordinates. USGS1 and DS3 have the same coordinates.
+
+```{r map, echo=FALSE}
+locations <- read_csv(here('data', 'Outlets.csv'))
+
+locations <- locations %>%
+st_as_sf(., coords=c('y','x'), crs = 4326)
+
+mapview(locations, zcol = 'name')
+
+```
+
+## Hydrographs
+
+Notes on gages: So far DS2 and DS3 have not been used. US1 and DS1 are mostly point measurements.
 
 ```{r hydrographs, echo=F}
 #daily streamflow
@@ -80,8 +100,127 @@ hydro_datelimit <- ggplot(daily_q, aes(x=date, y=q_m3s, color=site)) + geom_line
 
 ggplotly(hydro_datelimit)
 
+```
+
+## Streamflow differencing from USGS1 (outlet)
+
+```{r hydrographs_diff, echo=F}
+#streamflow differencing
+q_diff <- daily_q %>%
+  pivot_wider(names_from = site, values_from = q_m3s) %>%
+  mutate(usgs2_diff = usgs1 - usgs2,
+         us1_diff = usgs1 - us1,
+         ds1_diff = usgs1 - ds1,
+         ds2_diff = usgs1 - ds2,
+         ds3_diff = usgs1 - ds3) %>%
+  select(-c(usgs2, us1, ds1, ds2, ds3, usgs1)) %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'q_m3s')
+
+diff <- ggplot(q_diff, aes(x=date, y=q_m3s, color=site)) + 
+  geom_line() +
+  scale_x_date(limits = as.Date(c('2011-01-01', '2014-08-01'))) +
+  ylim(-1.1,0.6) +
+  theme_bw() + 
+  ggtitle('Daily streamflow difference from USGS1') 
+
+ggplotly(diff)
+
+#streamflow percent
+# q_percent <- daily_q %>%
+#   pivot_wider(names_from = site, values_from = q_m3s) %>%
+#   mutate(usgs2_diff = usgs2 / usgs1,
+#          us1_per = us1 / usgs1,
+#          ds1_per = ds1 / usgs1,
+#          ds2_per = ds2 / usgs1,
+#          ds3_per = ds3 / usgs1) %>%
+#   select(-c(usgs2, us1, ds1, ds2, ds3, usgs1)) %>%
+#   pivot_longer(!date, names_to = 'site', values_to = 'q_m3s')
+# 
+# percent <- ggplot(q_percent, aes(x=date, y=q_m3s*100, color=site)) + 
+#   geom_line() +
+#   labs(y='percent of USGS1') +
+#   ylim(0,1125) +
+#   scale_x_date(limits = as.Date(c('2011-01-01', '2014-08-01'))) +
+#   theme_bw() + 
+#   ggtitle('Daily streamflow percent of USGS1') 
+# 
+# ggplotly(percent)
 
 ```
+
+## Streamflow differencing between each gage
+
+DS1 minus US1 (uppermost)
+
+```{r DS1-US1, echo=FALSE}
+
+diff_ds1 <- daily_q %>%
+  pivot_wider(names_from = site, values_from = q_m3s) %>%
+  mutate(ds1_us1 = ds1 - us1) %>%
+  select(-c(usgs2, us1, ds1, ds2, ds3, usgs1)) %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'q_m3s')
+
+
+diff1 <- ggplot(diff_ds1, aes(x=date, y=q_m3s)) + 
+  geom_point() +
+  scale_x_date(limits = as.Date(c('2011-01-01', '2014-08-01'))) +
+  #ylim(-1.1,0.6) +
+  theme_bw() + 
+  ggtitle('Daily streamflow DS1 - US1') 
+
+ggplotly(diff1)
+
+mean(diff_ds1$q_m3s, na.rm=T)
+
+```
+
+USGS2 minus DS1
+
+```{r USGS2-DS1, echo=FALSE}
+
+diff_usgs2 <- daily_q %>%
+  pivot_wider(names_from = site, values_from = q_m3s) %>%
+  mutate(usgs2_ds1 = usgs2 - ds1) %>%
+  select(-c(usgs2, us1, ds1, ds2, ds3, usgs1)) %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'q_m3s')
+
+
+diff2 <- ggplot(diff_usgs2, aes(x=date, y=q_m3s)) + 
+  geom_point() +
+  scale_x_date(limits = as.Date(c('2011-01-01', '2014-08-01'))) +
+  #ylim(-1.1,0.6) +
+  theme_bw() + 
+  ggtitle('Daily streamflow USGS2 - DS1') 
+
+ggplotly(diff2)
+
+mean(diff_usgs2$q_m3s, na.rm=T)
+
+```
+
+USGS1 - USGS2
+
+```{r USGS1-USGS2, echo=FALSE}
+diff_usgs1 <- daily_q %>%
+  pivot_wider(names_from = site, values_from = q_m3s) %>%
+  mutate(usgs2_ds1 = usgs1 - usgs2) %>%
+  select(-c(usgs2, us1, ds1, ds2, ds3, usgs1)) %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'q_m3s')
+
+
+diff3 <- ggplot(diff_usgs1, aes(x=date, y=q_m3s)) + 
+  geom_point() +
+  scale_x_date(limits = as.Date(c('2011-01-01', '2013-12-01'))) +
+  #ylim(-1.1,0.6) +
+  theme_bw() + 
+  ggtitle('Daily streamflow USGS1 - USGS2') 
+
+ggplotly(diff3)
+
+mean(diff_usgs1$q_m3s, na.rm=T)
+
+```
+
 
 ## Precip
 
@@ -100,29 +239,29 @@ daily_p <- prec %>%
 
 precip <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line()  +
   theme_bw() +
-  ggtitle('Daily precip (all)')
+  ggtitle('Daily precip (Gordon N and S)')
 
 ggplotly(precip)
 
-#look at 2011-2013
-precip_datelim <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line() + 
-   scale_x_date(limits = as.Date(c('2011-01-01', '2014-01-01'))) +
-  theme_bw() +
-  ggtitle('Daily precip (2011-2013)')
-
-ggplotly(precip_datelim)
+# #look at 2011-2013
+# precip_datelim <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line() + 
+#    scale_x_date(limits = as.Date(c('2011-01-01', '2014-01-01'))) +
+#   theme_bw() +
+#   ggtitle('Daily precip (2011-2013)')
+# 
+# ggplotly(precip_datelim)
 
 #monthly sums
-monthlyp <- daily_p %>%
-  group_by(site, year(date), month(date)) %>%
-  summarize(precip_mo_mm = sum(precip_mm, na.rm=T),
-            mo_yr = median(date))
-
-mo_precip <- ggplot(monthlyp, aes(mo_yr, precip_mo_mm, color=site)) + geom_col(position ='dodge') +
-  scale_x_date(limits = as.Date(c('2012-06-01', '2014-01-01'))) +
-  ggtitle('Precip - monthly sum') + theme_bw()
-
-ggplotly(mo_precip)
+# monthlyp <- daily_p %>%
+#   group_by(site, year(date), month(date)) %>%
+#   summarize(precip_mo_mm = sum(precip_mm, na.rm=T),
+#             mo_yr = median(date))
+# 
+# mo_precip <- ggplot(monthlyp, aes(mo_yr, precip_mo_mm, color=site)) + geom_col(position ='dodge') +
+#   scale_x_date(limits = as.Date(c('2012-06-01', '2014-01-01'))) +
+#   ggtitle('Precip - monthly sum') + theme_bw()
+# 
+# ggplotly(mo_precip)
    
 ```
 
