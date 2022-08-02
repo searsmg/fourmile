@@ -151,7 +151,7 @@ ggplotly(diff)
 
 ## Streamflow differencing between each gage
 
-DS1 minus US1 (uppermost)
+### DS1 minus US1 (uppermost)
 
 ```{r DS1-US1, echo=FALSE}
 
@@ -173,7 +173,7 @@ ggplotly(diff1)
 
 ```
 
-Average DS1 minus US1 difference
+#### Average DS1 minus US1 difference
 
 ```{r DS1-US1_avg, echo=FALSE}
 
@@ -189,7 +189,7 @@ kable(diff_ds1_yr,
 
 ```
 
-USGS2 minus DS1
+### USGS2 minus DS1
 
 ```{r USGS2-DS1, echo=FALSE}
 
@@ -211,7 +211,7 @@ ggplotly(diff2)
 
 ```
 
-Average USGS2 minus DS1 difference
+#### Average USGS2 minus DS1 difference
 
 ```{r USGS2-DS1_avg, echo=FALSE}
 
@@ -227,7 +227,7 @@ kable(diff_usgs2_yr,
 
 ```
 
-USGS1 minus USGS2
+### USGS1 minus USGS2
 
 ```{r USGS1-USGS2, echo=FALSE}
 diff_usgs1 <- daily_q %>%
@@ -245,11 +245,13 @@ diff3 <- ggplot(diff_usgs1, aes(x=date, y=q_m3s)) +
   ggtitle('Daily streamflow USGS1 - USGS2') 
 
 ggplotly(diff3)
+
 ```
 
-Average USGS1 minus USGS2 difference
+#### Average USGS1 minus USGS2 difference
 
 ```{r USGS1-USGS2_avg, echo=FALSE}
+
 mean(diff_usgs1$q_m3s, na.rm=T)
 
 diff_usgs1_yr <- diff_usgs1 %>%
@@ -261,6 +263,25 @@ kable(diff_usgs1_yr,
   kable_styling()
 
 ```
+
+#### Sum of losses between USGS1 and USGS2
+
+```{r USGS1-USGS2 sum of losses, echo=FALSE}
+
+sum_diff_usgs1 <- diff_usgs1 %>%
+  mutate(month = as.numeric(format(date, "%m")), year = as.numeric(format(date, "%Y"))) %>%
+  mutate(neg_q = if_else(q_m3s < 0, q_m3s, 0)) %>%
+  dplyr::group_by(year, month) %>%
+  dplyr::summarize(mo_loss = sum(q_m3s)) %>%
+  #distinct() %>%
+  na.omit()
+
+kable(sum_diff_usgs1, 
+      col.names = c("Year", "Month", "Monthly sum of losses (m3/s)")) %>%
+  kable_styling()
+
+```
+
 
 ## Precip
 
