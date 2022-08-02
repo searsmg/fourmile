@@ -28,6 +28,7 @@ library(rgdal)
 library(sp)
 library(sf)
 library(mapview)
+library(kableExtra)
 ```
 
 
@@ -170,7 +171,21 @@ diff1 <- ggplot(diff_ds1, aes(x=date, y=q_m3s)) +
 
 ggplotly(diff1)
 
+```
+
+Average DS1 minus US1 difference
+
+```{r DS1-US1_avg, echo=FALSE}
+
 mean(diff_ds1$q_m3s, na.rm=T)
+
+diff_ds1_yr <- diff_ds1 %>%
+  group_by(year(date)) %>%
+  summarize(mean(q_m3s, na.rm=T))
+
+kable(diff_ds1_yr, 
+      col.names = c("Year", "Avg streamflow difference (m3/s)")) %>%
+  kable_styling()
 
 ```
 
@@ -194,11 +209,25 @@ diff2 <- ggplot(diff_usgs2, aes(x=date, y=q_m3s)) +
 
 ggplotly(diff2)
 
+```
+
+Average USGS2 minus DS1 difference
+
+```{r USGS2-DS1_avg, echo=FALSE}
+
 mean(diff_usgs2$q_m3s, na.rm=T)
+
+diff_usgs2_yr <- diff_usgs2 %>%
+  group_by(year(date)) %>%
+  summarize(mean(q_m3s, na.rm=T))
+
+kable(diff_usgs2_yr, 
+      col.names = c("Year", "Avg streamflow difference (m3/s)")) %>%
+  kable_styling()
 
 ```
 
-USGS1 - USGS2
+USGS1 minus USGS2
 
 ```{r USGS1-USGS2, echo=FALSE}
 diff_usgs1 <- daily_q %>%
@@ -216,11 +245,22 @@ diff3 <- ggplot(diff_usgs1, aes(x=date, y=q_m3s)) +
   ggtitle('Daily streamflow USGS1 - USGS2') 
 
 ggplotly(diff3)
-
-mean(diff_usgs1$q_m3s, na.rm=T)
-
 ```
 
+Average USGS1 minus USGS2 difference
+
+```{r USGS1-USGS2_avg, echo=FALSE}
+mean(diff_usgs1$q_m3s, na.rm=T)
+
+diff_usgs1_yr <- diff_usgs1 %>%
+  group_by(year(date)) %>%
+  summarize(mean(q_m3s, na.rm=T))
+
+kable(diff_usgs1_yr, 
+      col.names = c("Year", "Avg streamflow difference (m3/s)")) %>%
+  kable_styling()
+
+```
 
 ## Precip
 
