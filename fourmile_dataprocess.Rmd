@@ -283,12 +283,31 @@ ggplotly(diff4)
 
 ```{r precip, echo=F}
 #daily precip
+prec_update <- prec %>%
+    replace(.==-9999, NA) %>%
+  mutate(date = dmy(date),
+         doy = yday(date)) %>%
+  mutate(Gordon_South = ifelse(!doy %in% c(152:258), 
+                               NA, Gordon_South),
+         Gordon_North = ifelse(!doy %in% c(152:258), 
+                               NA, Gordon_North),
+         GH = ifelse(!doy %in% c(152:258), 
+                               NA, GH),
+         LM = ifelse(!doy %in% c(152:258), 
+                               NA, LM),
+         SE = ifelse(!doy %in% c(152:258), 
+                               NA, SE),
+         SP = ifelse(!doy %in% c(152:258), 
+                               NA, SP),
+         ST = ifelse(!doy %in% c(152:258), 
+                               NA, ST),
+         NADP_SL = ifelse(!doy %in% c(152:258), 
+                               NA, NADP_SL))
+
 daily_p <- prec %>%
-  replace(.==-9999, NA) %>%
-  mutate(date = dmy(date)) %>%
   pivot_longer(!date, names_to = 'site', values_to = 'precip_mm') %>%
   mutate(precip_mm = as.numeric(precip_mm)) %>%
-  mutate(WY = calcWaterYear(date)) %>%
+  mutate(WY = calcWaterYear(date))
   group_by(WY, site) %>%
   mutate(dailyp_cum_mm = cumsum(precip_mm))
 
