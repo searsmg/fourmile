@@ -325,3 +325,30 @@ ggplotly(precip_cumu)
    
 ```
 
+## Compare Niwot SNOTEL pirecip to prism pixel
+
+```{r}
+niwot_prism <- read_csv(here('data', 'niwot_prism_compare.csv')) 
+
+ni_prism <- niwot_prism %>%
+  filter(!row_number() %in% c(1:10)) %>%
+  rename(date = 1,
+         prism_mm = 2) %>%
+  mutate(date = ymd(date))
+
+niwot_snotel <- prec_update %>%
+  dplyr::select(c(date, Niwot_Snotel)) %>%
+  rename(snotel_mm = Niwot_Snotel)
+
+
+niwot_compare <- full_join(ni_prism, niwot_snotel, by = 'date')
+
+niwot_compare <- niwot_compare %>%
+  mutate(diff_mm = snotel_mm - prism_mm)
+
+summary(niwot_compare$diff_mm)
+count(niwot_compare)
+
+#filter to look at sept - june
+```
+
