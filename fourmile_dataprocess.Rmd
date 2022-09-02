@@ -284,7 +284,6 @@ ggplotly(diff4)
 ```{r precip, echo=F}
 #daily precip
 prec_update <- prec %>%
-    replace(.==-9999, NA) %>%
   mutate(date = dmy(date),
          doy = yday(date)) %>%
   mutate(Gordon_South = ifelse(!doy %in% c(152:258), 
@@ -302,9 +301,12 @@ prec_update <- prec %>%
          ST = ifelse(!doy %in% c(152:258), 
                                NA, ST),
          NADP_SL = ifelse(!doy %in% c(152:258), 
-                               NA, NADP_SL))
+                               NA, NADP_SL)) %>%
+  mutate_at(c('prism_W', 'prism_M', 'prism_E'), funs(lead), n = 1) #%>%
+  mutate_at(c('prism_W', 'prism_M', 'prism_E'), )
 
 daily_p <- prec %>%
+  replace(.==-9999, NA) %>%
   pivot_longer(!date, names_to = 'site', values_to = 'precip_mm') %>%
   mutate(precip_mm = as.numeric(precip_mm)) %>%
   mutate(WY = calcWaterYear(date))
@@ -340,15 +342,26 @@ niwot_snotel <- prec_update %>%
   dplyr::select(c(date, Niwot_Snotel)) %>%
   rename(snotel_mm = Niwot_Snotel)
 
-
 niwot_compare <- full_join(ni_prism, niwot_snotel, by = 'date')
 
 niwot_compare <- niwot_compare %>%
-  mutate(diff_mm = snotel_mm - prism_mm)
-
-summary(niwot_compare$diff_mm)
-count(niwot_compare)
+  mutate(diff_mm = snotel_mm - prism_mm) %>%
+  na.omit()
 
 #filter to look at sept - june
+niwot_winter_comp <- niwot_compare %>%
+  mutate(month = month(date)) %>%
+  filter(!month %in% c(6:8))
+
+summary(niwot_winter_comp)
+
+niwot_prismshift <- niwot_compare %>%
+  mutate_at(c("prism_mm"), funs(lead), n = 1) %>%
+  mutate(month = month(date)) %>%
+  filter(!month %in% c(6:8)) %>%
+  mutate(diff_mm = snotel_mm - prism_mm)
+
+summary(niwot_prismshift)
+
 ```
 
