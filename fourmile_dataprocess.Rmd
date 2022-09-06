@@ -32,6 +32,7 @@ library(kableExtra)
 library(dataRetrieval)
 library(raster)
 library(sf)
+library(stringr)
 
 ```
 
@@ -286,30 +287,25 @@ ggplotly(diff4)
 prec_update <- prec %>%
   mutate(date = dmy(date),
          doy = yday(date)) %>%
-  mutate(Gordon_South = ifelse(!doy %in% c(152:258), 
-                               NA, Gordon_South),
-         Gordon_North = ifelse(!doy %in% c(152:258), 
-                               NA, Gordon_North),
-         GH = ifelse(!doy %in% c(152:258), 
-                               NA, GH),
-         LM = ifelse(!doy %in% c(152:258), 
-                               NA, LM),
-         SE = ifelse(!doy %in% c(152:258), 
-                               NA, SE),
-         SP = ifelse(!doy %in% c(152:258), 
-                               NA, SP),
-         ST = ifelse(!doy %in% c(152:258), 
-                               NA, ST),
-         NADP_SL = ifelse(!doy %in% c(152:258), 
-                               NA, NADP_SL)) %>%
-  mutate_at(c('prism_W', 'prism_M', 'prism_E'), funs(lead), n = 1) #%>%
-  mutate_at(c('prism_W', 'prism_M', 'prism_E'), )
+  mutate_at(c('Gordon_South', 'Gordon_North',
+              'GH', 'LM', 'SE', 'SP', 'ST', 'NADP_SL'),
+            ~(ifelse(!doy %in% c(152:258), 
+                               NA, .))) %>%
+  mutate_at(c('prism_W', 'prism_M', 'prism_E'), list(lead), n = 1) %>%
+  mutate_at(c('prism_W', 'prism_M', 'prism_E'), ~(ifelse(doy %in% c(152:258),
+                                                         NA, .))) %>%
+  filter(date > '2009-12-31') %>%
+  dplyr::select(-c(doy)) %>%
+  mutate(date = format(as.Date(date), '%d.%m.%Y'))
+
+#write_csv(prec_update, 'precipAll_update.csv')
 
 daily_p <- prec %>%
+  mutate(date = dmy(date)) %>%
   replace(.==-9999, NA) %>%
   pivot_longer(!date, names_to = 'site', values_to = 'precip_mm') %>%
   mutate(precip_mm = as.numeric(precip_mm)) %>%
-  mutate(WY = calcWaterYear(date))
+  mutate(WY = calcWaterYear(date)) %>%
   group_by(WY, site) %>%
   mutate(dailyp_cum_mm = cumsum(precip_mm))
 
@@ -330,19 +326,19 @@ ggplotly(precip_cumu)
 ## Compare Niwot SNOTEL pirecip to prism pixel
 
 ```{r}
-niwot_prism <- read_csv(here('data', 'niwot_prism_compare.csv')) 
-
-ni_prism <- niwot_prism %>%
+niwot_prism <- read.csv(here('data', 'niwot_prism_compare.csv')) %>% 
   filter(!row_number() %in% c(1:10)) %>%
-  rename(date = 1,
-         prism_mm = 2) %>%
-  mutate(date = ymd(date))
+   rename(date = 1,
+          prism_mm = 2) %>%
+   mutate(date = ymd(date),
+          prism_mm = as.numeric(prism_mm))
 
 niwot_snotel <- prec_update %>%
   dplyr::select(c(date, Niwot_Snotel)) %>%
-  rename(snotel_mm = Niwot_Snotel)
+  rename(snotel_mm = Niwot_Snotel) %>%
+  mutate(date = dmy(date))
 
-niwot_compare <- full_join(ni_prism, niwot_snotel, by = 'date')
+niwot_compare <- full_join(niwot_prism, niwot_snotel, by = 'date')
 
 niwot_compare <- niwot_compare %>%
   mutate(diff_mm = snotel_mm - prism_mm) %>%
