@@ -33,7 +33,8 @@ library(dataRetrieval)
 library(raster)
 library(sf)
 library(stringr)
-
+library(hydroGOF)
+library(Metrics)
 ```
 
 
@@ -323,7 +324,7 @@ ggplotly(precip_cumu)
    
 ```
 
-## Compare Niwot SNOTEL pirecip to prism pixel
+## Compare Niwot SNOTEL precip to prism pixel
 
 ```{r}
 niwot_prism <- read.csv(here('data', 'niwot_prism_compare.csv')) %>% 
@@ -344,6 +345,15 @@ niwot_compare <- niwot_compare %>%
   mutate(diff_mm = snotel_mm - prism_mm) %>%
   na.omit()
 
+rmse(niwot_compare$prism_mm, niwot_compare$snotel_mm)
+pbias(niwot_compare$prism_mm, niwot_compare$snotel_mm)
+
+scatter <- ggplot(niwot_compare, aes(x=snotel_mm, y=prism_mm)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  
+ggplotly(scatter)
+
 #filter to look at sept - june
 niwot_winter_comp <- niwot_compare %>%
   mutate(month = month(date)) %>%
@@ -354,10 +364,67 @@ summary(niwot_winter_comp)
 niwot_prismshift <- niwot_compare %>%
   mutate_at(c("prism_mm"), funs(lead), n = 1) %>%
   mutate(month = month(date)) %>%
-  filter(!month %in% c(6:8)) %>%
+  #filter(!month %in% c(6:8)) %>%
   mutate(diff_mm = snotel_mm - prism_mm)
 
 summary(niwot_prismshift)
+rmse(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
+NSE(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
+pbias(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
+
+scatter_shiftday <- ggplot(niwot_prismshift, aes(x=snotel_mm, y=prism_mm)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  
+ggplotly(scatter_shiftday)
+
+niwot_prismfrac <- niwot_compare %>%
+  mutate(prism_most_mm = prism_mm * 0.974,
+         prism_little_mm = prism_mm * 0.026) %>%
+  mutate_at(c('prism_most_mm'), list(lead), n = 1) %>%
+  mutate(prism_new_mm = prism_most_mm + prism_little_mm,
+         diff_prismfrac = snotel_mm - prism_new_mm)
+
+summary(niwot_prismfrac)
+
+scatter_frac <- ggplot(niwot_prismfrac, aes(x=snotel_mm, y=prism_new_mm)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  
+ggplotly(scatter_frac)
+
+rmse(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
+NSE(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
+pbias(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
+
+```
+
+## Compare prism solar rad to flux solar rad
+
+```{r}
+srad <- solr %>%
+  dplyr::select(-1) %>%
+  filter(!row_number() %in% c(1:17)) %>%
+  replace(.==-9999, NA) %>%
+  rename(date = 1,
+         prism_w = 2,
+         prism_m = 3,
+         prism_e = 4,
+         gordon_s = 5,
+         gordon_n = 6,
+         greenlake = 7) %>%
+  mutate(date = dmy(date))
+
+niwot_srad <- Niwo %>%
+  mutate(date = ymd(date))
+
+niwot_daymet <- daym %>%
+  filter(!row_number() %in% c(1:7)) %>%
+  rename(year = 1,
+         doy = 2,
+         srad_wm2 = 3)
+  
+
 
 ```
 
