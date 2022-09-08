@@ -416,14 +416,88 @@ srad <- solr %>%
   mutate(date = dmy(date))
 
 niwot_srad <- Niwo %>%
-  mutate(date = ymd(date))
+  mutate(date = ymd(date)) %>%
+  rename(niwot_flux_mjm2 = 3) %>%
+  dplyr::select(-c(watts_per_m2)) %>%
+  replace(. == -9999, NA)
 
+## original  
+srad_compare <- full_join(srad, niwot_srad, by = 'date') %>%
+  dplyr::select(c(date, prism_w, niwot_flux_mjm2)) %>%
+  mutate(diff = niwot_flux_mjm2 - prism_w) %>%
+  na.omit()
+
+summary(srad_compare)
+
+scatter_srad_orig <- ggplot(srad_compare, aes(x=niwot_flux_mjm2, y=prism_w)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  
+ggplotly(scatter_srad_orig)
+
+## 1 day shift
+srad_shift1day <- srad_compare %>%
+  mutate_at(c("prism_w"),list(lead), n = 1) %>%
+  na.omit()
+
+scatter_srad_1day <- ggplot(srad_shift1day, aes(x=niwot_flux_mjm2, y=prism_w)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  
+ggplotly(scatter_srad_1day)
+#scatter_srad_1day
+
+summary(srad_shift1day)
+rmse(srad_shift1day$prism_w, srad_shift1day$niwot_flux_mjm2)
+pbias(srad_shift1day$prism_w, srad_shift1day$niwot_flux_mjm2)
+
+## shift by percentage
+srad_fracshift <- srad_compare %>%
+    mutate(prism_most = prism_w * 0.3,
+         prism_little = prism_w * 0.7) %>%
+  mutate_at(c('prism_most'), list(lead), n = 1) %>%
+  mutate(prism_new = prism_most + prism_little,
+         diff_prismfrac = niwot_flux_mjm2 - prism_new) %>%
+  na.omit()
+  
+scatter_srad_frac <- ggplot(srad_fracshift, aes(x=niwot_flux_mjm2, y=prism_new)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  
+ggplotly(scatter_srad_frac)
+#scatter_srad_frac
+
+summary(srad_fracshift)
+rmse(srad_fracshift$prism_new, srad_fracshift$niwot_flux_mjm2)
+pbias(srad_fracshift$prism_new, srad_fracshift$niwot_flux_mjm2)
+
+## bring in daymet
+## Daily total radiation (MJ/m2/day) can be calculated as follows: ((srad (W/m2) * dayl (s/day)) / l,000,000)
 niwot_daymet <- daym %>%
   filter(!row_number() %in% c(1:7)) %>%
   rename(year = 1,
          doy = 2,
-         srad_wm2 = 3)
+         srad_wm2 = 3) %>%
+  mutate(date = as.Date(doy),
+         month = month(date),
+         day = day(date),
+         date = make_date(year, month, day),
+         daymet_mjm2 = (srad_wm2 * 86400) / 1000000) %>%
+  dplyr::select(-c(year, doy, month, day))
   
+niwot_daymet_comp <- full_join(niwot_srad, niwot_daymet, by = 'date') %>%
+  dplyr::select(c(date, niwot_flux_mjm2, daymet_mjm2)) %>%
+  na.omit()
+  
+scatter_srad_daymet <- ggplot(niwot_daymet_comp, aes(x=niwot_flux_mjm2, y=daymet_mjm2)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  
+ggplotly(scatter_srad_daymet)
+#scatter_srad_frac
+
+#summary(srad_fracshift)
+rmse(niwot_daymet_comp$daymet_mjm2, niwot_daymet_comp$niwot_flux_mjm2)
 
 
 ```
