@@ -357,8 +357,8 @@ scatter <- ggplot(niwot_compare, aes(x=snotel_mm, y=prism_mm)) +
 ggplotly(scatter)
 
 rmse(niwot_compare$prism_mm, niwot_compare$snotel_mm)
+bias(niwot_compare$snotel_mm, niwot_compare$prism_mm)
 summary(niwot_compare$diff_mm)
-
 #filter to look at sept - june
 # niwot_winter_comp <- niwot_compare %>%
 #   mutate(month = month(date)) %>%
@@ -388,6 +388,7 @@ scatter_shiftday <- ggplot(niwot_prismshift, aes(x=snotel_mm, y=prism_mm)) +
 ggplotly(scatter_shiftday)
 
 rmse(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
+bias(niwot_prismshift$snotel_mm, niwot_prismshift$prism_mm)
 summary(niwot_prismshift$diff_mm)
 ```
 
@@ -410,6 +411,7 @@ scatter_frac <- ggplot(niwot_prismfrac, aes(x=snotel_mm, y=prism_new_mm)) +
 ggplotly(scatter_frac)
 
 rmse(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
+bias(niwot_prismfrac$snotel_mm, niwot_prismfrac$prism_new_mm)
 summary(niwot_prismfrac$diff_prismfrac)
 #NSE(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
 #pbias(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
@@ -454,6 +456,7 @@ scatter_srad_orig <- ggplot(srad_compare, aes(x=niwot_flux_mjm2, y=prism_w)) +
 ggplotly(scatter_srad_orig)
 
 rmse(srad_compare$prism_w, srad_compare$niwot_flux_mjm2)
+bias(srad_compare$niwot_flux_mjm2, srad_compare$prism_w)
 summary(srad_compare$diff)
 ```
 
@@ -475,6 +478,7 @@ ggplotly(scatter_srad_1day)
 #scatter_srad_1day
 
 rmse(srad_shift1day$prism_w, srad_shift1day$niwot_flux_mjm2)
+bias(srad_shift1day$niwot_flux_mjm2, srad_shift1day$prism_w)
 summary(srad_shift1day$diff)
 #pbias(srad_shift1day$prism_w, srad_shift1day$niwot_flux_mjm2)
 ```
@@ -500,6 +504,7 @@ ggplotly(scatter_srad_frac)
 #scatter_srad_frac
 
 rmse(srad_fracshift$prism_new, srad_fracshift$niwot_flux_mjm2)
+bias(srad_fracshift$niwot_flux_mjm2, srad_fracshift$prism_new)
 summary(srad_fracshift$diff_prismfrac)
 #pbias(srad_fracshift$prism_new, srad_fracshift$niwot_flux_mjm2)
 ```
@@ -536,6 +541,8 @@ ggplotly(scatter_srad_daymet)
 
 #summary(srad_fracshift)
 rmse(niwot_daymet_comp$daymet_mjm2, niwot_daymet_comp$niwot_flux_mjm2)
+bias(niwot_daymet_comp$niwot_flux_mjm2, niwot_daymet_comp$daymet_mjm2)
 summary(niwot_daymet_comp$diff)
+
 ```
 
