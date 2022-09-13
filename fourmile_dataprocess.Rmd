@@ -326,7 +326,9 @@ ggplotly(precip_cumu)
 
 ## Compare Niwot SNOTEL precip to prism pixel
 
-```{r}
+### Original prism and Niwot SNOTEL precip comaprison
+
+```{r, echo = F}
 niwot_prism <- read.csv(here('data', 'niwot_prism_compare.csv')) %>% 
   filter(!row_number() %in% c(1:10)) %>%
    rename(date = 1,
@@ -345,63 +347,80 @@ niwot_compare <- niwot_compare %>%
   mutate(diff_mm = snotel_mm - prism_mm) %>%
   na.omit()
 
-rmse(niwot_compare$prism_mm, niwot_compare$snotel_mm)
-pbias(niwot_compare$prism_mm, niwot_compare$snotel_mm)
+#pbias(niwot_compare$prism_mm, niwot_compare$snotel_mm)
 
 scatter <- ggplot(niwot_compare, aes(x=snotel_mm, y=prism_mm)) +
   geom_point() +
-  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue") +
+  ggtitle('Prism vs. Niwot SNOTEL precip')
   
 ggplotly(scatter)
 
+rmse(niwot_compare$prism_mm, niwot_compare$snotel_mm)
+summary(niwot_compare$diff_mm)
+
 #filter to look at sept - june
-niwot_winter_comp <- niwot_compare %>%
-  mutate(month = month(date)) %>%
-  filter(!month %in% c(6:8))
+# niwot_winter_comp <- niwot_compare %>%
+#   mutate(month = month(date)) %>%
+#   filter(!month %in% c(6:8))
+# 
+# summary(niwot_winter_comp)
+```
 
-summary(niwot_winter_comp)
+### Prism shift 1 day and Niwot SNOTEL precip
 
+```{r, echo = F}
 niwot_prismshift <- niwot_compare %>%
   mutate_at(c("prism_mm"), funs(lead), n = 1) %>%
   mutate(month = month(date)) %>%
   #filter(!month %in% c(6:8)) %>%
-  mutate(diff_mm = snotel_mm - prism_mm)
+  mutate(diff_mm = snotel_mm - prism_mm) %>%
+  na.omit()
 
-summary(niwot_prismshift)
-rmse(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
-NSE(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
-pbias(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
+#NSE(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
+#pbias(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
 
 scatter_shiftday <- ggplot(niwot_prismshift, aes(x=snotel_mm, y=prism_mm)) +
   geom_point() +
-  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue") +
+  ggtitle('Prism shift 1 day versus Niwot SNOTEL precip')
   
 ggplotly(scatter_shiftday)
 
+rmse(niwot_prismshift$prism_mm, niwot_prismshift$snotel_mm)
+summary(niwot_prismshift$diff_mm)
+```
+
+### Prism shift by fraction and Niwot SNOTEL precip
+
+```{r, echo = F}
 niwot_prismfrac <- niwot_compare %>%
   mutate(prism_most_mm = prism_mm * 0.974,
          prism_little_mm = prism_mm * 0.026) %>%
   mutate_at(c('prism_most_mm'), list(lead), n = 1) %>%
   mutate(prism_new_mm = prism_most_mm + prism_little_mm,
-         diff_prismfrac = snotel_mm - prism_new_mm)
-
-summary(niwot_prismfrac)
+         diff_prismfrac = snotel_mm - prism_new_mm) %>%
+  na.omit()
 
 scatter_frac <- ggplot(niwot_prismfrac, aes(x=snotel_mm, y=prism_new_mm)) +
   geom_point() +
-  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue") +
+  ggtitle('Prism shift by 97.4% and Niwot SNOTEL precip')
   
 ggplotly(scatter_frac)
 
 rmse(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
-NSE(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
-pbias(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
+summary(niwot_prismfrac$diff_prismfrac)
+#NSE(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
+#pbias(niwot_prismfrac$prism_new_mm, niwot_prismfrac$snotel_mm)
 
 ```
 
 ## Compare prism solar rad to flux solar rad
 
-```{r}
+### Original Prism and Niwot flux tower solar rad
+
+```{r, echo = F}
 srad <- solr %>%
   dplyr::select(-1) %>%
   filter(!row_number() %in% c(1:17)) %>%
@@ -427,30 +446,42 @@ srad_compare <- full_join(srad, niwot_srad, by = 'date') %>%
   mutate(diff = niwot_flux_mjm2 - prism_w) %>%
   na.omit()
 
-summary(srad_compare)
-
 scatter_srad_orig <- ggplot(srad_compare, aes(x=niwot_flux_mjm2, y=prism_w)) +
   geom_point() +
-  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue") +
+  ggtitle('Prism versus Niwot flux tower solar rad')
   
 ggplotly(scatter_srad_orig)
 
+rmse(srad_compare$prism_w, srad_compare$niwot_flux_mjm2)
+summary(srad_compare$diff)
+```
+
+### Prism shift by 1 day versus Niwot flux tower solar rad
+
+```{r, echo = F}
 ## 1 day shift
 srad_shift1day <- srad_compare %>%
   mutate_at(c("prism_w"),list(lead), n = 1) %>%
-  na.omit()
+  na.omit() %>%
+  mutate(diff = niwot_flux_mjm2 - prism_w)
 
 scatter_srad_1day <- ggplot(srad_shift1day, aes(x=niwot_flux_mjm2, y=prism_w)) +
   geom_point() +
-  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue") +
+  ggtitle('Prism shift 1 day vs. Niwot flux tower solar rad')
   
 ggplotly(scatter_srad_1day)
 #scatter_srad_1day
 
-summary(srad_shift1day)
 rmse(srad_shift1day$prism_w, srad_shift1day$niwot_flux_mjm2)
-pbias(srad_shift1day$prism_w, srad_shift1day$niwot_flux_mjm2)
+summary(srad_shift1day$diff)
+#pbias(srad_shift1day$prism_w, srad_shift1day$niwot_flux_mjm2)
+```
 
+### Prism shift by fraction versus Niwot flux tower solar rad
+
+```{r, echo = F}
 ## shift by percentage
 srad_fracshift <- srad_compare %>%
     mutate(prism_most = prism_w * 0.3,
@@ -462,15 +493,20 @@ srad_fracshift <- srad_compare %>%
   
 scatter_srad_frac <- ggplot(srad_fracshift, aes(x=niwot_flux_mjm2, y=prism_new)) +
   geom_point() +
-  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue") +
+  ggtitle('Prism shift by 30% vs. Niwot flux tower solar rad')
   
 ggplotly(scatter_srad_frac)
 #scatter_srad_frac
 
-summary(srad_fracshift)
 rmse(srad_fracshift$prism_new, srad_fracshift$niwot_flux_mjm2)
-pbias(srad_fracshift$prism_new, srad_fracshift$niwot_flux_mjm2)
+summary(srad_fracshift$diff_prismfrac)
+#pbias(srad_fracshift$prism_new, srad_fracshift$niwot_flux_mjm2)
+```
 
+### Daymet (original) versus Niwot flux tower solar rad
+
+```{r, echo = F}
 ## bring in daymet
 ## Daily total radiation (MJ/m2/day) can be calculated as follows: ((srad (W/m2) * dayl (s/day)) / l,000,000)
 niwot_daymet <- daym %>%
@@ -487,18 +523,19 @@ niwot_daymet <- daym %>%
   
 niwot_daymet_comp <- full_join(niwot_srad, niwot_daymet, by = 'date') %>%
   dplyr::select(c(date, niwot_flux_mjm2, daymet_mjm2)) %>%
-  na.omit()
+  na.omit() %>%
+  mutate(diff = niwot_flux_mjm2 - daymet_mjm2)
   
 scatter_srad_daymet <- ggplot(niwot_daymet_comp, aes(x=niwot_flux_mjm2, y=daymet_mjm2)) +
   geom_point() +
-  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue")
+  geom_abline(intercept = 0, slope = 1, size=1.5, color="blue") +
+  ggtitle('Daymet vs. Niwot flux tower solar rad')
   
 ggplotly(scatter_srad_daymet)
 #scatter_srad_frac
 
 #summary(srad_fracshift)
 rmse(niwot_daymet_comp$daymet_mjm2, niwot_daymet_comp$niwot_flux_mjm2)
-
-
+summary(niwot_daymet_comp$diff)
 ```
 
