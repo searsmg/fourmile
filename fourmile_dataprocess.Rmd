@@ -35,6 +35,8 @@ library(sf)
 library(stringr)
 library(hydroGOF)
 library(Metrics)
+library(ranger)
+library(missRanger)
 ```
 
 
@@ -543,6 +545,13 @@ ggplotly(scatter_srad_daymet)
 rmse(niwot_daymet_comp$daymet_mjm2, niwot_daymet_comp$niwot_flux_mjm2)
 bias(niwot_daymet_comp$niwot_flux_mjm2, niwot_daymet_comp$daymet_mjm2)
 summary(niwot_daymet_comp$diff)
+```
+
+### Solar rad gap filling
+
+```{r}
+
+
 
 ```
 
