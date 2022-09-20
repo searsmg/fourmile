@@ -37,6 +37,7 @@ library(hydroGOF)
 library(Metrics)
 library(ranger)
 library(missRanger)
+library(readxl)
 ```
 
 
@@ -549,9 +550,51 @@ summary(niwot_daymet_comp$diff)
 
 ### Solar rad gap filling
 
-```{r}
+```{r, echo=F}
+#bring in srad and niwot_srad
+srad_gapfil <- full_join(srad, niwot_srad) %>%
+  filter(date > '2009-12-31') %>%
+  dplyr::select(-c(prism_w, prism_m, prism_e))
 
+#bat <- read_xlsx('bat_srad.xlsx')
+#save.image(file = 'bat.RData')
+load('C:/Users/sears/Documents/Repos/fourmile/data/bat.RData')
 
+bet_day <- bat %>%
+  mutate(date = as.Date(datetime)) %>%
+  group_by(date) %>%
+  summarize(sw_in_avg_wm2= mean(in_swrad_wm2)) %>%
+  filter(date > '2009-12-31') %>%
+  mutate(bet_sw_in_mjm2 = (sw_in_avg_wm2 * 86400) / 1000000) %>%
+  dplyr::select(-c(sw_in_avg_wm2))
+
+srad_gapfil_all <- full_join(srad_gapfil, bet_day, by='date') %>%
+  filter(date < '2020-12-31') %>%
+  dplyr::select(-c(bet_sw_in_mjm2.x)) %>%
+  rename(bet_sw = bet_sw_in_mjm2.y)
+
+summary(srad_gapfil_all)
+
+srad_flip_nofill <- srad_gapfil %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'sw_in_mjm2')
+
+srad_nofill <- ggplot(srad_flip_nofill, aes(x=date, y=sw_in_mjm2, color=site)) +
+  geom_line() +
+  ggtitle('Solar rad, no fill')
+
+ggplotly(srad_nofill)
+
+new_srad <- missRanger(srad_gapfil_all, num.trees=100)
+summary(new_srad)
+
+srad_flip_fill <- new_srad %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'sw_in_mjm2')
+
+srad_filled <- ggplot(srad_flip_fill, aes(x=date, y=sw_in_mjm2, color=site)) +
+  geom_line() +
+  ggtitle('Solar rad, fill')
+
+ggplotly(srad_filled)
 
 ```
 
