@@ -571,7 +571,8 @@ bet_day <- bat %>%
 srad_gapfil_all <- full_join(srad_gapfil, bet_day, by='date') %>%
   filter(date < '2020-12-31') %>%
   dplyr::select(-c(bet_sw_in_mjm2.x)) %>%
-  rename(bet_sw = bet_sw_in_mjm2.y)
+  rename(bet_sw = bet_sw_in_mjm2.y) %>%
+  mutate(doyh = yday(date))
 
 summary(srad_gapfil_all)
 
@@ -584,11 +585,13 @@ srad_nofill <- ggplot(srad_flip_nofill, aes(x=date, y=sw_in_mjm2, color=site)) +
 
 ggplotly(srad_nofill)
 
-new_srad <- missRanger(srad_gapfil_all, num.trees=100)
+new_srad <- missRanger(srad_gapfil_all, num.trees=100000)
 summary(new_srad)
 
 srad_flip_fill <- new_srad %>%
+  dplyr::select(-c(doyh)) %>% 
   pivot_longer(!date, names_to = 'site', values_to = 'sw_in_mjm2')
+  
 
 srad_filled <- ggplot(srad_flip_fill, aes(x=date, y=sw_in_mjm2, color=site)) +
   geom_line() +
