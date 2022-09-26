@@ -1,0 +1,62 @@
+---
+title: "Fourmile_inputs"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: journal
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r open package, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+library(rmdformats)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(ggplot2)
+library(here)
+library(scales)
+library(here)
+library(rgdal)
+library(sp)
+library(sf)
+library(mapview)
+library(kableExtra)
+library(dataRetrieval)
+library(raster)
+library(sf)
+library(stringr)
+library(hydroGOF)
+library(Metrics)
+library(ranger)
+library(missRanger)
+library(readxl)
+
+```
+
+```{r loading data, include = F}
+
+setwd('C:/Users/sears/Documents/Repos/fourmile/data/files_to_edit')
+
+#pull in all filenames with csv
+filenames <- list.files('.', pattern='.csv', full.names=F)
+
+#read all the csvs
+dataframes <- lapply(filenames, read_csv)
+
+#name all the csv
+names(dataframes) <- substr(filenames, 1, 4)
+
+#extract csvs from list to global env
+lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
+rm(dataframes)
+
+
+```
+
