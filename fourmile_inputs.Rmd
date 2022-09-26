@@ -57,6 +57,193 @@ names(dataframes) <- substr(filenames, 1, 4)
 lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
 rm(dataframes)
 
+bet_srad <- read_xlsx('bet_srad.xlsx')
+updated_prec <- read_xlsx('updated_precip_2016to20.xlsx')
+bet_airt <- read_xlsx('bt_Met1.xlsx')
+bet_met <-read_xlsx('bt_Met2.xlsx')
+
+```
+
+# RH first
+
+```{r}
+#need to bring in Niwot and Betasso and remove prism
+rh <- rhum %>%
+  mutate(date = dmy(date)) %>%
+  dplyr::select(-c(prism_W, prism_M, prism_E))
+
+niwot_rh <- nime %>%
+  mutate(date = make_date(Year, Month, Day)) %>%
+  dplyr::select(c(date, RH_21m)) %>%
+  rename(Niwot = RH_21m) %>%
+  filter(date > '2009-12-31') %>%
+  filter(date < '2021-01-01')
+
+bet_rh <- bet_met %>%
+  rename(rh = 1,
+    datetime = 2) %>%
+  dplyr::select(c(datetime, rh)) %>%
+  mutate(date = as.Date(datetime)) %>%
+  group_by(date) %>%
+  summarize(rh = mean(rh)) %>%
+  filter(date > '2009-12-31') %>%
+  filter(date < '2021-01-01') %>%
+  rename(Betasso = rh) 
+
+rhall <- full_join(rh, niwot_rh, by = 'date')
+
+rhall <- full_join(rhall, bet_rh, by = 'date') %>% 
+  mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
+  replace(is.na(.), -9999)
+
+#rh done
+write.csv(rhall, 'rh_use.csv')
+
+```
+
+# wind 
+
+```{r}
+wind <- wind %>%
+  mutate(date = dmy(date))
+
+niwot_wind <- nime %>%
+  mutate(date = make_date(Year, Month, Day)) %>%
+  dplyr::select(c(date, ws_21m)) %>%
+  rename(Niwot = ws_21m) %>%
+  filter(date > '2009-12-31') %>%
+  filter(date < '2021-01-01')
+
+bet_wind <- bet_met %>%
+  rename(windspeed = 3,
+    datetime = 4) %>%
+  dplyr::select(c(datetime, windspeed)) %>%
+  mutate(date = as.Date(datetime)) %>%
+  group_by(date) %>%
+  summarize(wind = mean(windspeed)) %>%
+  filter(date > '2009-12-31') %>%
+  filter(date < '2021-01-01') %>%
+  rename(Betasso = wind) 
+
+windall <- full_join(wind, niwot_wind, by = 'date')
+
+windall <- full_join(windall, bet_wind, by = 'date') %>% 
+  mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
+  replace(is.na(.), -9999)
+
+write.csv(windall, 'wind_use.csv')
+
+```
+
+# Tmax 
+
+```{r}
+tmax <- tmax %>%
+  mutate(date = dmy(date)) %>%
+  dplyr::select(-c(prism_W, prism_M, prism_E))
+
+bet_tmax <- bet_airt %>%
+    rename(tmax = 3,
+    datetime = 4) %>%
+  dplyr::select(c(datetime, tmax)) %>%
+  mutate(date = as.Date(datetime)) %>%
+  group_by(date) %>%
+  summarize(tmax = max(tmax)) %>%
+  filter(date > '2009-12-31') %>%
+  filter(date < '2021-01-01') %>%
+  rename(Betasso = tmax) 
+
+tmaxall <- full_join(tmax, bet_tmax, by = 'date') %>%
+  mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
+  replace(is.na(.), -9999)
+
+write.csv(tmaxall, 'tmax_use.csv')
+
+```
+
+# Tmin
+
+```{r}
+tmin <- tmin %>%
+  mutate(date = dmy(date)) %>%
+  dplyr::select(-c(prism_W, prism_M, prism_E))
+
+bet_tmin <- bet_airt %>%
+    rename(tmin = 1,
+    datetime = 2) %>%
+  dplyr::select(c(datetime, tmin)) %>%
+  mutate(date = as.Date(datetime)) %>%
+  group_by(date) %>%
+  summarize(tmin = min(tmin)) %>%
+  filter(date > '2009-12-31') %>%
+  filter(date < '2021-01-01') %>%
+  rename(Betasso = tmin) 
+
+tminall <- full_join(tmin, bet_tmin, by = 'date') %>%
+  mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
+  replace(is.na(.), -9999)
+
+write.csv(tminall, 'tmin_use.csv')
+
+```
+
+# Solar rad
+
+```{r}
+solar <- solr %>%
+  mutate(date = dmy(date)) %>%
+  dplyr::select(-c(prism_W, prism_M, prism_E))
+
+niwot_solar <- niwo %>%
+  dplyr::select(c(1, 3)) %>%
+  filter(date > '2009-12-31') %>%
+  filter(date < '2021-01-01') %>%
+  rename(Niwot = 2)
+
+bet_solar <- bet_srad %>%
+  mutate(date = as.Date(datetime)) %>%
+  group_by(date) %>%
+  summarize(sw_in_avg_wm2= mean(in_swrad_wm2)) %>%
+  filter(date > '2009-12-31') %>%
+  mutate(bet_sw_in_mjm2 = (sw_in_avg_wm2 * 86400) / 1000000) %>%
+  dplyr::select(-c(sw_in_avg_wm2)) %>%
+  rename(Betasso = bet_sw_in_mjm2)
+
+solarall <- full_join(solar, niwot_solar, by = 'date')
+
+solarall <- full_join(solarall, bet_solar, by = 'date') %>% 
+  mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
+  replace(is.na(.), -9999)
+
+write.csv(solarall, 'solar_use.csv')
+
+```
+
+# Precip
+
+```{r}
+
+#daily precip
+precall <- prec %>%
+  mutate(date = dmy(date),
+         doy = yday(date)) %>%
+  mutate_at(c('Gordon_South', 'Gordon_North',
+              'GH', 'LM', 'SE', 'SP', 'ST', 'NADP_SL'),
+            ~(ifelse(!doy %in% c(152:258), 
+
+  
+  mutate_at(c('prism_W', 'prism_M', 'prism_E'), ~(ifelse(doy %in% c(152:258),
+                                                         NA, .))) %>%
+  filter(date > '2009-12-31') %>%
+  dplyr::select(-c(doy)) %>%
+  mutate(date = format(as.Date(date), '%d.%m.%Y'))
+
+
+
+  mutate(prism_most_mm = prism_mm * 0.974,
+         prism_little_mm = prism_mm * 0.026) %>%
+  mutate_at(c('prism_most_mm'), list(lead), n = 1) %>%
+  mutate(prism_new_mm = prism_most_mm + prism_little_mm
 
 ```
 
