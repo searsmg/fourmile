@@ -229,21 +229,88 @@ precall <- prec %>%
          doy = yday(date)) %>%
   mutate_at(c('Gordon_South', 'Gordon_North',
               'GH', 'LM', 'SE', 'SP', 'ST', 'NADP_SL'),
-            ~(ifelse(!doy %in% c(152:258), 
-
-  
+            ~(ifelse(!doy %in% c(152:258),
+                               NA, .))) %>%
+  mutate(prism_most_w = prism_W * 0.974,
+         prism_little_w = prism_W * 0.026,
+         prism_most_m = prism_M * 0.974,
+         prism_little_m = prism_M * 0.026,
+         prism_most_e = prism_E * 0.974,
+         prism_little_e = prism_E * 0.026) %>%
+  mutate_at(c('prism_most_w', 'prism_most_m', 'prism_most_e'), list(lead), n = 1) %>%
+  mutate(prism_W = prism_most_w + prism_little_w,
+         prism_M = prism_most_m + prism_little_m,
+         prism_E = prism_most_e + prism_little_e) %>%
+  dplyr::select(-c(prism_most_w, prism_little_w,
+                   prism_most_m, prism_little_m,
+                   prism_most_e, prism_little_e)) %>%
   mutate_at(c('prism_W', 'prism_M', 'prism_E'), ~(ifelse(doy %in% c(152:258),
                                                          NA, .))) %>%
-  filter(date > '2009-12-31') %>%
-  dplyr::select(-c(doy)) %>%
-  mutate(date = format(as.Date(date), '%d.%m.%Y'))
+  filter(date > '2009-12-31')
+
+bet_rain <- bet_met %>%
+  dplyr::select(c(5,6)) %>%
+  rename(Betasso_rain =1) %>%
+  mutate(date = as.Date(DATE_TIME)) %>%
+  group_by(date) %>%
+  summarize(Betasso = sum(Betasso_rain)) %>%
+  filter(date > '2009-12-31')
+
+precall <- full_join(precall, bet_rain, by = 'date')
+
+updated_prec <- updated_prec %>%
+  mutate_at(c(2,4,6,8,10), ~(.*25.4)) %>%
+  rename(GH = 2,
+         LM = 4,
+         SE = 6,
+         SP = 8,
+         ST = 10)
+
+gh <- updated_prec %>%
+  dplyr::select(c(1,2)) %>%
+  mutate(date = mdy(GH_date)) %>%
+  dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE)
+
+  
+lm <- updated_prec %>%
+  dplyr::select(c(3,4)) %>%
+  mutate(date = mdy(LM_date)) %>%
+  dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE)
+
+se <- updated_prec %>%
+  dplyr::select(c(5,6)) %>%
+  mutate(date = mdy(SE_date)) %>%
+  dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE)
+
+sp <- updated_prec %>%
+  dplyr::select(c(7,8)) %>%
+  mutate(date = mdy(SP_date)) %>%
+  dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE)
+
+st <- updated_prec %>%
+  dplyr::select(c(9,10)) %>%
+  mutate(date = mdy(ST_date)) %>%
+  dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE)
+  
+write.csv(gh, 'gh.csv')
+write.csv(lm, 'lm.csv')
+write.csv(se, 'se.csv')
+write.csv(sp, 'sp.csv')
+write.csv(st, 'st.csv')
+
+write.csv(precall, 'precall_fix.csv')
 
 
+# mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
+#   replace(is.na(.), -9999) %>%
+#   dplyr::select(-c(doy))
 
-  mutate(prism_most_mm = prism_mm * 0.974,
-         prism_little_mm = prism_mm * 0.026) %>%
-  mutate_at(c('prism_most_mm'), list(lead), n = 1) %>%
-  mutate(prism_new_mm = prism_most_mm + prism_little_mm
-
+         
+         
 ```
 
