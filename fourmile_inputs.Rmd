@@ -250,7 +250,7 @@ precall <- prec %>%
 
 bet_rain <- bet_met %>%
   dplyr::select(c(5,6)) %>%
-  rename(Betasso_rain =1) %>%
+  rename(Betasso_rain = 1) %>%
   mutate(date = as.Date(DATE_TIME)) %>%
   group_by(date) %>%
   summarize(Betasso = sum(Betasso_rain)) %>%
@@ -258,7 +258,8 @@ bet_rain <- bet_met %>%
 
 precall <- full_join(precall, bet_rain, by = 'date')
 
-updated_prec <- updated_prec %>%
+updated_prec1 <- updated_prec %>%
+  mutate_at(c(2,4,6,8,10), ~(ifelse(. > 7, NA, .))) %>%
   mutate_at(c(2,4,6,8,10), ~(.*25.4)) %>%
   rename(GH = 2,
          LM = 4,
@@ -266,46 +267,112 @@ updated_prec <- updated_prec %>%
          SP = 8,
          ST = 10)
 
-gh <- updated_prec %>%
+gh <- updated_prec1 %>%
   dplyr::select(c(1,2)) %>%
   mutate(date = mdy(GH_date)) %>%
   dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE) %>%
+  arrange(date)
+
+gh_old <- precall %>%
+  dplyr::select(c(date, GH)) %>%
+  filter(date < '2016-01-01') %>%
+  bind_rows(gh_old, gh) %>%
   distinct(date, .keep_all = TRUE)
 
+precall <- precall %>%
+  dplyr::select(-c(GH))
   
-lm <- updated_prec %>%
+precall <- full_join(precall, gh_old, by='date')
+
+lm <- updated_prec1 %>%
   dplyr::select(c(3,4)) %>%
   mutate(date = mdy(LM_date)) %>%
   dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE) %>%
+  arrange(date)
+
+lm_old <- precall %>%
+  dplyr::select(c(date, LM)) %>%
+  filter(date < '2016-01-01') 
+  
+lm_old <- bind_rows(lm_old, lm) %>%
   distinct(date, .keep_all = TRUE)
 
-se <- updated_prec %>%
+precall <- precall %>%
+  dplyr::select(-c(LM))
+  
+precall <- full_join(precall, lm_old, by='date')
+
+se <- updated_prec1 %>%
   dplyr::select(c(5,6)) %>%
   mutate(date = mdy(SE_date)) %>%
   dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE) %>%
+  arrange(date)
+
+se_old <- precall %>%
+  dplyr::select(c(date, SE)) %>%
+  filter(date < '2016-01-01') 
+  
+se_old <- bind_rows(se_old, se) %>%
   distinct(date, .keep_all = TRUE)
 
-sp <- updated_prec %>%
+precall <- precall %>%
+  dplyr::select(-c(SE))
+  
+precall <- full_join(precall, se_old, by='date')
+
+sp <- updated_prec1 %>%
   dplyr::select(c(7,8)) %>%
   mutate(date = mdy(SP_date)) %>%
   dplyr::select(-c(1)) %>%
+  distinct(date, .keep_all = TRUE) %>%
+  arrange(date)
+
+sp_old <- precall %>%
+  dplyr::select(c(date, SP)) %>%
+  filter(date < '2016-01-01') 
+  
+sp_old <- bind_rows(sp_old, sp) %>%
   distinct(date, .keep_all = TRUE)
 
-st <- updated_prec %>%
+precall <- precall %>%
+  dplyr::select(-c(SP))
+  
+precall <- full_join(precall, sp_old, by='date')
+
+st <- updated_prec1 %>%
   dplyr::select(c(9,10)) %>%
   mutate(date = mdy(ST_date)) %>%
   dplyr::select(-c(1)) %>%
-  distinct(date, .keep_all = TRUE)
+  distinct(date, .keep_all = TRUE) %>%
+  arrange(date)
+
+st_old <- precall %>%
+  dplyr::select(c(date, ST)) %>%
+  filter(date < '2016-01-01') 
   
-write.csv(gh, 'gh.csv')
-write.csv(lm, 'lm.csv')
-write.csv(se, 'se.csv')
-write.csv(sp, 'sp.csv')
-write.csv(st, 'st.csv')
+st_old <- bind_rows(st_old, st) %>%
+  distinct(date, .keep_all = TRUE)
 
-write.csv(precall, 'precall_fix.csv')
+precall <- precall %>%
+  dplyr::select(-c(ST))
+  
+precall <- full_join(precall, st_old, by='date')
 
 
+prec_final <- precall %>%
+  mutate_at(c('GH', 'LM', 'SE', 'SP', 'ST'),
+            ~(ifelse(!doy %in% c(152:258),
+                               NA, .))) %>%
+  filter(date < '2021-01-01') %>%
+  mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
+  dplyr::select(-c(doy))
+
+write.csv(prec_final, 'prec_use.csv')  
+
+#check the date range, make sure tip bucekts are being used at right times
 # mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
 #   replace(is.na(.), -9999) %>%
 #   dplyr::select(-c(doy))
