@@ -97,7 +97,7 @@ rhall <- full_join(rhall, bet_rh, by = 'date') %>%
   replace(is.na(.), -9999)
 
 #rh done
-write.csv(rhall, 'rh_use.csv')
+#write.csv(rhall, 'rh_use.csv')
 
 ```
 
@@ -131,7 +131,7 @@ windall <- full_join(windall, bet_wind, by = 'date') %>%
   mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
   replace(is.na(.), -9999)
 
-write.csv(windall, 'wind_use.csv')
+#write.csv(windall, 'wind_use.csv')
 
 ```
 
@@ -157,7 +157,7 @@ tmaxall <- full_join(tmax, bet_tmax, by = 'date') %>%
   mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
   replace(is.na(.), -9999)
 
-write.csv(tmaxall, 'tmax_use.csv')
+#write.csv(tmaxall, 'tmax_use.csv')
 
 ```
 
@@ -371,13 +371,46 @@ prec_final <- precall %>%
   dplyr::select(-c(doy))
 
 write.csv(prec_final, 'prec_use.csv')  
+       
+```
 
-#check the date range, make sure tip bucekts are being used at right times
-# mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
-#   replace(is.na(.), -9999) %>%
-#   dplyr::select(-c(doy))
+# combine all met data together
 
-         
-         
+```{r}
+
+wind <- read_csv('wind_use.csv')
+sol <- read_csv('solar_use.csv')
+tmin <- read_csv('tmin_use.csv')
+tmax <- read_csv('tmax_use.csv')
+prec <- read_csv('prec_use.csv')
+rh <- read_csv('rh_use.csv')
+
+#put all data frames into list
+df_list <- list(prec, sol, tmin, tmax, wind, rh)
+
+#merge all data frames in list
+met_all <- df_list %>% 
+  reduce(full_join, by='date')
+
+met_all <- met_all %>%  
+  mutate(date = dmy(date),
+         doy = yday(date)) %>%
+  replace(.==-9999, NA) %>%
+  filter(date > '2009-12-31')
+  
+
+met_fill <- missRanger(met_all, num.trees=1000)
+
+
+
+solar <- ggplot(met_fill, aes(x=date)) +
+  geom_line(aes(y=Gordon_S_mjm2), color='blue') +
+  geom_line(aes(y=Niwot_mjm2), color='red') +
+  geom_line(aes(y=Betasso_mjm2), color='orange')
+
+
+ggplotly(solar)
+
+
 ```
 
