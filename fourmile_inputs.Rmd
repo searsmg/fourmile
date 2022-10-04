@@ -414,3 +414,29 @@ ggplotly(solar)
 
 ```
 
+# Runoff ratios
+
+```{r}
+prec_runoff <- read_csv('prec_runoff.csv')
+
+ratios_prep <- prec_runoff %>%
+  mutate(prec_12 = hru5 + hru6,
+         prec_13 = hru3 + hru11,
+         prec_10 = hru1 + hru2 + hru8 + hru9 + hru4,
+         prec_11 = hru7 + hru10,
+         date = dmy(time)) %>%
+  dplyr::select(c(date, prec_12, prec_13, prec_10, prec_11,
+                  reach10_cms, reach11_cms, reach12_cms, reach13_cms)) %>%
+  mutate_at(c('prec_12', 'prec_13', 'prec_10', 'prec_11'), ~(./1000)) %>%
+  mutate_at(c('reach10_cms', 'reach11_cms', 'reach12_cms', 'reach13_cms'), ~(.*86400)) %>%
+  mutate(prec_12_cms = prec_12 * (14378900+16275100),
+         prec_13_cms = prec_13 * (),
+         prec_10_cms = prec_10 * (),
+         prec_11_cms = prec_11 * ())
+
+
+
+
+
+```
+
