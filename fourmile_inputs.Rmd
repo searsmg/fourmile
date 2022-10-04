@@ -428,11 +428,11 @@ ratios_prep <- prec_runoff %>%
   dplyr::select(c(date, prec_12, prec_13, prec_10, prec_11,
                   reach10_cms, reach11_cms, reach12_cms, reach13_cms)) %>%
   mutate_at(c('prec_12', 'prec_13', 'prec_10', 'prec_11'), ~(./1000)) %>%
-  mutate_at(c('reach10_cms', 'reach11_cms', 'reach12_cms', 'reach13_cms'), ~(.*86400)) %>%
-  mutate(prec_12_cms = prec_12 * (14378900+16275100),
-         prec_13_cms = prec_13 * (),
-         prec_10_cms = prec_10 * (),
-         prec_11_cms = prec_11 * ())
+  # mutate_at(c('reach10_cms', 'reach11_cms', 'reach12_cms', 'reach13_cms'), ~(.*86400)) %>%
+  # mutate(prec_12_cms = prec_12 * (14378900+16275100),
+  #        prec_13_cms = prec_13 * (),
+  #        prec_10_cms = prec_10 * (),
+  #        prec_11_cms = prec_11 * ())
 
 
 
