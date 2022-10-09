@@ -650,10 +650,14 @@ ratios_wy <- ratios %>%
   group_by(wy) %>%
   summarize_if(is.numeric, sum, na.rm=TRUE) %>%
   slice(-c(11:12)) %>%
-  mutate(us1_rr = us1 / prec_12_cmd,
-         ds1_rr = ds1 / prec_13_cmd,
-         usgs2_rr = usgs2 / prec_10_cmd,
-         usgs1_rr = usgs1 / prec_11_cmd)
+  mutate(us1_rr = ifelse(is.na(us1), 
+                          NA, us1 / prec_12_cmd),
+         ds1_rr = ifelse(is.na(ds1),
+                          NA, ds1 / prec_13_cmd),
+         usgs2_rr = ifelse(is.na(usgs2), 
+                            NA, usgs2 / prec_10_cmd),
+         usgs1_rr = ifelse(is.na(usgs1),
+                            NA, usgs1 / prec_11_cmd))
 
 kable(ratios_wy) %>%
   kable_styling()
