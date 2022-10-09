@@ -248,6 +248,32 @@ precall <- prec %>%
                                                          NA, .))) %>%
   filter(date > '2009-12-31')
 
+#####################################################################
+#get prism shift only for precip (for year round)
+prec_orig <- read_csv('precipAll.csv')
+
+prec_prismshift <- prec_orig %>%
+  dplyr::select(c(date, prism_W, prism_M, prism_E)) %>%
+  mutate(date = dmy(date)) %>%
+  mutate(prism_most_w = prism_W * 0.974,
+         prism_little_w = prism_W * 0.026,
+         prism_most_m = prism_M * 0.974,
+         prism_little_m = prism_M * 0.026,
+         prism_most_e = prism_E * 0.974,
+         prism_little_e = prism_E * 0.026) %>%
+  mutate_at(c('prism_most_w', 'prism_most_m', 'prism_most_e'), list(lead), n = 1) %>%
+  mutate(prism_W = prism_most_w + prism_little_w,
+         prism_M = prism_most_m + prism_little_m,
+         prism_E = prism_most_e + prism_little_e) %>%
+  dplyr::select(-c(prism_most_w, prism_little_w,
+                   prism_most_m, prism_little_m,
+                   prism_most_e, prism_little_e)) %>%
+  filter(date > '2009-12-31') %>%
+  mutate(date = format(as.Date(date), '%d.%m.%Y'))
+  
+write.csv(prec_prismshift, 'precip_prismshift.csv')
+#####################################################
+
 bet_rain <- bet_met %>%
   dplyr::select(c(5,6)) %>%
   rename(Betasso_rain = 1) %>%
@@ -414,29 +440,5 @@ ggplotly(solar)
 
 ```
 
-# Runoff ratios
 
-```{r}
-prec_runoff <- read_csv('prec_runoff.csv')
-
-ratios_prep <- prec_runoff %>%
-  mutate(prec_12 = hru5 + hru6,
-         prec_13 = hru3 + hru11,
-         prec_10 = hru1 + hru2 + hru8 + hru9 + hru4,
-         prec_11 = hru7 + hru10,
-         date = dmy(time)) %>%
-  dplyr::select(c(date, prec_12, prec_13, prec_10, prec_11,
-                  reach10_cms, reach11_cms, reach12_cms, reach13_cms)) %>%
-  mutate_at(c('prec_12', 'prec_13', 'prec_10', 'prec_11'), ~(./1000)) %>%
-  # mutate_at(c('reach10_cms', 'reach11_cms', 'reach12_cms', 'reach13_cms'), ~(.*86400)) %>%
-  # mutate(prec_12_cms = prec_12 * (14378900+16275100),
-  #        prec_13_cms = prec_13 * (),
-  #        prec_10_cms = prec_10 * (),
-  #        prec_11_cms = prec_11 * ())
-
-
-
-
-
-```
 
