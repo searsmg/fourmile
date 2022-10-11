@@ -288,43 +288,43 @@ ggplotly(diff4)
 
 ```{r precip, echo=F}
 #daily precip
-# prec_update <- prec %>%
-#   mutate(date = dmy(date),
-#          doy = yday(date)) %>%
-#   mutate_at(c('Gordon_South', 'Gordon_North',
-#               'GH', 'LM', 'SE', 'SP', 'ST', 'NADP_SL'),
-#             ~(ifelse(!doy %in% c(152:258), 
-#                                NA, .))) %>%
-#   mutate_at(c('prism_W', 'prism_M', 'prism_E'), list(lead), n = 1) %>%
-#   mutate_at(c('prism_W', 'prism_M', 'prism_E'), ~(ifelse(doy %in% c(152:258),
-#                                                          NA, .))) %>%
-#   filter(date > '2009-12-31') %>%
-#   dplyr::select(-c(doy)) %>%
-#   mutate(date = format(as.Date(date), '%d.%m.%Y'))
-# 
-# #write_csv(prec_update, 'precipAll_update.csv')
-# 
-# daily_p <- prec %>%
-#   mutate(date = dmy(date)) %>%
-#   replace(.==-9999, NA) %>%
-#   pivot_longer(!date, names_to = 'site', values_to = 'precip_mm') %>%
-#   mutate(precip_mm = as.numeric(precip_mm)) %>%
-#   mutate(WY = calcWaterYear(date)) %>%
-#   group_by(WY, site) %>%
-#   mutate(dailyp_cum_mm = cumsum(precip_mm))
-# 
-# precip <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line()  +
-#   theme_bw() +
-#   ggtitle('Daily precip (all)')
-# 
-# ggplotly(precip)
-# 
-# precip_cumu <- ggplot(daily_p, aes(x=date, y=dailyp_cum_mm, color=site)) + geom_line()  +
-#   theme_bw() +
-#   ggtitle('Daily precip cumulative sums (all)')
-# 
-# ggplotly(precip_cumu)
-   
+prec_update <- prec %>%
+  mutate(date = dmy(date),
+         doy = yday(date)) %>%
+  mutate_at(c('Gordon_South', 'Gordon_North',
+              'GH', 'LM', 'SE', 'SP', 'ST', 'NADP_SL'),
+            ~(ifelse(!doy %in% c(152:258),
+                               NA, .))) %>%
+  mutate_at(c('prism_W', 'prism_M', 'prism_E'), list(lead), n = 1) %>%
+  mutate_at(c('prism_W', 'prism_M', 'prism_E'), ~(ifelse(doy %in% c(152:258),
+                                                         NA, .))) %>%
+  filter(date > '2009-12-31') %>%
+  dplyr::select(-c(doy)) %>%
+  mutate(date = format(as.Date(date), '%d.%m.%Y'))
+
+#write_csv(prec_update, 'precipAll_update.csv')
+
+daily_p <- prec %>%
+  mutate(date = dmy(date)) %>%
+  replace(.==-9999, NA) %>%
+  pivot_longer(!date, names_to = 'site', values_to = 'precip_mm') %>%
+  mutate(precip_mm = as.numeric(precip_mm)) %>%
+  mutate(WY = calcWaterYear(date)) %>%
+  group_by(WY, site) %>%
+  mutate(dailyp_cum_mm = cumsum(precip_mm))
+
+precip <- ggplot(daily_p, aes(x=date, y=precip_mm, color=site)) + geom_line()  +
+  theme_bw() +
+  ggtitle('Daily precip (all)')
+
+ggplotly(precip)
+
+precip_cumu <- ggplot(daily_p, aes(x=date, y=dailyp_cum_mm, color=site)) + geom_line()  +
+  theme_bw() +
+  ggtitle('Daily precip cumulative sums (all)')
+
+ggplotly(precip_cumu)
+
 ```
 
 ## Compare Niwot SNOTEL precip to prism pixel
