@@ -441,4 +441,156 @@ ggplotly(solar)
 ```
 
 
+## Update PRISM
+
+```{r}
+#bring in all new prism data
+setwd('C:/Users/sears/Documents/Repos/fourmile/data/updated_prism')
+
+#pull in all filenames with csv
+filenames <- list.files('.', pattern='.csv', full.names=F)
+
+#read all the csvs
+dataframes <- lapply(filenames, read_csv)
+
+#name all the csv
+names(dataframes) <- substr(filenames, 1,5)
+
+#extract csvs from list to global env
+lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
+rm(dataframes)
+
+
+prism <- list(p2010,p2011,p2012,p2013,p2014,p2015,p2016,p2017,p2018,p2019,p2020)
+
+prism_all <- bind_rows(prism) %>%
+  rename(ppt_mm = 6, 
+         tmin_c = 7,
+         tmax_c = 8) %>%
+  arrange(Date) %>%
+  filter(str_detect(Name, 'prism_7|prism_12|prism_13|prism_14|prism_15|prism_16|prism_17|prism_18|prism_28'))
+
+#break out by variable then can rotate the data
+#tmax first
+tmax <- prism_all %>%
+  dplyr::select(c(Date, Name, tmax_c)) %>%
+  pivot_wider(names_from = Name, values_from = tmax_c)
+  
+write.csv(tmax, 'tmax.csv')
+write.csv(prism_all, 'prism_all.csv')
+
+#tmin
+tmin <- prism_all %>%
+  dplyr::select(c(Date, Name, tmin_c)) %>%
+  pivot_wider(names_from = Name, values_from = tmin_c)
+  
+write.csv(tmin, 'tmin.csv')
+
+#prism precip 
+#best case (in winter prism is used, outside of that NA as -9999 PLUS prism shift)
+p_bestcase <- prism_all %>%
+  dplyr::select(c(Date, Name, ppt_mm)) %>%
+  pivot_wider(names_from = Name, values_from = ppt_mm) %>%
+  mutate(prism_most_7 = prism_7 * 0.974,
+         prism_little_7 = prism_7 * 0.026,
+         prism_most_12 = prism_12 * 0.974,
+         prism_little_12 = prism_12 * 0.026,
+         prism_most_13 = prism_13 * 0.974,
+         prism_little_13 = prism_13 * 0.026,
+         prism_most_14 = prism_14 * 0.974,
+         prism_little_14 = prism_14 * 0.026,
+         prism_most_15 = prism_15 * 0.974,
+         prism_little_15 = prism_15 * 0.026,
+         prism_most_16 = prism_16 * 0.974,
+         prism_little_16 = prism_16 * 0.026,
+         prism_most_17 = prism_17 * 0.974,
+         prism_little_17 = prism_17 * 0.026,
+         prism_most_18 = prism_18 * 0.974,
+         prism_little_18 = prism_18 * 0.026,
+         prism_most_28 = prism_28 * 0.974,
+         prism_little_28 = prism_28 * 0.026) %>%
+  mutate_at(c('prism_most_7', 'prism_most_12', 'prism_most_13',
+              'prism_most_14', 'prism_most_15', 'prism_most_16',
+              'prism_most_17', 'prism_most_18', 'prism_most_28'),
+            list(lead), n = 1) %>%
+  mutate(prism_7 = prism_most_7 + prism_little_7,
+         prism_12 = prism_most_12 + prism_little_12,
+         prism_13 = prism_most_13 + prism_little_13,
+         prism_14 = prism_most_14 + prism_little_14,
+         prism_15 = prism_most_15 + prism_little_15,
+         prism_16 = prism_most_16 + prism_little_16,
+         prism_17 = prism_most_17 + prism_little_17,
+         prism_18 = prism_most_18 + prism_little_18,
+         prism_28 = prism_most_28 + prism_little_28,) %>%
+  dplyr::select(-c(prism_most_7, prism_little_7,
+                   prism_most_12, prism_little_12,
+                   prism_most_13, prism_little_13,
+                   prism_most_14, prism_little_14,
+                   prism_most_15, prism_little_15,
+                   prism_most_16, prism_little_16,
+                   prism_most_17, prism_little_17,
+                   prism_most_18, prism_little_18,
+                   prism_most_28, prism_little_28)) %>%
+  mutate(doy = yday(Date)) %>%
+  mutate_at(c('prism_7', 'prism_12', 'prism_13',
+              'prism_14', 'prism_15', 'prism_16',
+              'prism_17', 'prism_18', 'prism_28'), 
+            ~(ifelse(doy %in% c(152:258), -9999, .)))
+
+write.csv(p_bestcase, 'p_bestcase.csv')
+
+p_shift <- prism_all %>%
+    dplyr::select(c(Date, Name, ppt_mm)) %>%
+  pivot_wider(names_from = Name, values_from = ppt_mm) %>%
+  mutate(prism_most_7 = prism_7 * 0.974,
+         prism_little_7 = prism_7 * 0.026,
+         prism_most_12 = prism_12 * 0.974,
+         prism_little_12 = prism_12 * 0.026,
+         prism_most_13 = prism_13 * 0.974,
+         prism_little_13 = prism_13 * 0.026,
+         prism_most_14 = prism_14 * 0.974,
+         prism_little_14 = prism_14 * 0.026,
+         prism_most_15 = prism_15 * 0.974,
+         prism_little_15 = prism_15 * 0.026,
+         prism_most_16 = prism_16 * 0.974,
+         prism_little_16 = prism_16 * 0.026,
+         prism_most_17 = prism_17 * 0.974,
+         prism_little_17 = prism_17 * 0.026,
+         prism_most_18 = prism_18 * 0.974,
+         prism_little_18 = prism_18 * 0.026,
+         prism_most_28 = prism_28 * 0.974,
+         prism_little_28 = prism_28 * 0.026) %>%
+  mutate_at(c('prism_most_7', 'prism_most_12', 'prism_most_13',
+              'prism_most_14', 'prism_most_15', 'prism_most_16',
+              'prism_most_17', 'prism_most_18', 'prism_most_28'),
+            list(lead), n = 1) %>%
+  mutate(prism_7 = prism_most_7 + prism_little_7,
+         prism_12 = prism_most_12 + prism_little_12,
+         prism_13 = prism_most_13 + prism_little_13,
+         prism_14 = prism_most_14 + prism_little_14,
+         prism_15 = prism_most_15 + prism_little_15,
+         prism_16 = prism_most_16 + prism_little_16,
+         prism_17 = prism_most_17 + prism_little_17,
+         prism_18 = prism_most_18 + prism_little_18,
+         prism_28 = prism_most_28 + prism_little_28,) %>%
+  dplyr::select(-c(prism_most_7, prism_little_7,
+                   prism_most_12, prism_little_12,
+                   prism_most_13, prism_little_13,
+                   prism_most_14, prism_little_14,
+                   prism_most_15, prism_little_15,
+                   prism_most_16, prism_little_16,
+                   prism_most_17, prism_little_17,
+                   prism_most_18, prism_little_18,
+                   prism_most_28, prism_little_28))
+  
+
+write.csv(p_shift, 'p_shift.csv')
+
+p_noshift <- prism_all %>%
+  dplyr::select(c(Date, Name, ppt_mm)) %>%
+  pivot_wider(names_from = Name, values_from = ppt_mm)
+
+write.csv(p_noshift, 'p_noshift.csv')
+
+```
 
