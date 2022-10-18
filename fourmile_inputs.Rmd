@@ -592,5 +592,36 @@ p_noshift <- prism_all %>%
 
 write.csv(p_noshift, 'p_noshift.csv')
 
+#need to do RH!!!
+#RH: =100*(EXP((17.625*TD)/(243.04+TD))/EXP((17.625*T)/(243.04+T)))
+#pull in all filenames with csv
+filenames <- list.files('.', pattern='.csv', full.names=F)
+
+#read all the csvs
+dataframes <- lapply(filenames, read_csv)
+
+#name all the csv
+names(dataframes) <- substr(filenames, 1,5)
+
+#extract csvs from list to global env
+lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
+rm(dataframes)
+
+
+prismt <- list(t2010,t2011,t2012,t2013,t2014,t2015,t2016,t2017,t2018,t2019,t2020)
+
+rh <- bind_rows(prismt) %>%
+  na.omit() %>% 
+  rename(tmean_c = 6, 
+         tdew_c = 7) %>%
+  arrange(Date) %>%
+  group_by(Name, Date) %>%
+  mutate(rh = 100*(exp((17.625*tdew_c)/(243.04+tdew_c))/exp((17.625*tmean_c)/(243.04+tmean_c)))) %>%
+  dplyr::select(c(Date, Name, rh)) %>%
+  pivot_wider(names_from = Name, values_from = rh)
+  
+write.csv(rh, 'rh.csv')
+
+
 ```
 
