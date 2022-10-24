@@ -32,7 +32,7 @@ mapview(fourmile)
     #--- variables to download ---#
     elements = c("srad"),
     #--- years ---#
-    years = 2010:2020
+    years = 2020:2021 #update
   )
 )
 
@@ -91,7 +91,7 @@ rad_pivot_new <- rad_pivot %>%
   pivot_wider(names_from = id_new, values_from = solrad)
 
 #csv ready for Ages
-write.csv(rad_pivot_new, 'daymet_srad_all.csv')
+write.csv(rad_pivot_new, 'daymet_srad_2020.csv')
 
 ## below code is only to pull the lat lon out of R to view pixel locations
 #create a df of geometry and id to load into GIS
