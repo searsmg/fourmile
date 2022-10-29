@@ -24,20 +24,21 @@ mapview(fourmile)
 
 #download srad data for Fourmile polygon
 (
-  srad <- FedData::get_daymet(
+  daym <- FedData::get_daymet(
     #--- supply the vector data in sp ---#
     template = as(fourmile, "Spatial"),
     #--- label ---#
     label = "fourmile",
     #--- variables to download ---#
-    elements = c("srad"),
+    elements = c("srad", 'dayl'),
     #--- years ---#
-    years = 2020:2021 #update
+    years = 2010:2020 #update
   )
 )
 
 #srad as stars
-rad_stars <- st_as_stars(srad$srad)
+rad_stars <- st_as_stars(daym$srad)
+dayl_stars <- st_as_stars(daym$dayl)
 
 #get into date values
 date_values <- rad_stars %>% 
@@ -48,50 +49,78 @@ date_values <- rad_stars %>%
   #--- convert to date ---#
   ymd(.)
 
+date_values <- dayl_stars %>% 
+  #--- get band values ---#
+  st_get_dimension_values(., "band") %>% 
+  #--- remove X ---#
+  gsub("X", "", .) %>% 
+  #--- convert to date ---#
+  ymd(.)
+
+
 #get into 3d
 st_set_dimensions(rad_stars, 3, values = date_values, names = "date" ) 
+st_set_dimensions(dayl_stars, 3, values = date_values, names = "date" ) 
 
 #view it
 mapview(rad_stars)
 
-#move it back to sf as points instad of polygon
+#move it back to sf as points instead of polygon
 rad <- st_as_sf(rad_stars, as_points = T)
+dayl <- st_as_sf(dayl_stars, as_points = T)
 
 #change the crs
 rad <- st_transform(rad, 4326)
+dayl <- st_transform(dayl, 4326)
 
 #match the crs to rad data
 fourmile <- st_transform(fourmile, 4326)
 
 #intersect the points w/ polygon
 rad_filter <- st_intersection(rad, fourmile)
+dayl_filter <- st_intersection(dayl, fourmile)
 
 #view points within watershed
 mapview(rad_pivot) + mapview(fourmile)
-
-rm(srad) #not using anymore (taking up memory)
-rm(rad_stars) #not using anymore (taking up memory)
 
 #pivot data
 rad_pivot <- rad_filter %>%
   mutate(id = seq_len(nrow(.))) %>%
   pivot_longer(!c(geometry, id), names_to = 'date', values_to = 'solrad') %>%
   mutate(date = gsub('X', '', date),
-         date = ymd(date))
+         date = ymd(date)) 
 
-#saved the downloaded as Rdata so don't have to download everytime
-load('daymet_rad.Rdata')
+dayl_pivot <- dayl_filter %>%
+  mutate(id = seq_len(nrow(.))) %>%
+  pivot_longer(!c(geometry, id), names_to = 'date', values_to = 'dayl') %>%
+  mutate(date = gsub('X', '', date),
+         date = ymd(date)) 
+
+day_pivnew <- dayl_pivot %>%
+  select(-c(geometry)) %>%
+  as_tibble()
+
+rad_pivnew <- rad_pivot %>%
+  select(-c(geometry)) %>%
+  as_tibble()
+  
+pivot <- full_join(rad_pivnew, day_pivnew, by = c('date', 'id'))
+
+pivot <- pivot %>% #(srad (W/m2) * dayl (s/day)) / l,000,000)
+  mutate(sol_use = (solrad * dayl)/1000000)
+  
 
 #pivot back, format date for Ages
-rad_pivot_new <- rad_pivot %>%
-  #mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
+rad_pivot_new <- pivot %>%
+  mutate(date = format(as.Date(date), '%d.%m.%Y')) %>%
   mutate(id_new = paste0('daymet_', id)) %>%
   as_tibble() %>%
-  select(-c(geometry, id)) %>%
-  pivot_wider(names_from = id_new, values_from = solrad)
+  select(-c(geometry.x, geometry.y, id, solrad, dayl)) %>%
+  pivot_wider(names_from = id_new, values_from = sol_use) %>%
+  select(c(date, daymet_54, daymet_36, daymet_33, daymet_30, daymet_26, daymet_9, daymet_6))
 
 #csv ready for Ages
-write.csv(rad_pivot_new, 'daymet_srad_2020.csv')
+write.csv(rad_pivot_new, 'daymet_srad.csv')
 
 ## below code is only to pull the lat lon out of R to view pixel locations
 #create a df of geometry and id to load into GIS
