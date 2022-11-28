@@ -1,0 +1,13 @@
+cal_run,KGE,input_data,year_missing
+station_all,0.795361769,station,none
+station_2011,0.875030284,station,2011
+station_2012,0.789571146,station,2012
+station_2013,0.811008408,station,2013
+station_2014,0.783307795,station,2014
+station_2015,0.709256019,station,2015
+station_2016,0.81931108,station,2016
+station_2017,0.774763291,station,2017
+station_2018,0.816964111,station,2018
+station_2019,0.832515469,station,2019
+station_2020,0.77274452,station,2020
+grid_all,0.777104068,grid,none
