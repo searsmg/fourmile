@@ -68,5 +68,7 @@ name <- levels(params$param)
 
 lapply(name, plot_params)
 
+write.csv(params, 'params.csv')
+
 ```
 
