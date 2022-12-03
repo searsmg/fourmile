@@ -24,7 +24,7 @@ params <- read_csv('calruns_params.csv') %>%
 
 ```
 
-# KGE
+## KGE for calibrations
 
 ```{r look at kge, echo = F}
 
@@ -35,7 +35,7 @@ ggplotly(kge_plot)
 
 ```
 
-# Parameters
+## Parameters
 
 ```{r params, echo = F}
 
@@ -52,6 +52,7 @@ params <- params %>%
   mutate(value = as.numeric(value),
          param = as.factor(param))
 
+#function to plot all params
 plot_params <- function(param_name) {
   params %>%
     filter(param == param_name) %>%
@@ -69,6 +70,34 @@ name <- levels(params$param)
 lapply(name, plot_params)
 
 write.csv(params, 'params.csv')
+
+```
+
+## Hydrographs
+
+```{r}
+
+flow <- read_csv('discharge_all.csv') %>%
+  replace(.==-9999, NA)
+
+
+flow_pivot <- flow %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s')
+
+q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) +
+  geom_line()
+
+ggplotly(q)
+
+library(hydroGOF)
+
+KGE(flow$grid_all, flow$obs)
+KGE(flow$statn_all, flow$obs)
+
+get_kge <- function() {
+  
+}
+
 
 ```
 
