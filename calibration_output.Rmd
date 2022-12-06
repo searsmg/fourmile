@@ -12,6 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(plotly)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+library(dataRetrieval)
 
 ```
 
@@ -73,10 +77,9 @@ write.csv(params, 'params.csv')
 
 ```
 
-## Hydrographs
+## Hydrograph
 
-```{r}
-
+```{r hydrographs, echo = F}
 flow <- read_csv('discharge_all.csv') %>%
   replace(.==-9999, NA)
 
@@ -90,13 +93,86 @@ q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) +
 ggplotly(q)
 
 library(hydroGOF)
+```
 
-KGE(flow$grid_all, flow$obs)
-KGE(flow$statn_all, flow$obs)
+## Overall KGE
 
-get_kge <- function() {
-  
-}
+```{r kge overall, echo = F}
+
+flow_kge_all <- flow %>%
+  summarize(grid2011 = KGE(grid_2011, obs),
+            grid2012 = KGE(grid_2012, obs),
+            grid2013 = KGE(grid_2013, obs),
+            grid2014 = KGE(grid_2014, obs),
+            grid2015 = KGE(grid_2015, obs),
+            grid2016 = KGE(grid_2016, obs),
+            grid2017 = KGE(grid_2017, obs),
+            grid2018 = KGE(grid_2018, obs),
+            grid2019 = KGE(grid_2019, obs),
+            grid2020 = KGE(grid_2020, obs),
+            gridall = KGE(grid_all, obs),
+            statn2011 = KGE(statn_2011, obs),
+            statn2012 = KGE(statn_2012, obs),
+            statn2013 = KGE(statn_2013, obs),
+            statn2014 = KGE(statn_2014, obs),
+            statn2015 = KGE(statn_2015, obs),
+            statn2016 = KGE(statn_2016, obs),
+            statn2017 = KGE(statn_2017, obs),
+            statn2018 = KGE(statn_2018, obs),
+            statn2019 = KGE(statn_2019, obs),
+            statn2020 = KGE(statn_2020, obs),
+            statnall = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_kge_all <- flow_kge_all %>%
+  pivot_longer(everything()) %>%
+  arrange(value)
+
+kable(flow_kge_all) %>%
+  kable_styling()
+
+```
+
+## Model run KGE by water year
+
+```{r kge by year, echo = F}
+flow_year <- flow %>%
+  mutate(WY = addWaterYear()) %>%
+  group_by(WY) %>%
+  summarize(kge_grid2011 = KGE(grid_2011, obs),
+            kge_grid2012 = KGE(grid_2012, obs),
+            kge_grid2013 = KGE(grid_2013, obs),
+            kge_grid2014 = KGE(grid_2014, obs),
+            kge_grid2015 = KGE(grid_2015, obs),
+            kge_grid2016 = KGE(grid_2016, obs),
+            kge_grid2017 = KGE(grid_2017, obs),
+            kge_grid2018 = KGE(grid_2018, obs),
+            kge_grid2019 = KGE(grid_2019, obs),
+            kge_grid2020 = KGE(grid_2020, obs),
+            kge_gridall = KGE(grid_all, obs),
+            kge_statn2011 = KGE(statn_2011, obs),
+            kge_statn2012 = KGE(statn_2012, obs),
+            kge_statn2013 = KGE(statn_2013, obs),
+            kge_statn2014 = KGE(statn_2014, obs),
+            kge_statn2015 = KGE(statn_2015, obs),
+            kge_statn2016 = KGE(statn_2016, obs),
+            kge_statn2017 = KGE(statn_2017, obs),
+            kge_statn2018 = KGE(statn_2018, obs),
+            kge_statn2019 = KGE(statn_2019, obs),
+            kge_statn2020 = KGE(statn_2020, obs),
+            kge_statnall = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_kge <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  pivot_wider(names_from = 'year', values_from = 'kge')
+
+kable(flow_kge) %>%
+  kable_styling()
 
 
 ```
