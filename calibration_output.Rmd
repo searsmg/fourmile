@@ -2,7 +2,11 @@
 title: "Fourmile Calibrations"
 author: "Megan Sears"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: journal
 editor_options: 
   chunk_output_type: console
 ---
@@ -16,6 +20,7 @@ library(lubridate)
 library(knitr)
 library(kableExtra)
 library(dataRetrieval)
+library(hydroGOF)
 
 ```
 
@@ -73,7 +78,7 @@ name <- levels(params$param)
 
 lapply(name, plot_params)
 
-write.csv(params, 'params.csv')
+#write.csv(params, 'params.csv')
 
 ```
 
@@ -92,7 +97,6 @@ q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) +
 
 ggplotly(q)
 
-library(hydroGOF)
 ```
 
 ## Overall KGE
@@ -131,48 +135,85 @@ flow_kge_all <- flow_kge_all %>%
   arrange(value)
 
 kable(flow_kge_all) %>%
-  kable_styling()
+  kable_styling(full_width = F)
 
 ```
 
 ## Model run KGE by water year
 
 ```{r kge by year, echo = F}
+
 flow_year <- flow %>%
-  mutate(WY = addWaterYear()) %>%
+  mutate(WY = calcWaterYear(date)) %>%
   group_by(WY) %>%
-  summarize(kge_grid2011 = KGE(grid_2011, obs),
-            kge_grid2012 = KGE(grid_2012, obs),
-            kge_grid2013 = KGE(grid_2013, obs),
-            kge_grid2014 = KGE(grid_2014, obs),
-            kge_grid2015 = KGE(grid_2015, obs),
-            kge_grid2016 = KGE(grid_2016, obs),
-            kge_grid2017 = KGE(grid_2017, obs),
-            kge_grid2018 = KGE(grid_2018, obs),
-            kge_grid2019 = KGE(grid_2019, obs),
-            kge_grid2020 = KGE(grid_2020, obs),
-            kge_gridall = KGE(grid_all, obs),
-            kge_statn2011 = KGE(statn_2011, obs),
-            kge_statn2012 = KGE(statn_2012, obs),
-            kge_statn2013 = KGE(statn_2013, obs),
-            kge_statn2014 = KGE(statn_2014, obs),
-            kge_statn2015 = KGE(statn_2015, obs),
-            kge_statn2016 = KGE(statn_2016, obs),
-            kge_statn2017 = KGE(statn_2017, obs),
-            kge_statn2018 = KGE(statn_2018, obs),
-            kge_statn2019 = KGE(statn_2019, obs),
-            kge_statn2020 = KGE(statn_2020, obs),
-            kge_statnall = KGE(statn_all, obs)) %>%
+  summarize(grid2011 = KGE(grid_2011, obs),
+            grid2012 = KGE(grid_2012, obs),
+            grid2013 = KGE(grid_2013, obs),
+            grid2014 = KGE(grid_2014, obs),
+            grid2015 = KGE(grid_2015, obs),
+            grid2016 = KGE(grid_2016, obs),
+            grid2017 = KGE(grid_2017, obs),
+            grid2018 = KGE(grid_2018, obs),
+            grid2019 = KGE(grid_2019, obs),
+            grid2020 = KGE(grid_2020, obs),
+            gridall = KGE(grid_all, obs),
+            statn2011 = KGE(statn_2011, obs),
+            statn2012 = KGE(statn_2012, obs),
+            statn2013 = KGE(statn_2013, obs),
+            statn2014 = KGE(statn_2014, obs),
+            statn2015 = KGE(statn_2015, obs),
+            statn2016 = KGE(statn_2016, obs),
+            statn2017 = KGE(statn_2017, obs),
+            statn2018 = KGE(statn_2018, obs),
+            statn2019 = KGE(statn_2019, obs),
+            statn2020 = KGE(statn_2020, obs),
+            statnall = KGE(statn_all, obs)) %>%
     mutate_if(is.numeric,
             round,
             digits = 2)
 
 flow_kge <- flow_year %>%
-  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
-  pivot_wider(names_from = 'year', values_from = 'kge')
+  pivot_longer(!WY, names_to = 'model_run', values_to = 'kge') %>%
+  pivot_wider(names_from = 'WY', values_from = 'kge')
 
-kable(flow_kge) %>%
+flow_kge %>%
+  kable(.) %>%
   kable_styling()
+
+
+flow_plot <- flow_year %>%
+  pivot_longer(!WY, names_to = 'model_run', values_to = 'kge') %>%
+  mutate(WY = as.factor(WY))
+
+
+kge_plot_wy <- ggplot(flow_plot, aes(WY, kge, color = model_run)) + geom_point(size = 3) +
+  theme_bw()
+
+ggplotly(kge_plot_wy)
+
+
+```
+
+## Model run KGE plots by water year
+
+```{r wy plots, echo = F}
+
+
+plot_kge <- function(wateryear) {
+  flow_plot %>%
+    filter(WY == wateryear) %>%
+    ggplot(aes(x = model_run,
+               y = kge)) + 
+    geom_col() + 
+    ggtitle(wateryear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(flow_plot$WY)
+
+lapply(name, plot_kge)
+
 
 
 ```
