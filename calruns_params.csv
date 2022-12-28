@@ -11,28 +11,28 @@ station_all,FCAdaptation,1
 station_all,ACAdaptation,1
  type,double,
 ,,
-station_all,baseTemp,-4.024512288
+station_all,baseTemp,-1.147193913
  type,double,
 ,,
-station_all,t_factor,0.030861237
+station_all,t_factor,0.277702078
  type,double,
 ,,
-station_all,r_factor,0.654568793
+station_all,r_factor,0.331989252
  type,double,
 ,,
-station_all,g_factor,4.71792468
+station_all,g_factor,4.809954571
  type,double,
 ,,
-station_all,snowCritDens,0.736787793
+station_all,snowCritDens,0.557292676
  type,double,
 ,,
-station_all,ccf_factor,0.027011427
+station_all,ccf_factor,0.029080493
  type,double,
 ,,
-station_all,snow_trans,1.303835526
+station_all,snow_trans,2.206547703
  type,double,
 ,,
-station_all,snow_trs,4.892001568
+station_all,snow_trs,4.904789727
  type,double,
 ,,
 station_all,piadin,0
@@ -80,28 +80,28 @@ station_all,angstrom_a,0.25
 station_all,angstrom_b,0.5
  type,double,
 ,,
-station_all,a_rain,1.941241787
+station_all,a_rain,1.821713031
  type,double,
 ,,
-station_all,a_snow,9.868938358
+station_all,a_snow,6.977487734
  type,double,
 ,,
-station_all,soilMaxDPS,0.746780679
+station_all,soilMaxDPS,6.696800812
  type,double,
 ,,
-station_all,soilPolRed,48.97461556
+station_all,soilPolRed,30.35220418
  type,double,
 ,,
 station_all,soilLinRed,0
  type,double,
 ,,
-station_all,soilMaxInfSummer,64.45901539
+station_all,soilMaxInfSummer,73.30976735
  type,double,
 ,,
-station_all,soilMaxInfWinter,36.46819877
+station_all,soilMaxInfWinter,63.35108274
  type,double,
 ,,
-station_all,soilMaxInfSnow,86.81491481
+station_all,soilMaxInfSnow,58.01309429
  type,double,
 ,,
 station_all,soilImpGT80,0.25
@@ -110,34 +110,34 @@ station_all,soilImpGT80,0.25
 station_all,soilImpLT80,0.6
  type,double,
 ,,
-station_all,soilDistMPSLPS,0.242955014
+station_all,soilDistMPSLPS,3.241706745
  type,double,
 ,,
-station_all,soilDiffMPSLPS,0.300511225
+station_all,soilDiffMPSLPS,5.342121036
  type,double,
 ,,
-station_all,soilOutLPS,9.957934372
+station_all,soilOutLPS,5.703064184
  type,double,
 ,,
-station_all,soilLatVertLPS,5.81818572
+station_all,soilLatVertLPS,4.817233154
  type,double,
 ,,
 station_all,soilMaxPerc,1
  type,double,
 ,,
-station_all,geoMaxPerc,0.790121587
+station_all,geoMaxPerc,0.351565339
  type,double,
 ,,
-station_all,kdiff_layer,1.037718853
+station_all,kdiff_layer,1.644952014
  type,double,
 ,,
-station_all,BetaW,0.189668659
+station_all,BetaW,2.616132527
  type,double,
 ,,
-station_all,lagSurfaceRunoff,1.290887121
+station_all,lagSurfaceRunoff,1.4651339
  type,double,
 ,,
-station_all,lagInterflow,1.993568609
+station_all,lagInterflow,1.998221347
  type,double,
 ,,
 station_all,initRG1,0.04
@@ -146,16 +146,16 @@ station_all,initRG1,0.04
 station_all,initRG2,0.01
  type,double,
 ,,
-station_all,gwRG1RG2dist,0.700698801
+station_all,gwRG1RG2dist,0.525486079
  type,double,
 ,,
-station_all,gwRG1Fact,7.402896407
+station_all,gwRG1Fact,3.104596927
  type,double,
 ,,
-station_all,gwRG2Fact,54.97971779
+station_all,gwRG2Fact,47.74831413
  type,double,
 ,,
-station_all,gwCapRise,0.214835969
+station_all,gwCapRise,0.449833195
  type,double,
 ,,
 station_all,N_delay_RG1,5
@@ -170,7 +170,7 @@ station_all,N_concRG1,10
 station_all,N_concRG2,10
  type,double,
 ,,
-station_all,flowRouteTA,0.100290117
+station_all,flowRouteTA,0.164467833
  type,double,
 ,,
 station_all,Ksink,0
@@ -212,28 +212,28 @@ station_2011,FCAdaptation,1
 station_2011,ACAdaptation,1
  type,double,
 ,,
-station_2011,baseTemp,1.189559066
+station_2011,baseTemp,-0.905270721
  type,double,
 ,,
-station_2011,t_factor,1.528931834
+station_2011,t_factor,0.089837073
  type,double,
 ,,
-station_2011,r_factor,1.692959338
+station_2011,r_factor,2.408484107
  type,double,
 ,,
-station_2011,g_factor,3.228187268
+station_2011,g_factor,3.907040294
  type,double,
 ,,
-station_2011,snowCritDens,0.610613545
+station_2011,snowCritDens,0.522029775
  type,double,
 ,,
-station_2011,ccf_factor,0.043087842
+station_2011,ccf_factor,0.007253342
  type,double,
 ,,
-station_2011,snow_trans,2.13199535
+station_2011,snow_trans,1.292123854
  type,double,
 ,,
-station_2011,snow_trs,4.928893292
+station_2011,snow_trs,4.922986565
  type,double,
 ,,
 station_2011,piadin,0
@@ -281,28 +281,28 @@ station_2011,angstrom_a,0.25
 station_2011,angstrom_b,0.5
  type,double,
 ,,
-station_2011,a_rain,1.819062088
+station_2011,a_rain,1.738578161
  type,double,
 ,,
-station_2011,a_snow,9.221583126
+station_2011,a_snow,2.910414688
  type,double,
 ,,
-station_2011,soilMaxDPS,9.559892459
+station_2011,soilMaxDPS,2.061779837
  type,double,
 ,,
-station_2011,soilPolRed,49.79032226
+station_2011,soilPolRed,16.15229249
  type,double,
 ,,
 station_2011,soilLinRed,0
  type,double,
 ,,
-station_2011,soilMaxInfSummer,106.5390623
+station_2011,soilMaxInfSummer,112.5239841
  type,double,
 ,,
-station_2011,soilMaxInfWinter,3.747034744
+station_2011,soilMaxInfWinter,76.08321537
  type,double,
 ,,
-station_2011,soilMaxInfSnow,30.35529374
+station_2011,soilMaxInfSnow,34.15984726
  type,double,
 ,,
 station_2011,soilImpGT80,0.25
@@ -311,34 +311,34 @@ station_2011,soilImpGT80,0.25
 station_2011,soilImpLT80,0.6
  type,double,
 ,,
-station_2011,soilDistMPSLPS,6.12479294
+station_2011,soilDistMPSLPS,0.410877463
  type,double,
 ,,
-station_2011,soilDiffMPSLPS,5.847105797
+station_2011,soilDiffMPSLPS,0.240448311
  type,double,
 ,,
-station_2011,soilOutLPS,2.767607901
+station_2011,soilOutLPS,5.537736582
  type,double,
 ,,
-station_2011,soilLatVertLPS,2.358807462
+station_2011,soilLatVertLPS,9.297690715
  type,double,
 ,,
 station_2011,soilMaxPerc,1
  type,double,
 ,,
-station_2011,geoMaxPerc,0.653900284
+station_2011,geoMaxPerc,0.947006414
  type,double,
 ,,
-station_2011,kdiff_layer,48.13472533
+station_2011,kdiff_layer,6.708273994
  type,double,
 ,,
-station_2011,BetaW,14.93457063
+station_2011,BetaW,2.119354504
  type,double,
 ,,
-station_2011,lagSurfaceRunoff,1.425428464
+station_2011,lagSurfaceRunoff,1.273216459
  type,double,
 ,,
-station_2011,lagInterflow,1.907883151
+station_2011,lagInterflow,1.996463963
  type,double,
 ,,
 station_2011,initRG1,0.04
@@ -347,16 +347,16 @@ station_2011,initRG1,0.04
 station_2011,initRG2,0.01
  type,double,
 ,,
-station_2011,gwRG1RG2dist,0.12275832
+station_2011,gwRG1RG2dist,0.484584881
  type,double,
 ,,
-station_2011,gwRG1Fact,1.005410649
+station_2011,gwRG1Fact,9.321153369
  type,double,
 ,,
-station_2011,gwRG2Fact,28.26440696
+station_2011,gwRG2Fact,57.61669367
  type,double,
 ,,
-station_2011,gwCapRise,0.440220818
+station_2011,gwCapRise,0.228466544
  type,double,
 ,,
 station_2011,N_delay_RG1,5
@@ -371,7 +371,7 @@ station_2011,N_concRG1,10
 station_2011,N_concRG2,10
  type,double,
 ,,
-station_2011,flowRouteTA,0.100107715
+station_2011,flowRouteTA,0.193200565
  type,double,
 ,,
 station_2011,Ksink,0
@@ -413,28 +413,28 @@ station_2012,FCAdaptation,1
 station_2012,ACAdaptation,1
  type,double,
 ,,
-station_2012,baseTemp,-3.371100713
+station_2012,baseTemp,-1.051322249
  type,double,
 ,,
-station_2012,t_factor,0.004332422
+station_2012,t_factor,0.123899301
  type,double,
 ,,
-station_2012,r_factor,2.273530076
+station_2012,r_factor,0.239034626
  type,double,
 ,,
-station_2012,g_factor,3.70859461
+station_2012,g_factor,4.534076333
  type,double,
 ,,
-station_2012,snowCritDens,0.616369349
+station_2012,snowCritDens,0.689612168
  type,double,
 ,,
-station_2012,ccf_factor,0.037366375
+station_2012,ccf_factor,0.021581897
  type,double,
 ,,
-station_2012,snow_trans,1.996920943
+station_2012,snow_trans,1.876842781
  type,double,
 ,,
-station_2012,snow_trs,4.96154217
+station_2012,snow_trs,4.903641333
  type,double,
 ,,
 station_2012,piadin,0
@@ -482,28 +482,28 @@ station_2012,angstrom_a,0.25
 station_2012,angstrom_b,0.5
  type,double,
 ,,
-station_2012,a_rain,1.476019981
+station_2012,a_rain,1.847928571
  type,double,
 ,,
-station_2012,a_snow,9.808658666
+station_2012,a_snow,5.013059848
  type,double,
 ,,
-station_2012,soilMaxDPS,3.186509898
+station_2012,soilMaxDPS,3.455885044
  type,double,
 ,,
-station_2012,soilPolRed,49.97841971
+station_2012,soilPolRed,12.45049004
  type,double,
 ,,
 station_2012,soilLinRed,0
  type,double,
 ,,
-station_2012,soilMaxInfSummer,84.41932745
+station_2012,soilMaxInfSummer,75.61510979
  type,double,
 ,,
-station_2012,soilMaxInfWinter,50.18741978
+station_2012,soilMaxInfWinter,67.73890878
  type,double,
 ,,
-station_2012,soilMaxInfSnow,44.6919186
+station_2012,soilMaxInfSnow,84.90509843
  type,double,
 ,,
 station_2012,soilImpGT80,0.25
@@ -512,34 +512,34 @@ station_2012,soilImpGT80,0.25
 station_2012,soilImpLT80,0.6
  type,double,
 ,,
-station_2012,soilDistMPSLPS,1.166652167
+station_2012,soilDistMPSLPS,4.79251333
  type,double,
 ,,
-station_2012,soilDiffMPSLPS,6.734808343
+station_2012,soilDiffMPSLPS,5.925468689
  type,double,
 ,,
-station_2012,soilOutLPS,9.956376027
+station_2012,soilOutLPS,2.997085203
  type,double,
 ,,
-station_2012,soilLatVertLPS,9.075887298
+station_2012,soilLatVertLPS,8.632058696
  type,double,
 ,,
 station_2012,soilMaxPerc,1
  type,double,
 ,,
-station_2012,geoMaxPerc,0.420915213
+station_2012,geoMaxPerc,0.09749358
  type,double,
 ,,
-station_2012,kdiff_layer,1.366874645
+station_2012,kdiff_layer,1.019605853
  type,double,
 ,,
-station_2012,BetaW,2.272529271
+station_2012,BetaW,3.300549171
  type,double,
 ,,
-station_2012,lagSurfaceRunoff,1.254713261
+station_2012,lagSurfaceRunoff,1.395716876
  type,double,
 ,,
-station_2012,lagInterflow,1.918060838
+station_2012,lagInterflow,1.99687694
  type,double,
 ,,
 station_2012,initRG1,0.04
@@ -548,16 +548,16 @@ station_2012,initRG1,0.04
 station_2012,initRG2,0.01
  type,double,
 ,,
-station_2012,gwRG1RG2dist,0.589726253
+station_2012,gwRG1RG2dist,0.246565118
  type,double,
 ,,
-station_2012,gwRG1Fact,14.89264095
+station_2012,gwRG1Fact,16.13966246
  type,double,
 ,,
-station_2012,gwRG2Fact,68.80362218
+station_2012,gwRG2Fact,45.84503014
  type,double,
 ,,
-station_2012,gwCapRise,0.19098188
+station_2012,gwCapRise,0.3655245
  type,double,
 ,,
 station_2012,N_delay_RG1,5
@@ -572,7 +572,7 @@ station_2012,N_concRG1,10
 station_2012,N_concRG2,10
  type,double,
 ,,
-station_2012,flowRouteTA,0.155548262
+station_2012,flowRouteTA,0.192099383
  type,double,
 ,,
 station_2012,Ksink,0
@@ -614,28 +614,28 @@ station_2013,FCAdaptation,1
 station_2013,ACAdaptation,1
  type,double,
 ,,
-station_2013,baseTemp,-3.922893841
+station_2013,baseTemp,1.865236483
  type,double,
 ,,
-station_2013,t_factor,0.009921003
+station_2013,t_factor,0.131198076
  type,double,
 ,,
-station_2013,r_factor,0.809267937
+station_2013,r_factor,0.742831052
  type,double,
 ,,
-station_2013,g_factor,3.250270435
+station_2013,g_factor,4.024341161
  type,double,
 ,,
-station_2013,snowCritDens,0.372963495
+station_2013,snowCritDens,0.574541163
  type,double,
 ,,
-station_2013,ccf_factor,0.03996406
+station_2013,ccf_factor,0.001212647
  type,double,
 ,,
-station_2013,snow_trans,0.707304939
+station_2013,snow_trans,2.105229892
  type,double,
 ,,
-station_2013,snow_trs,2.706000778
+station_2013,snow_trs,0.080349219
  type,double,
 ,,
 station_2013,piadin,0
@@ -683,28 +683,28 @@ station_2013,angstrom_a,0.25
 station_2013,angstrom_b,0.5
  type,double,
 ,,
-station_2013,a_rain,1.495775468
+station_2013,a_rain,1.927877952
  type,double,
 ,,
-station_2013,a_snow,9.301958198
+station_2013,a_snow,2.476516444
  type,double,
 ,,
-station_2013,soilMaxDPS,6.256938509
+station_2013,soilMaxDPS,1.680119137
  type,double,
 ,,
-station_2013,soilPolRed,24.89948498
+station_2013,soilPolRed,49.94784962
  type,double,
 ,,
 station_2013,soilLinRed,0
  type,double,
 ,,
-station_2013,soilMaxInfSummer,103.9642574
+station_2013,soilMaxInfSummer,97.21864765
  type,double,
 ,,
-station_2013,soilMaxInfWinter,75.54540041
+station_2013,soilMaxInfWinter,33.35514054
  type,double,
 ,,
-station_2013,soilMaxInfSnow,36.68389218
+station_2013,soilMaxInfSnow,32.78925059
  type,double,
 ,,
 station_2013,soilImpGT80,0.25
@@ -713,34 +713,34 @@ station_2013,soilImpGT80,0.25
 station_2013,soilImpLT80,0.6
  type,double,
 ,,
-station_2013,soilDistMPSLPS,2.0925053
+station_2013,soilDistMPSLPS,0.039944218
  type,double,
 ,,
-station_2013,soilDiffMPSLPS,6.136625204
+station_2013,soilDiffMPSLPS,5.682634033
  type,double,
 ,,
-station_2013,soilOutLPS,1.593636219
+station_2013,soilOutLPS,0.237518263
  type,double,
 ,,
-station_2013,soilLatVertLPS,1.694324663
+station_2013,soilLatVertLPS,1.298442715
  type,double,
 ,,
 station_2013,soilMaxPerc,1
  type,double,
 ,,
-station_2013,geoMaxPerc,0.925834717
+station_2013,geoMaxPerc,0.037558606
  type,double,
 ,,
-station_2013,kdiff_layer,42.59689185
+station_2013,kdiff_layer,31.20107064
  type,double,
 ,,
-station_2013,BetaW,0.103038034
+station_2013,BetaW,14.72145933
  type,double,
 ,,
-station_2013,lagSurfaceRunoff,1.488544475
+station_2013,lagSurfaceRunoff,1.203009684
  type,double,
 ,,
-station_2013,lagInterflow,1.966410103
+station_2013,lagInterflow,1.831376417
  type,double,
 ,,
 station_2013,initRG1,0.04
@@ -749,16 +749,16 @@ station_2013,initRG1,0.04
 station_2013,initRG2,0.01
  type,double,
 ,,
-station_2013,gwRG1RG2dist,0.229685959
+station_2013,gwRG1RG2dist,0.639708527
  type,double,
 ,,
-station_2013,gwRG1Fact,1.089710235
+station_2013,gwRG1Fact,1.51979232
  type,double,
 ,,
-station_2013,gwRG2Fact,50.27873788
+station_2013,gwRG2Fact,9.454063085
  type,double,
 ,,
-station_2013,gwCapRise,0.542600979
+station_2013,gwCapRise,0.317536671
  type,double,
 ,,
 station_2013,N_delay_RG1,5
@@ -773,7 +773,7 @@ station_2013,N_concRG1,10
 station_2013,N_concRG2,10
  type,double,
 ,,
-station_2013,flowRouteTA,0.10004751
+station_2013,flowRouteTA,0.108739579
  type,double,
 ,,
 station_2013,Ksink,0
@@ -815,28 +815,28 @@ station_2014,FCAdaptation,1
 station_2014,ACAdaptation,1
  type,double,
 ,,
-station_2014,baseTemp,-0.925947396
+station_2014,baseTemp,-0.624564519
  type,double,
 ,,
-station_2014,t_factor,0.454751221
+station_2014,t_factor,0.04156721
  type,double,
 ,,
-station_2014,r_factor,0.351128807
+station_2014,r_factor,1.230311325
  type,double,
 ,,
-station_2014,g_factor,3.636832282
+station_2014,g_factor,4.413732285
  type,double,
 ,,
-station_2014,snowCritDens,0.561632065
+station_2014,snowCritDens,0.681931041
  type,double,
 ,,
-station_2014,ccf_factor,0.016890847
+station_2014,ccf_factor,0.005835
  type,double,
 ,,
-station_2014,snow_trans,1.820456904
+station_2014,snow_trans,2.071024864
  type,double,
 ,,
-station_2014,snow_trs,4.844308395
+station_2014,snow_trs,4.94776677
  type,double,
 ,,
 station_2014,piadin,0
@@ -884,28 +884,28 @@ station_2014,angstrom_a,0.25
 station_2014,angstrom_b,0.5
  type,double,
 ,,
-station_2014,a_rain,1.967700109
+station_2014,a_rain,1.846372848
  type,double,
 ,,
-station_2014,a_snow,7.604996845
+station_2014,a_snow,3.249102684
  type,double,
 ,,
-station_2014,soilMaxDPS,9.83392472
+station_2014,soilMaxDPS,8.794347608
  type,double,
 ,,
-station_2014,soilPolRed,29.68254216
+station_2014,soilPolRed,11.60314648
  type,double,
 ,,
 station_2014,soilLinRed,0
  type,double,
 ,,
-station_2014,soilMaxInfSummer,79.35913866
+station_2014,soilMaxInfSummer,117.888752
  type,double,
 ,,
-station_2014,soilMaxInfWinter,57.03513709
+station_2014,soilMaxInfWinter,55.77337163
  type,double,
 ,,
-station_2014,soilMaxInfSnow,58.05337817
+station_2014,soilMaxInfSnow,0.644506768
  type,double,
 ,,
 station_2014,soilImpGT80,0.25
@@ -914,34 +914,34 @@ station_2014,soilImpGT80,0.25
 station_2014,soilImpLT80,0.6
  type,double,
 ,,
-station_2014,soilDistMPSLPS,2.366679329
+station_2014,soilDistMPSLPS,4.069920483
  type,double,
 ,,
-station_2014,soilDiffMPSLPS,7.572104069
+station_2014,soilDiffMPSLPS,8.568378945
  type,double,
 ,,
-station_2014,soilOutLPS,9.570647481
+station_2014,soilOutLPS,9.717959064
  type,double,
 ,,
-station_2014,soilLatVertLPS,4.985501401
+station_2014,soilLatVertLPS,4.440336562
  type,double,
 ,,
 station_2014,soilMaxPerc,1
  type,double,
 ,,
-station_2014,geoMaxPerc,0.295317151
+station_2014,geoMaxPerc,0.476519094
  type,double,
 ,,
-station_2014,kdiff_layer,1.007910312
+station_2014,kdiff_layer,36.31215029
  type,double,
 ,,
-station_2014,BetaW,0.144336681
+station_2014,BetaW,3.638914623
  type,double,
 ,,
-station_2014,lagSurfaceRunoff,1.374345013
+station_2014,lagSurfaceRunoff,1.35121256
  type,double,
 ,,
-station_2014,lagInterflow,1.995705435
+station_2014,lagInterflow,1.999386275
  type,double,
 ,,
 station_2014,initRG1,0.04
@@ -950,16 +950,16 @@ station_2014,initRG1,0.04
 station_2014,initRG2,0.01
  type,double,
 ,,
-station_2014,gwRG1RG2dist,0.268326346
+station_2014,gwRG1RG2dist,0.563348431
  type,double,
 ,,
-station_2014,gwRG1Fact,6.875852574
+station_2014,gwRG1Fact,1.706917437
  type,double,
 ,,
-station_2014,gwRG2Fact,19.49026622
+station_2014,gwRG2Fact,70.82945369
  type,double,
 ,,
-station_2014,gwCapRise,0.303419953
+station_2014,gwCapRise,0.545577313
  type,double,
 ,,
 station_2014,N_delay_RG1,5
@@ -974,7 +974,7 @@ station_2014,N_concRG1,10
 station_2014,N_concRG2,10
  type,double,
 ,,
-station_2014,flowRouteTA,0.100002757
+station_2014,flowRouteTA,0.200870172
  type,double,
 ,,
 station_2014,Ksink,0
@@ -1016,28 +1016,28 @@ station_2015,FCAdaptation,1
 station_2015,ACAdaptation,1
  type,double,
 ,,
-station_2015,baseTemp,2.002999459
+station_2015,baseTemp,0.156192256
  type,double,
 ,,
-station_2015,t_factor,0.256858661
+station_2015,t_factor,0.051683801
  type,double,
 ,,
-station_2015,r_factor,0.242985017
+station_2015,r_factor,0.034842972
  type,double,
 ,,
-station_2015,g_factor,4.025350073
+station_2015,g_factor,2.173936238
  type,double,
 ,,
-station_2015,snowCritDens,0.667514873
+station_2015,snowCritDens,0.515087783
  type,double,
 ,,
-station_2015,ccf_factor,0.005606147
+station_2015,ccf_factor,0.001871695
  type,double,
 ,,
-station_2015,snow_trans,1.888853542
+station_2015,snow_trans,1.273003013
  type,double,
 ,,
-station_2015,snow_trs,2.227780882
+station_2015,snow_trs,4.755163577
  type,double,
 ,,
 station_2015,piadin,0
@@ -1085,28 +1085,28 @@ station_2015,angstrom_a,0.25
 station_2015,angstrom_b,0.5
  type,double,
 ,,
-station_2015,a_rain,1.887949958
+station_2015,a_rain,1.868312295
  type,double,
 ,,
-station_2015,a_snow,7.213349295
+station_2015,a_snow,7.964086052
  type,double,
 ,,
-station_2015,soilMaxDPS,5.252475318
+station_2015,soilMaxDPS,5.100325156
  type,double,
 ,,
-station_2015,soilPolRed,4.428222042
+station_2015,soilPolRed,14.46246939
  type,double,
 ,,
 station_2015,soilLinRed,0
  type,double,
 ,,
-station_2015,soilMaxInfSummer,35.99194042
+station_2015,soilMaxInfSummer,82.81909604
  type,double,
 ,,
-station_2015,soilMaxInfWinter,45.60315299
+station_2015,soilMaxInfWinter,71.1336775
  type,double,
 ,,
-station_2015,soilMaxInfSnow,36.37880648
+station_2015,soilMaxInfSnow,48.90393871
  type,double,
 ,,
 station_2015,soilImpGT80,0.25
@@ -1115,34 +1115,34 @@ station_2015,soilImpGT80,0.25
 station_2015,soilImpLT80,0.6
  type,double,
 ,,
-station_2015,soilDistMPSLPS,1.067894335
+station_2015,soilDistMPSLPS,0.86063626
  type,double,
 ,,
-station_2015,soilDiffMPSLPS,2.33506257
+station_2015,soilDiffMPSLPS,7.623707092
  type,double,
 ,,
-station_2015,soilOutLPS,0.178405779
+station_2015,soilOutLPS,5.215655287
  type,double,
 ,,
-station_2015,soilLatVertLPS,0.703950231
+station_2015,soilLatVertLPS,9.190324412
  type,double,
 ,,
 station_2015,soilMaxPerc,1
  type,double,
 ,,
-station_2015,geoMaxPerc,0.896178531
+station_2015,geoMaxPerc,0.59490369
  type,double,
 ,,
-station_2015,kdiff_layer,42.63772089
+station_2015,kdiff_layer,1.005549119
  type,double,
 ,,
-station_2015,BetaW,10.2670168
+station_2015,BetaW,5.145915226
  type,double,
 ,,
-station_2015,lagSurfaceRunoff,1.226572736
+station_2015,lagSurfaceRunoff,1.316932256
  type,double,
 ,,
-station_2015,lagInterflow,1.968550127
+station_2015,lagInterflow,1.999899226
  type,double,
 ,,
 station_2015,initRG1,0.04
@@ -1151,16 +1151,16 @@ station_2015,initRG1,0.04
 station_2015,initRG2,0.01
  type,double,
 ,,
-station_2015,gwRG1RG2dist,0.850684591
+station_2015,gwRG1RG2dist,0.634987222
  type,double,
 ,,
-station_2015,gwRG1Fact,1.00142514
+station_2015,gwRG1Fact,16.0432086
  type,double,
 ,,
-station_2015,gwRG2Fact,29.38072536
+station_2015,gwRG2Fact,77.68120177
  type,double,
 ,,
-station_2015,gwCapRise,0.570899349
+station_2015,gwCapRise,0.513739212
  type,double,
 ,,
 station_2015,N_delay_RG1,5
@@ -1175,7 +1175,7 @@ station_2015,N_concRG1,10
 station_2015,N_concRG2,10
  type,double,
 ,,
-station_2015,flowRouteTA,0.144788525
+station_2015,flowRouteTA,0.231129992
  type,double,
 ,,
 station_2015,Ksink,0
@@ -1217,28 +1217,28 @@ station_2016,FCAdaptation,1
 station_2016,ACAdaptation,1
  type,double,
 ,,
-station_2016,baseTemp,1.263167355
+station_2016,baseTemp,-0.510816979
  type,double,
 ,,
-station_2016,t_factor,3.231738178
+station_2016,t_factor,0.111256899
  type,double,
 ,,
-station_2016,r_factor,0.865154498
+station_2016,r_factor,0.75617324
  type,double,
 ,,
-station_2016,g_factor,2.319804957
+station_2016,g_factor,3.457517406
  type,double,
 ,,
-station_2016,snowCritDens,0.68466258
+station_2016,snowCritDens,0.66705908
  type,double,
 ,,
-station_2016,ccf_factor,0.031187624
+station_2016,ccf_factor,0.006843552
  type,double,
 ,,
-station_2016,snow_trans,0.563700581
+station_2016,snow_trans,0.819737084
  type,double,
 ,,
-station_2016,snow_trs,4.877335051
+station_2016,snow_trs,4.836550436
  type,double,
 ,,
 station_2016,piadin,0
@@ -1286,28 +1286,28 @@ station_2016,angstrom_a,0.25
 station_2016,angstrom_b,0.5
  type,double,
 ,,
-station_2016,a_rain,1.916113389
+station_2016,a_rain,1.828619061
  type,double,
 ,,
-station_2016,a_snow,7.061175774
+station_2016,a_snow,4.086899691
  type,double,
 ,,
-station_2016,soilMaxDPS,5.028873111
+station_2016,soilMaxDPS,2.654721733
  type,double,
 ,,
-station_2016,soilPolRed,42.22421184
+station_2016,soilPolRed,41.95513484
  type,double,
 ,,
 station_2016,soilLinRed,0
  type,double,
 ,,
-station_2016,soilMaxInfSummer,62.18561679
+station_2016,soilMaxInfSummer,29.93893729
  type,double,
 ,,
-station_2016,soilMaxInfWinter,85.72245175
+station_2016,soilMaxInfWinter,45.71910219
  type,double,
 ,,
-station_2016,soilMaxInfSnow,68.61990285
+station_2016,soilMaxInfSnow,79.78682456
  type,double,
 ,,
 station_2016,soilImpGT80,0.25
@@ -1316,34 +1316,34 @@ station_2016,soilImpGT80,0.25
 station_2016,soilImpLT80,0.6
  type,double,
 ,,
-station_2016,soilDistMPSLPS,0.011880942
+station_2016,soilDistMPSLPS,2.476013655
  type,double,
 ,,
-station_2016,soilDiffMPSLPS,0.859097664
+station_2016,soilDiffMPSLPS,7.010439595
  type,double,
 ,,
-station_2016,soilOutLPS,1.125890688
+station_2016,soilOutLPS,2.252050305
  type,double,
 ,,
-station_2016,soilLatVertLPS,0.91867547
+station_2016,soilLatVertLPS,9.360849665
  type,double,
 ,,
 station_2016,soilMaxPerc,1
  type,double,
 ,,
-station_2016,geoMaxPerc,0.160434683
+station_2016,geoMaxPerc,0.292767083
  type,double,
 ,,
-station_2016,kdiff_layer,46.17586603
+station_2016,kdiff_layer,1.031277469
  type,double,
 ,,
-station_2016,BetaW,14.96778927
+station_2016,BetaW,0.567622584
  type,double,
 ,,
-station_2016,lagSurfaceRunoff,1.032450761
+station_2016,lagSurfaceRunoff,1.215516637
  type,double,
 ,,
-station_2016,lagInterflow,1.279438912
+station_2016,lagInterflow,1.999257233
  type,double,
 ,,
 station_2016,initRG1,0.04
@@ -1352,16 +1352,16 @@ station_2016,initRG1,0.04
 station_2016,initRG2,0.01
  type,double,
 ,,
-station_2016,gwRG1RG2dist,0.673315131
+station_2016,gwRG1RG2dist,0.261905158
  type,double,
 ,,
-station_2016,gwRG1Fact,1.186152616
+station_2016,gwRG1Fact,7.926967248
  type,double,
 ,,
-station_2016,gwRG2Fact,61.91055793
+station_2016,gwRG2Fact,49.7254071
  type,double,
 ,,
-station_2016,gwCapRise,0.465670776
+station_2016,gwCapRise,0.369621443
  type,double,
 ,,
 station_2016,N_delay_RG1,5
@@ -1376,7 +1376,7 @@ station_2016,N_concRG1,10
 station_2016,N_concRG2,10
  type,double,
 ,,
-station_2016,flowRouteTA,0.107016794
+station_2016,flowRouteTA,0.18235554
  type,double,
 ,,
 station_2016,Ksink,0
@@ -1418,28 +1418,28 @@ station_2017,FCAdaptation,1
 station_2017,ACAdaptation,1
  type,double,
 ,,
-station_2017,baseTemp,1.751517961
+station_2017,baseTemp,-1.695424689
  type,double,
 ,,
-station_2017,t_factor,1.211699706
+station_2017,t_factor,0.257004277
  type,double,
 ,,
-station_2017,r_factor,0.525112598
+station_2017,r_factor,0.080464648
  type,double,
 ,,
-station_2017,g_factor,3.1911013
+station_2017,g_factor,4.024484405
  type,double,
 ,,
-station_2017,snowCritDens,0.691027672
+station_2017,snowCritDens,0.717400611
  type,double,
 ,,
-station_2017,ccf_factor,0.024583521
+station_2017,ccf_factor,0.021191924
  type,double,
 ,,
-station_2017,snow_trans,1.553265159
+station_2017,snow_trans,1.784696562
  type,double,
 ,,
-station_2017,snow_trs,4.859798354
+station_2017,snow_trs,4.773517779
  type,double,
 ,,
 station_2017,piadin,0
@@ -1487,28 +1487,28 @@ station_2017,angstrom_a,0.25
 station_2017,angstrom_b,0.5
  type,double,
 ,,
-station_2017,a_rain,1.847235604
+station_2017,a_rain,1.940106937
  type,double,
 ,,
-station_2017,a_snow,8.340470428
+station_2017,a_snow,7.841883895
  type,double,
 ,,
-station_2017,soilMaxDPS,4.461837714
+station_2017,soilMaxDPS,4.064906576
  type,double,
 ,,
-station_2017,soilPolRed,13.03845556
+station_2017,soilPolRed,29.39728392
  type,double,
 ,,
 station_2017,soilLinRed,0
  type,double,
 ,,
-station_2017,soilMaxInfSummer,67.94795806
+station_2017,soilMaxInfSummer,134.0147522
  type,double,
 ,,
-station_2017,soilMaxInfWinter,19.03961099
+station_2017,soilMaxInfWinter,50.81908898
  type,double,
 ,,
-station_2017,soilMaxInfSnow,31.5626324
+station_2017,soilMaxInfSnow,9.054606465
  type,double,
 ,,
 station_2017,soilImpGT80,0.25
@@ -1517,34 +1517,34 @@ station_2017,soilImpGT80,0.25
 station_2017,soilImpLT80,0.6
  type,double,
 ,,
-station_2017,soilDistMPSLPS,3.719906576
+station_2017,soilDistMPSLPS,4.001349262
  type,double,
 ,,
-station_2017,soilDiffMPSLPS,8.313889599
+station_2017,soilDiffMPSLPS,4.921992692
  type,double,
 ,,
-station_2017,soilOutLPS,9.759578111
+station_2017,soilOutLPS,5.859008027
  type,double,
 ,,
-station_2017,soilLatVertLPS,4.123392151
+station_2017,soilLatVertLPS,8.920156936
  type,double,
 ,,
 station_2017,soilMaxPerc,1
  type,double,
 ,,
-station_2017,geoMaxPerc,0.656612927
+station_2017,geoMaxPerc,0.521318282
  type,double,
 ,,
-station_2017,kdiff_layer,1.587848173
+station_2017,kdiff_layer,3.880835529
  type,double,
 ,,
-station_2017,BetaW,0.116137466
+station_2017,BetaW,2.456529354
  type,double,
 ,,
-station_2017,lagSurfaceRunoff,1.309804819
+station_2017,lagSurfaceRunoff,1.215448889
  type,double,
 ,,
-station_2017,lagInterflow,1.993786597
+station_2017,lagInterflow,1.995550222
  type,double,
 ,,
 station_2017,initRG1,0.04
@@ -1553,16 +1553,16 @@ station_2017,initRG1,0.04
 station_2017,initRG2,0.01
  type,double,
 ,,
-station_2017,gwRG1RG2dist,0.253761933
+station_2017,gwRG1RG2dist,0.303702687
  type,double,
 ,,
-station_2017,gwRG1Fact,4.006446588
+station_2017,gwRG1Fact,12.26536105
  type,double,
 ,,
-station_2017,gwRG2Fact,57.84620937
+station_2017,gwRG2Fact,43.98736655
  type,double,
 ,,
-station_2017,gwCapRise,0.405550509
+station_2017,gwCapRise,0.146678854
  type,double,
 ,,
 station_2017,N_delay_RG1,5
@@ -1577,7 +1577,7 @@ station_2017,N_concRG1,10
 station_2017,N_concRG2,10
  type,double,
 ,,
-station_2017,flowRouteTA,0.100381354
+station_2017,flowRouteTA,0.153769627
  type,double,
 ,,
 station_2017,Ksink,0
@@ -1619,28 +1619,28 @@ station_2018,FCAdaptation,1
 station_2018,ACAdaptation,1
  type,double,
 ,,
-station_2018,baseTemp,0.972737588
+station_2018,baseTemp,-0.617658161
  type,double,
 ,,
-station_2018,t_factor,1.712026397
+station_2018,t_factor,0.001323011
  type,double,
 ,,
-station_2018,r_factor,2.851987905
+station_2018,r_factor,0.610166809
  type,double,
 ,,
-station_2018,g_factor,4.258512246
+station_2018,g_factor,3.964283574
  type,double,
 ,,
-station_2018,snowCritDens,0.551825477
+station_2018,snowCritDens,0.723010766
  type,double,
 ,,
-station_2018,ccf_factor,0.015842703
+station_2018,ccf_factor,0.007056921
  type,double,
 ,,
-station_2018,snow_trans,0.763065774
+station_2018,snow_trans,0.674491159
  type,double,
 ,,
-station_2018,snow_trs,4.939907585
+station_2018,snow_trs,4.931999189
  type,double,
 ,,
 station_2018,piadin,0
@@ -1688,28 +1688,28 @@ station_2018,angstrom_a,0.25
 station_2018,angstrom_b,0.5
  type,double,
 ,,
-station_2018,a_rain,1.772593528
+station_2018,a_rain,1.989499108
  type,double,
 ,,
-station_2018,a_snow,3.111575166
+station_2018,a_snow,4.234859892
  type,double,
 ,,
-station_2018,soilMaxDPS,5.632479079
+station_2018,soilMaxDPS,7.710396499
  type,double,
 ,,
-station_2018,soilPolRed,7.250494106
+station_2018,soilPolRed,34.08780217
  type,double,
 ,,
 station_2018,soilLinRed,0
  type,double,
 ,,
-station_2018,soilMaxInfSummer,74.11624401
+station_2018,soilMaxInfSummer,104.5863966
  type,double,
 ,,
-station_2018,soilMaxInfWinter,17.26038385
+station_2018,soilMaxInfWinter,86.2476121
  type,double,
 ,,
-station_2018,soilMaxInfSnow,38.62297174
+station_2018,soilMaxInfSnow,23.0134964
  type,double,
 ,,
 station_2018,soilImpGT80,0.25
@@ -1718,34 +1718,34 @@ station_2018,soilImpGT80,0.25
 station_2018,soilImpLT80,0.6
  type,double,
 ,,
-station_2018,soilDistMPSLPS,0.012494427
+station_2018,soilDistMPSLPS,3.141200487
  type,double,
 ,,
-station_2018,soilDiffMPSLPS,0.893371342
+station_2018,soilDiffMPSLPS,7.185967026
  type,double,
 ,,
-station_2018,soilOutLPS,1.244181394
+station_2018,soilOutLPS,2.886298577
  type,double,
 ,,
-station_2018,soilLatVertLPS,0.364222536
+station_2018,soilLatVertLPS,8.249397515
  type,double,
 ,,
 station_2018,soilMaxPerc,1
  type,double,
 ,,
-station_2018,geoMaxPerc,0.072250302
+station_2018,geoMaxPerc,0.461754121
  type,double,
 ,,
-station_2018,kdiff_layer,41.50225953
+station_2018,kdiff_layer,1.022135341
  type,double,
 ,,
-station_2018,BetaW,14.61281137
+station_2018,BetaW,0.26331485
  type,double,
 ,,
-station_2018,lagSurfaceRunoff,1.229731087
+station_2018,lagSurfaceRunoff,1.444202619
  type,double,
 ,,
-station_2018,lagInterflow,1.217482642
+station_2018,lagInterflow,1.990304678
  type,double,
 ,,
 station_2018,initRG1,0.04
@@ -1754,16 +1754,16 @@ station_2018,initRG1,0.04
 station_2018,initRG2,0.01
  type,double,
 ,,
-station_2018,gwRG1RG2dist,0.701861182
+station_2018,gwRG1RG2dist,0.655366166
  type,double,
 ,,
-station_2018,gwRG1Fact,1.155615871
+station_2018,gwRG1Fact,9.289087307
  type,double,
 ,,
-station_2018,gwRG2Fact,22.61293809
+station_2018,gwRG2Fact,67.30964306
  type,double,
 ,,
-station_2018,gwCapRise,0.226507223
+station_2018,gwCapRise,0.396466475
  type,double,
 ,,
 station_2018,N_delay_RG1,5
@@ -1778,7 +1778,7 @@ station_2018,N_concRG1,10
 station_2018,N_concRG2,10
  type,double,
 ,,
-station_2018,flowRouteTA,0.223866358
+station_2018,flowRouteTA,0.207233594
  type,double,
 ,,
 station_2018,Ksink,0
@@ -1820,28 +1820,28 @@ station_2019,FCAdaptation,1
 station_2019,ACAdaptation,1
  type,double,
 ,,
-station_2019,baseTemp,1.683188772
+station_2019,baseTemp,-1.448988275
  type,double,
 ,,
-station_2019,t_factor,2.096338011
+station_2019,t_factor,0.150798996
  type,double,
 ,,
-station_2019,r_factor,2.079832931
+station_2019,r_factor,1.820031067
  type,double,
 ,,
-station_2019,g_factor,3.766731665
+station_2019,g_factor,3.922745127
  type,double,
 ,,
-station_2019,snowCritDens,0.556853533
+station_2019,snowCritDens,0.697693839
  type,double,
 ,,
-station_2019,ccf_factor,0.015501824
+station_2019,ccf_factor,0.013610294
  type,double,
 ,,
-station_2019,snow_trans,0.521393328
+station_2019,snow_trans,1.846108683
  type,double,
 ,,
-station_2019,snow_trs,4.889959587
+station_2019,snow_trs,4.848865753
  type,double,
 ,,
 station_2019,piadin,0
@@ -1889,28 +1889,28 @@ station_2019,angstrom_a,0.25
 station_2019,angstrom_b,0.5
  type,double,
 ,,
-station_2019,a_rain,1.684227573
+station_2019,a_rain,1.818948127
  type,double,
 ,,
-station_2019,a_snow,3.135890606
+station_2019,a_snow,3.462636566
  type,double,
 ,,
-station_2019,soilMaxDPS,6.521657012
+station_2019,soilMaxDPS,3.41446416
  type,double,
 ,,
-station_2019,soilPolRed,30.6081204
+station_2019,soilPolRed,49.86113209
  type,double,
 ,,
 station_2019,soilLinRed,0
  type,double,
 ,,
-station_2019,soilMaxInfSummer,42.57394266
+station_2019,soilMaxInfSummer,44.25767701
  type,double,
 ,,
-station_2019,soilMaxInfWinter,84.00205121
+station_2019,soilMaxInfWinter,59.93682377
  type,double,
 ,,
-station_2019,soilMaxInfSnow,25.53568305
+station_2019,soilMaxInfSnow,43.57996175
  type,double,
 ,,
 station_2019,soilImpGT80,0.25
@@ -1919,34 +1919,34 @@ station_2019,soilImpGT80,0.25
 station_2019,soilImpLT80,0.6
  type,double,
 ,,
-station_2019,soilDistMPSLPS,0.01938755
+station_2019,soilDistMPSLPS,3.119851863
  type,double,
 ,,
-station_2019,soilDiffMPSLPS,4.347084632
+station_2019,soilDiffMPSLPS,3.923866576
  type,double,
 ,,
-station_2019,soilOutLPS,1.171014361
+station_2019,soilOutLPS,2.982392102
  type,double,
 ,,
-station_2019,soilLatVertLPS,0.537300585
+station_2019,soilLatVertLPS,4.633357374
  type,double,
 ,,
 station_2019,soilMaxPerc,1
  type,double,
 ,,
-station_2019,geoMaxPerc,0.068704767
+station_2019,geoMaxPerc,0.375625939
  type,double,
 ,,
-station_2019,kdiff_layer,41.3298875
+station_2019,kdiff_layer,1.023568539
  type,double,
 ,,
-station_2019,BetaW,14.73896825
+station_2019,BetaW,0.830564525
  type,double,
 ,,
-station_2019,lagSurfaceRunoff,1.199582007
+station_2019,lagSurfaceRunoff,1.220818051
  type,double,
 ,,
-station_2019,lagInterflow,1.003180932
+station_2019,lagInterflow,1.99141809
  type,double,
 ,,
 station_2019,initRG1,0.04
@@ -1955,16 +1955,16 @@ station_2019,initRG1,0.04
 station_2019,initRG2,0.01
  type,double,
 ,,
-station_2019,gwRG1RG2dist,0.838461752
+station_2019,gwRG1RG2dist,0.225039024
  type,double,
 ,,
-station_2019,gwRG1Fact,1.353555445
+station_2019,gwRG1Fact,7.526107742
  type,double,
 ,,
-station_2019,gwRG2Fact,34.20524111
+station_2019,gwRG2Fact,41.30619424
  type,double,
 ,,
-station_2019,gwCapRise,0.499605521
+station_2019,gwCapRise,0.540798256
  type,double,
 ,,
 station_2019,N_delay_RG1,5
@@ -1979,7 +1979,7 @@ station_2019,N_concRG1,10
 station_2019,N_concRG2,10
  type,double,
 ,,
-station_2019,flowRouteTA,0.118845531
+station_2019,flowRouteTA,0.185132859
  type,double,
 ,,
 station_2019,Ksink,0
@@ -2021,28 +2021,28 @@ station_2020,FCAdaptation,1
 station_2020,ACAdaptation,1
  type,double,
 ,,
-station_2020,baseTemp,1.625275607
+station_2020,baseTemp,-1.188922609
  type,double,
 ,,
-station_2020,t_factor,1.948402025
+station_2020,t_factor,0.119864837
  type,double,
 ,,
-station_2020,r_factor,1.262160437
+station_2020,r_factor,0.095965984
  type,double,
 ,,
-station_2020,g_factor,3.436431403
+station_2020,g_factor,4.12999669
  type,double,
 ,,
-station_2020,snowCritDens,0.644026925
+station_2020,snowCritDens,0.514736003
  type,double,
 ,,
-station_2020,ccf_factor,0.042500947
+station_2020,ccf_factor,0.018065694
  type,double,
 ,,
-station_2020,snow_trans,1.537688702
+station_2020,snow_trans,2.153383564
  type,double,
 ,,
-station_2020,snow_trs,4.69039631
+station_2020,snow_trs,4.959555504
  type,double,
 ,,
 station_2020,piadin,0
@@ -2090,28 +2090,28 @@ station_2020,angstrom_a,0.25
 station_2020,angstrom_b,0.5
  type,double,
 ,,
-station_2020,a_rain,1.690924898
+station_2020,a_rain,1.83073141
  type,double,
 ,,
-station_2020,a_snow,6.985648307
+station_2020,a_snow,7.368274575
  type,double,
 ,,
-station_2020,soilMaxDPS,7.786880556
+station_2020,soilMaxDPS,1.976654182
  type,double,
 ,,
-station_2020,soilPolRed,21.8240844
+station_2020,soilPolRed,12.04392205
  type,double,
 ,,
 station_2020,soilLinRed,0
  type,double,
 ,,
-station_2020,soilMaxInfSummer,100.5896115
+station_2020,soilMaxInfSummer,65.08611362
  type,double,
 ,,
-station_2020,soilMaxInfWinter,91.94605143
+station_2020,soilMaxInfWinter,18.4403093
  type,double,
 ,,
-station_2020,soilMaxInfSnow,55.6823747
+station_2020,soilMaxInfSnow,97.9214838
  type,double,
 ,,
 station_2020,soilImpGT80,0.25
@@ -2120,34 +2120,34 @@ station_2020,soilImpGT80,0.25
 station_2020,soilImpLT80,0.6
  type,double,
 ,,
-station_2020,soilDistMPSLPS,0.007855613
+station_2020,soilDistMPSLPS,5.677202411
  type,double,
 ,,
-station_2020,soilDiffMPSLPS,4.087611992
+station_2020,soilDiffMPSLPS,6.885990564
  type,double,
 ,,
-station_2020,soilOutLPS,3.008830786
+station_2020,soilOutLPS,5.500648984
  type,double,
 ,,
-station_2020,soilLatVertLPS,3.00933648
+station_2020,soilLatVertLPS,9.133952511
  type,double,
 ,,
 station_2020,soilMaxPerc,1
  type,double,
 ,,
-station_2020,geoMaxPerc,0.315218818
+station_2020,geoMaxPerc,0.568505179
  type,double,
 ,,
-station_2020,kdiff_layer,1.011926987
+station_2020,kdiff_layer,1.681788742
  type,double,
 ,,
-station_2020,BetaW,0.159867283
+station_2020,BetaW,2.482372136
  type,double,
 ,,
-station_2020,lagSurfaceRunoff,1.416344286
+station_2020,lagSurfaceRunoff,1.456317863
  type,double,
 ,,
-station_2020,lagInterflow,1.98428331
+station_2020,lagInterflow,1.998348542
  type,double,
 ,,
 station_2020,initRG1,0.04
@@ -2156,16 +2156,16 @@ station_2020,initRG1,0.04
 station_2020,initRG2,0.01
  type,double,
 ,,
-station_2020,gwRG1RG2dist,0.726162351
+station_2020,gwRG1RG2dist,0.507432512
  type,double,
 ,,
-station_2020,gwRG1Fact,1.902519736
+station_2020,gwRG1Fact,7.543264159
  type,double,
 ,,
-station_2020,gwRG2Fact,13.61442647
+station_2020,gwRG2Fact,20.33709418
  type,double,
 ,,
-station_2020,gwCapRise,0.595104466
+station_2020,gwCapRise,0.153879397
  type,double,
 ,,
 station_2020,N_delay_RG1,5
@@ -2180,7 +2180,7 @@ station_2020,N_concRG1,10
 station_2020,N_concRG2,10
  type,double,
 ,,
-station_2020,flowRouteTA,0.100318653
+station_2020,flowRouteTA,0.209144792
  type,double,
 ,,
 station_2020,Ksink,0
@@ -2222,28 +2222,28 @@ grid_all,FCAdaptation,1
 grid_all,ACAdaptation,1
  type,double,
 ,,
-grid_all,baseTemp,2.68896068
+grid_all,baseTemp,2.681503948
  type,double,
 ,,
-grid_all,t_factor,2.038438555
+grid_all,t_factor,1.683439129
  type,double,
 ,,
-grid_all,r_factor,3.01013705
+grid_all,r_factor,2.197328984
  type,double,
 ,,
-grid_all,g_factor,1.768513064
+grid_all,g_factor,2.82477852
  type,double,
 ,,
-grid_all,snowCritDens,0.379555368
+grid_all,snowCritDens,0.474722409
  type,double,
 ,,
-grid_all,ccf_factor,0.039512026
+grid_all,ccf_factor,0.012588841
  type,double,
 ,,
-grid_all,snow_trans,1.174852619
+grid_all,snow_trans,2.076200364
  type,double,
 ,,
-grid_all,snow_trs,-1.591714656
+grid_all,snow_trs,3.998076756
  type,double,
 ,,
 grid_all,piadin,0
@@ -2291,28 +2291,28 @@ grid_all,angstrom_a,0.25
 grid_all,angstrom_b,0.5
  type,double,
 ,,
-grid_all,a_rain,1.212066704
+grid_all,a_rain,1.853389558
  type,double,
 ,,
-grid_all,a_snow,1.980692745
+grid_all,a_snow,5.136063103
  type,double,
 ,,
-grid_all,soilMaxDPS,3.717658497
+grid_all,soilMaxDPS,1.214519609
  type,double,
 ,,
-grid_all,soilPolRed,3.052361272
+grid_all,soilPolRed,3.295950199
  type,double,
 ,,
 grid_all,soilLinRed,0
  type,double,
 ,,
-grid_all,soilMaxInfSummer,24.77867636
+grid_all,soilMaxInfSummer,134.194912
  type,double,
 ,,
-grid_all,soilMaxInfWinter,73.53143466
+grid_all,soilMaxInfWinter,18.8756797
  type,double,
 ,,
-grid_all,soilMaxInfSnow,70.6772071
+grid_all,soilMaxInfSnow,6.294720151
  type,double,
 ,,
 grid_all,soilImpGT80,0.25
@@ -2321,34 +2321,34 @@ grid_all,soilImpGT80,0.25
 grid_all,soilImpLT80,0.6
  type,double,
 ,,
-grid_all,soilDistMPSLPS,1.777570696
+grid_all,soilDistMPSLPS,5.750174219
  type,double,
 ,,
-grid_all,soilDiffMPSLPS,0.213741694
+grid_all,soilDiffMPSLPS,6.221004339
  type,double,
 ,,
-grid_all,soilOutLPS,0.379356104
+grid_all,soilOutLPS,0.192174476
  type,double,
 ,,
-grid_all,soilLatVertLPS,0.620123331
+grid_all,soilLatVertLPS,0.62118184
  type,double,
 ,,
 grid_all,soilMaxPerc,1
  type,double,
 ,,
-grid_all,geoMaxPerc,0.748799848
+grid_all,geoMaxPerc,0.977857576
  type,double,
 ,,
-grid_all,kdiff_layer,43.92790948
+grid_all,kdiff_layer,30.29447639
  type,double,
 ,,
-grid_all,BetaW,7.527975966
+grid_all,BetaW,13.83421994
  type,double,
 ,,
-grid_all,lagSurfaceRunoff,1.440859786
+grid_all,lagSurfaceRunoff,1.313916677
  type,double,
 ,,
-grid_all,lagInterflow,1.993504273
+grid_all,lagInterflow,1.851646618
  type,double,
 ,,
 grid_all,initRG1,0.04
@@ -2357,16 +2357,16 @@ grid_all,initRG1,0.04
 grid_all,initRG2,0.01
  type,double,
 ,,
-grid_all,gwRG1RG2dist,0.339361013
+grid_all,gwRG1RG2dist,0.472898704
  type,double,
 ,,
-grid_all,gwRG1Fact,1.041300546
+grid_all,gwRG1Fact,1.004814354
  type,double,
 ,,
-grid_all,gwRG2Fact,70.57019162
+grid_all,gwRG2Fact,73.01857357
  type,double,
 ,,
-grid_all,gwCapRise,0.483330325
+grid_all,gwCapRise,0.506734834
  type,double,
 ,,
 grid_all,N_delay_RG1,5
@@ -2381,7 +2381,7 @@ grid_all,N_concRG1,10
 grid_all,N_concRG2,10
  type,double,
 ,,
-grid_all,flowRouteTA,0.114382252
+grid_all,flowRouteTA,0.192662349
  type,double,
 ,,
 grid_all,Ksink,0
@@ -2423,28 +2423,28 @@ grid_2011,FCAdaptation,1
 grid_2011,ACAdaptation,1
  type,double,
 ,,
-grid_2011,baseTemp,-1.841533804
+grid_2011,baseTemp,1.064494897
  type,double,
 ,,
-grid_2011,t_factor,1.005668848
+grid_2011,t_factor,1.380347594
  type,double,
 ,,
-grid_2011,r_factor,4.669540486
+grid_2011,r_factor,4.31673958
  type,double,
 ,,
-grid_2011,g_factor,1.287150638
+grid_2011,g_factor,3.455264449
  type,double,
 ,,
-grid_2011,snowCritDens,0.458578479
+grid_2011,snowCritDens,0.584811576
  type,double,
 ,,
-grid_2011,ccf_factor,0.045660461
+grid_2011,ccf_factor,0.02181467
  type,double,
 ,,
-grid_2011,snow_trans,1.914776945
+grid_2011,snow_trans,1.620749437
  type,double,
 ,,
-grid_2011,snow_trs,0.340311618
+grid_2011,snow_trs,4.656312334
  type,double,
 ,,
 grid_2011,piadin,0
@@ -2492,28 +2492,28 @@ grid_2011,angstrom_a,0.25
 grid_2011,angstrom_b,0.5
  type,double,
 ,,
-grid_2011,a_rain,1.768304993
+grid_2011,a_rain,1.97206126
  type,double,
 ,,
-grid_2011,a_snow,9.248159797
+grid_2011,a_snow,5.094522242
  type,double,
 ,,
-grid_2011,soilMaxDPS,2.734191305
+grid_2011,soilMaxDPS,6.565694349
  type,double,
 ,,
-grid_2011,soilPolRed,46.09577121
+grid_2011,soilPolRed,3.883547348
  type,double,
 ,,
 grid_2011,soilLinRed,0
  type,double,
 ,,
-grid_2011,soilMaxInfSummer,90.25616153
+grid_2011,soilMaxInfSummer,147.6104008
  type,double,
 ,,
-grid_2011,soilMaxInfWinter,34.80948843
+grid_2011,soilMaxInfWinter,15.30486141
  type,double,
 ,,
-grid_2011,soilMaxInfSnow,7.614312881
+grid_2011,soilMaxInfSnow,83.9871304
  type,double,
 ,,
 grid_2011,soilImpGT80,0.25
@@ -2522,34 +2522,34 @@ grid_2011,soilImpGT80,0.25
 grid_2011,soilImpLT80,0.6
  type,double,
 ,,
-grid_2011,soilDistMPSLPS,0.002842573
+grid_2011,soilDistMPSLPS,3.722904217
  type,double,
 ,,
-grid_2011,soilDiffMPSLPS,1.714445648
+grid_2011,soilDiffMPSLPS,8.377278438
  type,double,
 ,,
-grid_2011,soilOutLPS,0.09838914
+grid_2011,soilOutLPS,0.086536898
  type,double,
 ,,
-grid_2011,soilLatVertLPS,0.047327065
+grid_2011,soilLatVertLPS,0.680415364
  type,double,
 ,,
 grid_2011,soilMaxPerc,1
  type,double,
 ,,
-grid_2011,geoMaxPerc,0.700116199
+grid_2011,geoMaxPerc,0.947146443
  type,double,
 ,,
-grid_2011,kdiff_layer,45.60126916
+grid_2011,kdiff_layer,46.3721545
  type,double,
 ,,
-grid_2011,BetaW,9.011108394
+grid_2011,BetaW,14.79181765
  type,double,
 ,,
-grid_2011,lagSurfaceRunoff,1.488423569
+grid_2011,lagSurfaceRunoff,1.164841669
  type,double,
 ,,
-grid_2011,lagInterflow,1.512641456
+grid_2011,lagInterflow,1.97000131
  type,double,
 ,,
 grid_2011,initRG1,0.04
@@ -2558,16 +2558,16 @@ grid_2011,initRG1,0.04
 grid_2011,initRG2,0.01
  type,double,
 ,,
-grid_2011,gwRG1RG2dist,0.641112403
+grid_2011,gwRG1RG2dist,0.33979604
  type,double,
 ,,
-grid_2011,gwRG1Fact,1.001836952
+grid_2011,gwRG1Fact,1.001621345
  type,double,
 ,,
-grid_2011,gwRG2Fact,38.72881966
+grid_2011,gwRG2Fact,43.09321314
  type,double,
 ,,
-grid_2011,gwCapRise,0.318742778
+grid_2011,gwCapRise,0.549161676
  type,double,
 ,,
 grid_2011,N_delay_RG1,5
@@ -2582,7 +2582,7 @@ grid_2011,N_concRG1,10
 grid_2011,N_concRG2,10
  type,double,
 ,,
-grid_2011,flowRouteTA,1.97879394
+grid_2011,flowRouteTA,0.201063215
  type,double,
 ,,
 grid_2011,Ksink,0
@@ -2612,1614 +2612,6 @@ grid_2011,sceno,0
 grid_2011,opti,0
  type,int,
 ,,
-grid_2013,initMPS,0.1
- type,double,
-,,
-grid_2013,initLPS,0.05
- type,double,
-,,
-grid_2013,FCAdaptation,1
- type,double,
-,,
-grid_2013,ACAdaptation,1
- type,double,
-,,
-grid_2013,baseTemp,2.09689543
- type,double,
-,,
-grid_2013,t_factor,2.54116449
- type,double,
-,,
-grid_2013,r_factor,1.514870487
- type,double,
-,,
-grid_2013,g_factor,1.069884295
- type,double,
-,,
-grid_2013,snowCritDens,0.209368993
- type,double,
-,,
-grid_2013,ccf_factor,0.021407973
- type,double,
-,,
-grid_2013,snow_trans,0.537021334
- type,double,
-,,
-grid_2013,snow_trs,4.850760049
- type,double,
-,,
-grid_2013,piadin,0
- type,int,
-,,
-grid_2013,Beta_min,0.002
- type,double,
-,,
-grid_2013,Beta_trans,0.00001
- type,double,
-,,
-grid_2013,Beta_rsd,0.03
- type,double,
-,,
-grid_2013,deposition_factor,0.04
- type,double,
-,,
-grid_2013,delayNitrification,0.2
- type,double,
-,,
-grid_2013,denitrificationSoilSaturationThreshold,0.6
- type,double,
-,,
-grid_2013,denitrificationRateCoefficient,1.4
- type,double,
-,,
-grid_2013,nitrificationSurfaceTemperatureThreshold,5
- type,double,
-,,
-grid_2013,nitrificationSoilTemperatureThreshold,5
- type,double,
-,,
-grid_2013,longTZ,-105
- type,double,
-,,
-grid_2013,locGrw,w
- type,string,
-,,
-grid_2013,tempRes,d
- type,string,
-,,
-grid_2013,angstrom_a,0.25
- type,double,
-,,
-grid_2013,angstrom_b,0.5
- type,double,
-,,
-grid_2013,a_rain,1.847039848
- type,double,
-,,
-grid_2013,a_snow,0.554290159
- type,double,
-,,
-grid_2013,soilMaxDPS,2.873121149
- type,double,
-,,
-grid_2013,soilPolRed,12.02406108
- type,double,
-,,
-grid_2013,soilLinRed,0
- type,double,
-,,
-grid_2013,soilMaxInfSummer,97.64995598
- type,double,
-,,
-grid_2013,soilMaxInfWinter,70.75604718
- type,double,
-,,
-grid_2013,soilMaxInfSnow,90.35779502
- type,double,
-,,
-grid_2013,soilImpGT80,0.25
- type,double,
-,,
-grid_2013,soilImpLT80,0.6
- type,double,
-,,
-grid_2013,soilDistMPSLPS,2.518617576
- type,double,
-,,
-grid_2013,soilDiffMPSLPS,7.766079215
- type,double,
-,,
-grid_2013,soilOutLPS,9.714026065
- type,double,
-,,
-grid_2013,soilLatVertLPS,2.532230949
- type,double,
-,,
-grid_2013,soilMaxPerc,1
- type,double,
-,,
-grid_2013,geoMaxPerc,0.50860076
- type,double,
-,,
-grid_2013,kdiff_layer,1.138163278
- type,double,
-,,
-grid_2013,BetaW,0.193351585
- type,double,
-,,
-grid_2013,lagSurfaceRunoff,1.426537022
- type,double,
-,,
-grid_2013,lagInterflow,1.930155138
- type,double,
-,,
-grid_2013,initRG1,0.04
- type,double,
-,,
-grid_2013,initRG2,0.01
- type,double,
-,,
-grid_2013,gwRG1RG2dist,0.730500938
- type,double,
-,,
-grid_2013,gwRG1Fact,13.75342617
- type,double,
-,,
-grid_2013,gwRG2Fact,62.48544695
- type,double,
-,,
-grid_2013,gwCapRise,0.488197735
- type,double,
-,,
-grid_2013,N_delay_RG1,5
- type,double,
-,,
-grid_2013,N_delay_RG2,5
- type,double,
-,,
-grid_2013,N_concRG1,10
- type,double,
-,,
-grid_2013,N_concRG2,10
- type,double,
-,,
-grid_2013,flowRouteTA,0.10384249
- type,double,
-,,
-grid_2013,Ksink,0
- type,double,
-,,
-grid_2013,drspac,1000
- type,double,
-,,
-grid_2013,drrad,15
- type,double,
-,,
-grid_2013,clat,4.2
- type,double,
-,,
-grid_2013,LExCoef,-0.65
- type,double,
-,,
-grid_2013,rootfactor,1.2
- type,double,
-,,
-grid_2013,temp_lag,0.8
- type,double,
-,,
-grid_2013,sceno,0
- type,double,
-,,
-grid_2013,opti,0
- type,int,
-,,
-grid_2014,initMPS,0.1
- type,double,
-,,
-grid_2014,initLPS,0.05
- type,double,
-,,
-grid_2014,FCAdaptation,1
- type,double,
-,,
-grid_2014,ACAdaptation,1
- type,double,
-,,
-grid_2014,baseTemp,-1.936082236
- type,double,
-,,
-grid_2014,t_factor,0.978885093
- type,double,
-,,
-grid_2014,r_factor,1.818360455
- type,double,
-,,
-grid_2014,g_factor,4.06089863
- type,double,
-,,
-grid_2014,snowCritDens,0.245208369
- type,double,
-,,
-grid_2014,ccf_factor,0.020087578
- type,double,
-,,
-grid_2014,snow_trans,0.011111803
- type,double,
-,,
-grid_2014,snow_trs,4.664332143
- type,double,
-,,
-grid_2014,piadin,0
- type,int,
-,,
-grid_2014,Beta_min,0.002
- type,double,
-,,
-grid_2014,Beta_trans,0.00001
- type,double,
-,,
-grid_2014,Beta_rsd,0.03
- type,double,
-,,
-grid_2014,deposition_factor,0.04
- type,double,
-,,
-grid_2014,delayNitrification,0.2
- type,double,
-,,
-grid_2014,denitrificationSoilSaturationThreshold,0.6
- type,double,
-,,
-grid_2014,denitrificationRateCoefficient,1.4
- type,double,
-,,
-grid_2014,nitrificationSurfaceTemperatureThreshold,5
- type,double,
-,,
-grid_2014,nitrificationSoilTemperatureThreshold,5
- type,double,
-,,
-grid_2014,longTZ,-105
- type,double,
-,,
-grid_2014,locGrw,w
- type,string,
-,,
-grid_2014,tempRes,d
- type,string,
-,,
-grid_2014,angstrom_a,0.25
- type,double,
-,,
-grid_2014,angstrom_b,0.5
- type,double,
-,,
-grid_2014,a_rain,1.977820511
- type,double,
-,,
-grid_2014,a_snow,0.16946451
- type,double,
-,,
-grid_2014,soilMaxDPS,6.209849292
- type,double,
-,,
-grid_2014,soilPolRed,2.567190647
- type,double,
-,,
-grid_2014,soilLinRed,0
- type,double,
-,,
-grid_2014,soilMaxInfSummer,137.2431832
- type,double,
-,,
-grid_2014,soilMaxInfWinter,76.04253837
- type,double,
-,,
-grid_2014,soilMaxInfSnow,75.5372715
- type,double,
-,,
-grid_2014,soilImpGT80,0.25
- type,double,
-,,
-grid_2014,soilImpLT80,0.6
- type,double,
-,,
-grid_2014,soilDistMPSLPS,5.272931149
- type,double,
-,,
-grid_2014,soilDiffMPSLPS,5.905181275
- type,double,
-,,
-grid_2014,soilOutLPS,0.135038599
- type,double,
-,,
-grid_2014,soilLatVertLPS,0.462760224
- type,double,
-,,
-grid_2014,soilMaxPerc,1
- type,double,
-,,
-grid_2014,geoMaxPerc,0.863264478
- type,double,
-,,
-grid_2014,kdiff_layer,32.99849433
- type,double,
-,,
-grid_2014,BetaW,4.63379656
- type,double,
-,,
-grid_2014,lagSurfaceRunoff,1.464212728
- type,double,
-,,
-grid_2014,lagInterflow,1.967593595
- type,double,
-,,
-grid_2014,initRG1,0.04
- type,double,
-,,
-grid_2014,initRG2,0.01
- type,double,
-,,
-grid_2014,gwRG1RG2dist,0.500744922
- type,double,
-,,
-grid_2014,gwRG1Fact,1.003695972
- type,double,
-,,
-grid_2014,gwRG2Fact,66.09473238
- type,double,
-,,
-grid_2014,gwCapRise,0.499339367
- type,double,
-,,
-grid_2014,N_delay_RG1,5
- type,double,
-,,
-grid_2014,N_delay_RG2,5
- type,double,
-,,
-grid_2014,N_concRG1,10
- type,double,
-,,
-grid_2014,N_concRG2,10
- type,double,
-,,
-grid_2014,flowRouteTA,0.161404652
- type,double,
-,,
-grid_2014,Ksink,0
- type,double,
-,,
-grid_2014,drspac,1000
- type,double,
-,,
-grid_2014,drrad,15
- type,double,
-,,
-grid_2014,clat,4.2
- type,double,
-,,
-grid_2014,LExCoef,-0.65
- type,double,
-,,
-grid_2014,rootfactor,1.2
- type,double,
-,,
-grid_2014,temp_lag,0.8
- type,double,
-,,
-grid_2014,sceno,0
- type,double,
-,,
-grid_2014,opti,0
- type,int,
-,,
-grid_2015,initMPS,0.1
- type,double,
-,,
-grid_2015,initLPS,0.05
- type,double,
-,,
-grid_2015,FCAdaptation,1
- type,double,
-,,
-grid_2015,ACAdaptation,1
- type,double,
-,,
-grid_2015,baseTemp,1.867458754
- type,double,
-,,
-grid_2015,t_factor,3.573690531
- type,double,
-,,
-grid_2015,r_factor,3.9945248
- type,double,
-,,
-grid_2015,g_factor,2.013796608
- type,double,
-,,
-grid_2015,snowCritDens,0.474814282
- type,double,
-,,
-grid_2015,ccf_factor,0.029879382
- type,double,
-,,
-grid_2015,snow_trans,1.271022724
- type,double,
-,,
-grid_2015,snow_trs,1.25017263
- type,double,
-,,
-grid_2015,piadin,0
- type,int,
-,,
-grid_2015,Beta_min,0.002
- type,double,
-,,
-grid_2015,Beta_trans,0.00001
- type,double,
-,,
-grid_2015,Beta_rsd,0.03
- type,double,
-,,
-grid_2015,deposition_factor,0.04
- type,double,
-,,
-grid_2015,delayNitrification,0.2
- type,double,
-,,
-grid_2015,denitrificationSoilSaturationThreshold,0.6
- type,double,
-,,
-grid_2015,denitrificationRateCoefficient,1.4
- type,double,
-,,
-grid_2015,nitrificationSurfaceTemperatureThreshold,5
- type,double,
-,,
-grid_2015,nitrificationSoilTemperatureThreshold,5
- type,double,
-,,
-grid_2015,longTZ,-105
- type,double,
-,,
-grid_2015,locGrw,w
- type,string,
-,,
-grid_2015,tempRes,d
- type,string,
-,,
-grid_2015,angstrom_a,0.25
- type,double,
-,,
-grid_2015,angstrom_b,0.5
- type,double,
-,,
-grid_2015,a_rain,1.905800031
- type,double,
-,,
-grid_2015,a_snow,6.335538218
- type,double,
-,,
-grid_2015,soilMaxDPS,5.256412088
- type,double,
-,,
-grid_2015,soilPolRed,9.315833183
- type,double,
-,,
-grid_2015,soilLinRed,0
- type,double,
-,,
-grid_2015,soilMaxInfSummer,58.6151474
- type,double,
-,,
-grid_2015,soilMaxInfWinter,67.22551049
- type,double,
-,,
-grid_2015,soilMaxInfSnow,57.28595663
- type,double,
-,,
-grid_2015,soilImpGT80,0.25
- type,double,
-,,
-grid_2015,soilImpLT80,0.6
- type,double,
-,,
-grid_2015,soilDistMPSLPS,0.007217945
- type,double,
-,,
-grid_2015,soilDiffMPSLPS,4.523178129
- type,double,
-,,
-grid_2015,soilOutLPS,0.055586149
- type,double,
-,,
-grid_2015,soilLatVertLPS,0.069400622
- type,double,
-,,
-grid_2015,soilMaxPerc,1
- type,double,
-,,
-grid_2015,geoMaxPerc,0.903699127
- type,double,
-,,
-grid_2015,kdiff_layer,42.29410502
- type,double,
-,,
-grid_2015,BetaW,4.201936616
- type,double,
-,,
-grid_2015,lagSurfaceRunoff,1.000162365
- type,double,
-,,
-grid_2015,lagInterflow,1.35592209
- type,double,
-,,
-grid_2015,initRG1,0.04
- type,double,
-,,
-grid_2015,initRG2,0.01
- type,double,
-,,
-grid_2015,gwRG1RG2dist,0.318585793
- type,double,
-,,
-grid_2015,gwRG1Fact,1.001170359
- type,double,
-,,
-grid_2015,gwRG2Fact,69.54346557
- type,double,
-,,
-grid_2015,gwCapRise,0.160176467
- type,double,
-,,
-grid_2015,N_delay_RG1,5
- type,double,
-,,
-grid_2015,N_delay_RG2,5
- type,double,
-,,
-grid_2015,N_concRG1,10
- type,double,
-,,
-grid_2015,N_concRG2,10
- type,double,
-,,
-grid_2015,flowRouteTA,1.222743661
- type,double,
-,,
-grid_2015,Ksink,0
- type,double,
-,,
-grid_2015,drspac,1000
- type,double,
-,,
-grid_2015,drrad,15
- type,double,
-,,
-grid_2015,clat,4.2
- type,double,
-,,
-grid_2015,LExCoef,-0.65
- type,double,
-,,
-grid_2015,rootfactor,1.2
- type,double,
-,,
-grid_2015,temp_lag,0.8
- type,double,
-,,
-grid_2015,sceno,0
- type,double,
-,,
-grid_2015,opti,0
- type,int,
-,,
-grid_2016,initMPS,0.1
- type,double,
-,,
-grid_2016,initLPS,0.05
- type,double,
-,,
-grid_2016,FCAdaptation,1
- type,double,
-,,
-grid_2016,ACAdaptation,1
- type,double,
-,,
-grid_2016,baseTemp,1.98881065
- type,double,
-,,
-grid_2016,t_factor,0.957733583
- type,double,
-,,
-grid_2016,r_factor,3.678659886
- type,double,
-,,
-grid_2016,g_factor,2.681067072
- type,double,
-,,
-grid_2016,snowCritDens,0.374989446
- type,double,
-,,
-grid_2016,ccf_factor,0.042981945
- type,double,
-,,
-grid_2016,snow_trans,0.580450094
- type,double,
-,,
-grid_2016,snow_trs,-0.992440474
- type,double,
-,,
-grid_2016,piadin,0
- type,int,
-,,
-grid_2016,Beta_min,0.002
- type,double,
-,,
-grid_2016,Beta_trans,0.00001
- type,double,
-,,
-grid_2016,Beta_rsd,0.03
- type,double,
-,,
-grid_2016,deposition_factor,0.04
- type,double,
-,,
-grid_2016,delayNitrification,0.2
- type,double,
-,,
-grid_2016,denitrificationSoilSaturationThreshold,0.6
- type,double,
-,,
-grid_2016,denitrificationRateCoefficient,1.4
- type,double,
-,,
-grid_2016,nitrificationSurfaceTemperatureThreshold,5
- type,double,
-,,
-grid_2016,nitrificationSoilTemperatureThreshold,5
- type,double,
-,,
-grid_2016,longTZ,-105
- type,double,
-,,
-grid_2016,locGrw,w
- type,string,
-,,
-grid_2016,tempRes,d
- type,string,
-,,
-grid_2016,angstrom_a,0.25
- type,double,
-,,
-grid_2016,angstrom_b,0.5
- type,double,
-,,
-grid_2016,a_rain,1.623917243
- type,double,
-,,
-grid_2016,a_snow,1.643285847
- type,double,
-,,
-grid_2016,soilMaxDPS,2.181466082
- type,double,
-,,
-grid_2016,soilPolRed,37.42552434
- type,double,
-,,
-grid_2016,soilLinRed,0
- type,double,
-,,
-grid_2016,soilMaxInfSummer,83.99494898
- type,double,
-,,
-grid_2016,soilMaxInfWinter,62.93682831
- type,double,
-,,
-grid_2016,soilMaxInfSnow,72.73885798
- type,double,
-,,
-grid_2016,soilImpGT80,0.25
- type,double,
-,,
-grid_2016,soilImpLT80,0.6
- type,double,
-,,
-grid_2016,soilDistMPSLPS,0.077006686
- type,double,
-,,
-grid_2016,soilDiffMPSLPS,6.722597018
- type,double,
-,,
-grid_2016,soilOutLPS,0.097966384
- type,double,
-,,
-grid_2016,soilLatVertLPS,0.433163293
- type,double,
-,,
-grid_2016,soilMaxPerc,1
- type,double,
-,,
-grid_2016,geoMaxPerc,0.8216992
- type,double,
-,,
-grid_2016,kdiff_layer,43.2875677
- type,double,
-,,
-grid_2016,BetaW,12.97609645
- type,double,
-,,
-grid_2016,lagSurfaceRunoff,1.368954144
- type,double,
-,,
-grid_2016,lagInterflow,1.951778752
- type,double,
-,,
-grid_2016,initRG1,0.04
- type,double,
-,,
-grid_2016,initRG2,0.01
- type,double,
-,,
-grid_2016,gwRG1RG2dist,0.507751023
- type,double,
-,,
-grid_2016,gwRG1Fact,1.010577134
- type,double,
-,,
-grid_2016,gwRG2Fact,24.38540272
- type,double,
-,,
-grid_2016,gwCapRise,0.47290205
- type,double,
-,,
-grid_2016,N_delay_RG1,5
- type,double,
-,,
-grid_2016,N_delay_RG2,5
- type,double,
-,,
-grid_2016,N_concRG1,10
- type,double,
-,,
-grid_2016,N_concRG2,10
- type,double,
-,,
-grid_2016,flowRouteTA,0.107324992
- type,double,
-,,
-grid_2016,Ksink,0
- type,double,
-,,
-grid_2016,drspac,1000
- type,double,
-,,
-grid_2016,drrad,15
- type,double,
-,,
-grid_2016,clat,4.2
- type,double,
-,,
-grid_2016,LExCoef,-0.65
- type,double,
-,,
-grid_2016,rootfactor,1.2
- type,double,
-,,
-grid_2016,temp_lag,0.8
- type,double,
-,,
-grid_2016,sceno,0
- type,double,
-,,
-grid_2016,opti,0
- type,int,
-,,
-grid_2017,initMPS,0.1
- type,double,
-,,
-grid_2017,initLPS,0.05
- type,double,
-,,
-grid_2017,FCAdaptation,1
- type,double,
-,,
-grid_2017,ACAdaptation,1
- type,double,
-,,
-grid_2017,baseTemp,2.369166274
- type,double,
-,,
-grid_2017,t_factor,2.576471195
- type,double,
-,,
-grid_2017,r_factor,3.260376005
- type,double,
-,,
-grid_2017,g_factor,1.839574691
- type,double,
-,,
-grid_2017,snowCritDens,0.454310298
- type,double,
-,,
-grid_2017,ccf_factor,0.052253605
- type,double,
-,,
-grid_2017,snow_trans,0.887378032
- type,double,
-,,
-grid_2017,snow_trs,-0.195155717
- type,double,
-,,
-grid_2017,piadin,0
- type,int,
-,,
-grid_2017,Beta_min,0.002
- type,double,
-,,
-grid_2017,Beta_trans,0.00001
- type,double,
-,,
-grid_2017,Beta_rsd,0.03
- type,double,
-,,
-grid_2017,deposition_factor,0.04
- type,double,
-,,
-grid_2017,delayNitrification,0.2
- type,double,
-,,
-grid_2017,denitrificationSoilSaturationThreshold,0.6
- type,double,
-,,
-grid_2017,denitrificationRateCoefficient,1.4
- type,double,
-,,
-grid_2017,nitrificationSurfaceTemperatureThreshold,5
- type,double,
-,,
-grid_2017,nitrificationSoilTemperatureThreshold,5
- type,double,
-,,
-grid_2017,longTZ,-105
- type,double,
-,,
-grid_2017,locGrw,w
- type,string,
-,,
-grid_2017,tempRes,d
- type,string,
-,,
-grid_2017,angstrom_a,0.25
- type,double,
-,,
-grid_2017,angstrom_b,0.5
- type,double,
-,,
-grid_2017,a_rain,0.243167818
- type,double,
-,,
-grid_2017,a_snow,2.886454467
- type,double,
-,,
-grid_2017,soilMaxDPS,9.128159461
- type,double,
-,,
-grid_2017,soilPolRed,3.970634346
- type,double,
-,,
-grid_2017,soilLinRed,0
- type,double,
-,,
-grid_2017,soilMaxInfSummer,81.52669913
- type,double,
-,,
-grid_2017,soilMaxInfWinter,95.14332986
- type,double,
-,,
-grid_2017,soilMaxInfSnow,39.75988903
- type,double,
-,,
-grid_2017,soilImpGT80,0.25
- type,double,
-,,
-grid_2017,soilImpLT80,0.6
- type,double,
-,,
-grid_2017,soilDistMPSLPS,4.54446977
- type,double,
-,,
-grid_2017,soilDiffMPSLPS,1.769864511
- type,double,
-,,
-grid_2017,soilOutLPS,0.526234706
- type,double,
-,,
-grid_2017,soilLatVertLPS,0.362449283
- type,double,
-,,
-grid_2017,soilMaxPerc,1
- type,double,
-,,
-grid_2017,geoMaxPerc,0.901436722
- type,double,
-,,
-grid_2017,kdiff_layer,43.543935
- type,double,
-,,
-grid_2017,BetaW,9.307515558
- type,double,
-,,
-grid_2017,lagSurfaceRunoff,1.031819453
- type,double,
-,,
-grid_2017,lagInterflow,1.982995893
- type,double,
-,,
-grid_2017,initRG1,0.04
- type,double,
-,,
-grid_2017,initRG2,0.01
- type,double,
-,,
-grid_2017,gwRG1RG2dist,0.264185208
- type,double,
-,,
-grid_2017,gwRG1Fact,1.000572537
- type,double,
-,,
-grid_2017,gwRG2Fact,22.89273801
- type,double,
-,,
-grid_2017,gwCapRise,0.540638183
- type,double,
-,,
-grid_2017,N_delay_RG1,5
- type,double,
-,,
-grid_2017,N_delay_RG2,5
- type,double,
-,,
-grid_2017,N_concRG1,10
- type,double,
-,,
-grid_2017,N_concRG2,10
- type,double,
-,,
-grid_2017,flowRouteTA,0.273319769
- type,double,
-,,
-grid_2017,Ksink,0
- type,double,
-,,
-grid_2017,drspac,1000
- type,double,
-,,
-grid_2017,drrad,15
- type,double,
-,,
-grid_2017,clat,4.2
- type,double,
-,,
-grid_2017,LExCoef,-0.65
- type,double,
-,,
-grid_2017,rootfactor,1.2
- type,double,
-,,
-grid_2017,temp_lag,0.8
- type,double,
-,,
-grid_2017,sceno,0
- type,double,
-,,
-grid_2017,opti,0
- type,int,
-,,
-grid_2018,initMPS,0.1
- type,double,
-,,
-grid_2018,initLPS,0.05
- type,double,
-,,
-grid_2018,FCAdaptation,1
- type,double,
-,,
-grid_2018,ACAdaptation,1
- type,double,
-,,
-grid_2018,baseTemp,1.625831189
- type,double,
-,,
-grid_2018,t_factor,1.775236609
- type,double,
-,,
-grid_2018,r_factor,3.111770617
- type,double,
-,,
-grid_2018,g_factor,1.928989364
- type,double,
-,,
-grid_2018,snowCritDens,0.57259924
- type,double,
-,,
-grid_2018,ccf_factor,0.043292102
- type,double,
-,,
-grid_2018,snow_trans,0.932816523
- type,double,
-,,
-grid_2018,snow_trs,-0.231631049
- type,double,
-,,
-grid_2018,piadin,0
- type,int,
-,,
-grid_2018,Beta_min,0.002
- type,double,
-,,
-grid_2018,Beta_trans,0.00001
- type,double,
-,,
-grid_2018,Beta_rsd,0.03
- type,double,
-,,
-grid_2018,deposition_factor,0.04
- type,double,
-,,
-grid_2018,delayNitrification,0.2
- type,double,
-,,
-grid_2018,denitrificationSoilSaturationThreshold,0.6
- type,double,
-,,
-grid_2018,denitrificationRateCoefficient,1.4
- type,double,
-,,
-grid_2018,nitrificationSurfaceTemperatureThreshold,5
- type,double,
-,,
-grid_2018,nitrificationSoilTemperatureThreshold,5
- type,double,
-,,
-grid_2018,longTZ,-105
- type,double,
-,,
-grid_2018,locGrw,w
- type,string,
-,,
-grid_2018,tempRes,d
- type,string,
-,,
-grid_2018,angstrom_a,0.25
- type,double,
-,,
-grid_2018,angstrom_b,0.5
- type,double,
-,,
-grid_2018,a_rain,1.034924022
- type,double,
-,,
-grid_2018,a_snow,1.633008341
- type,double,
-,,
-grid_2018,soilMaxDPS,7.643956863
- type,double,
-,,
-grid_2018,soilPolRed,2.715915797
- type,double,
-,,
-grid_2018,soilLinRed,0
- type,double,
-,,
-grid_2018,soilMaxInfSummer,45.24016425
- type,double,
-,,
-grid_2018,soilMaxInfWinter,75.37805151
- type,double,
-,,
-grid_2018,soilMaxInfSnow,49.71148226
- type,double,
-,,
-grid_2018,soilImpGT80,0.25
- type,double,
-,,
-grid_2018,soilImpLT80,0.6
- type,double,
-,,
-grid_2018,soilDistMPSLPS,1.890447251
- type,double,
-,,
-grid_2018,soilDiffMPSLPS,2.331143023
- type,double,
-,,
-grid_2018,soilOutLPS,0.410748047
- type,double,
-,,
-grid_2018,soilLatVertLPS,0.389075159
- type,double,
-,,
-grid_2018,soilMaxPerc,1
- type,double,
-,,
-grid_2018,geoMaxPerc,0.778782948
- type,double,
-,,
-grid_2018,kdiff_layer,44.07637243
- type,double,
-,,
-grid_2018,BetaW,7.36716175
- type,double,
-,,
-grid_2018,lagSurfaceRunoff,1.228490336
- type,double,
-,,
-grid_2018,lagInterflow,1.953060006
- type,double,
-,,
-grid_2018,initRG1,0.04
- type,double,
-,,
-grid_2018,initRG2,0.01
- type,double,
-,,
-grid_2018,gwRG1RG2dist,0.716995724
- type,double,
-,,
-grid_2018,gwRG1Fact,1.005715622
- type,double,
-,,
-grid_2018,gwRG2Fact,75.76111814
- type,double,
-,,
-grid_2018,gwCapRise,0.558431111
- type,double,
-,,
-grid_2018,N_delay_RG1,5
- type,double,
-,,
-grid_2018,N_delay_RG2,5
- type,double,
-,,
-grid_2018,N_concRG1,10
- type,double,
-,,
-grid_2018,N_concRG2,10
- type,double,
-,,
-grid_2018,flowRouteTA,0.170190996
- type,double,
-,,
-grid_2018,Ksink,0
- type,double,
-,,
-grid_2018,drspac,1000
- type,double,
-,,
-grid_2018,drrad,15
- type,double,
-,,
-grid_2018,clat,4.2
- type,double,
-,,
-grid_2018,LExCoef,-0.65
- type,double,
-,,
-grid_2018,rootfactor,1.2
- type,double,
-,,
-grid_2018,temp_lag,0.8
- type,double,
-,,
-grid_2018,sceno,0
- type,double,
-,,
-grid_2018,opti,0
- type,int,
-,,
-grid_2019,initMPS,0.1
- type,double,
-,,
-grid_2019,initLPS,0.05
- type,double,
-,,
-grid_2019,FCAdaptation,1
- type,double,
-,,
-grid_2019,ACAdaptation,1
- type,double,
-,,
-grid_2019,baseTemp,2.73817074
- type,double,
-,,
-grid_2019,t_factor,1.782047422
- type,double,
-,,
-grid_2019,r_factor,3.595641063
- type,double,
-,,
-grid_2019,g_factor,3.047519163
- type,double,
-,,
-grid_2019,snowCritDens,0.490977516
- type,double,
-,,
-grid_2019,ccf_factor,0.045655477
- type,double,
-,,
-grid_2019,snow_trans,0.58987048
- type,double,
-,,
-grid_2019,snow_trs,-1.080477165
- type,double,
-,,
-grid_2019,piadin,0
- type,int,
-,,
-grid_2019,Beta_min,0.002
- type,double,
-,,
-grid_2019,Beta_trans,0.00001
- type,double,
-,,
-grid_2019,Beta_rsd,0.03
- type,double,
-,,
-grid_2019,deposition_factor,0.04
- type,double,
-,,
-grid_2019,delayNitrification,0.2
- type,double,
-,,
-grid_2019,denitrificationSoilSaturationThreshold,0.6
- type,double,
-,,
-grid_2019,denitrificationRateCoefficient,1.4
- type,double,
-,,
-grid_2019,nitrificationSurfaceTemperatureThreshold,5
- type,double,
-,,
-grid_2019,nitrificationSoilTemperatureThreshold,5
- type,double,
-,,
-grid_2019,longTZ,-105
- type,double,
-,,
-grid_2019,locGrw,w
- type,string,
-,,
-grid_2019,tempRes,d
- type,string,
-,,
-grid_2019,angstrom_a,0.25
- type,double,
-,,
-grid_2019,angstrom_b,0.5
- type,double,
-,,
-grid_2019,a_rain,1.274736744
- type,double,
-,,
-grid_2019,a_snow,1.408693887
- type,double,
-,,
-grid_2019,soilMaxDPS,8.356607718
- type,double,
-,,
-grid_2019,soilPolRed,3.371152958
- type,double,
-,,
-grid_2019,soilLinRed,0
- type,double,
-,,
-grid_2019,soilMaxInfSummer,73.65537955
- type,double,
-,,
-grid_2019,soilMaxInfWinter,92.81878221
- type,double,
-,,
-grid_2019,soilMaxInfSnow,96.32669151
- type,double,
-,,
-grid_2019,soilImpGT80,0.25
- type,double,
-,,
-grid_2019,soilImpLT80,0.6
- type,double,
-,,
-grid_2019,soilDistMPSLPS,2.769721726
- type,double,
-,,
-grid_2019,soilDiffMPSLPS,2.44315682
- type,double,
-,,
-grid_2019,soilOutLPS,0.358199914
- type,double,
-,,
-grid_2019,soilLatVertLPS,0.522033603
- type,double,
-,,
-grid_2019,soilMaxPerc,1
- type,double,
-,,
-grid_2019,geoMaxPerc,0.728247679
- type,double,
-,,
-grid_2019,kdiff_layer,26.10419648
- type,double,
-,,
-grid_2019,BetaW,8.42221583
- type,double,
-,,
-grid_2019,lagSurfaceRunoff,1.444766053
- type,double,
-,,
-grid_2019,lagInterflow,1.893224654
- type,double,
-,,
-grid_2019,initRG1,0.04
- type,double,
-,,
-grid_2019,initRG2,0.01
- type,double,
-,,
-grid_2019,gwRG1RG2dist,0.613542104
- type,double,
-,,
-grid_2019,gwRG1Fact,1.005135842
- type,double,
-,,
-grid_2019,gwRG2Fact,58.87648955
- type,double,
-,,
-grid_2019,gwCapRise,0.505044733
- type,double,
-,,
-grid_2019,N_delay_RG1,5
- type,double,
-,,
-grid_2019,N_delay_RG2,5
- type,double,
-,,
-grid_2019,N_concRG1,10
- type,double,
-,,
-grid_2019,N_concRG2,10
- type,double,
-,,
-grid_2019,flowRouteTA,0.105468475
- type,double,
-,,
-grid_2019,Ksink,0
- type,double,
-,,
-grid_2019,drspac,1000
- type,double,
-,,
-grid_2019,drrad,15
- type,double,
-,,
-grid_2019,clat,4.2
- type,double,
-,,
-grid_2019,LExCoef,-0.65
- type,double,
-,,
-grid_2019,rootfactor,1.2
- type,double,
-,,
-grid_2019,temp_lag,0.8
- type,double,
-,,
-grid_2019,sceno,0
- type,double,
-,,
-grid_2019,opti,0
- type,int,
-,,
-grid_2020,initMPS,0.1
- type,double,
-,,
-grid_2020,initLPS,0.05
- type,double,
-,,
-grid_2020,FCAdaptation,1
- type,double,
-,,
-grid_2020,ACAdaptation,1
- type,double,
-,,
-grid_2020,baseTemp,0.61791112
- type,double,
-,,
-grid_2020,t_factor,0.618906368
- type,double,
-,,
-grid_2020,r_factor,0.579613212
- type,double,
-,,
-grid_2020,g_factor,2.809240528
- type,double,
-,,
-grid_2020,snowCritDens,0.663102662
- type,double,
-,,
-grid_2020,ccf_factor,0.003038985
- type,double,
-,,
-grid_2020,snow_trans,0.756628263
- type,double,
-,,
-grid_2020,snow_trs,4.12722823
- type,double,
-,,
-grid_2020,piadin,0
- type,int,
-,,
-grid_2020,Beta_min,0.002
- type,double,
-,,
-grid_2020,Beta_trans,0.00001
- type,double,
-,,
-grid_2020,Beta_rsd,0.03
- type,double,
-,,
-grid_2020,deposition_factor,0.04
- type,double,
-,,
-grid_2020,delayNitrification,0.2
- type,double,
-,,
-grid_2020,denitrificationSoilSaturationThreshold,0.6
- type,double,
-,,
-grid_2020,denitrificationRateCoefficient,1.4
- type,double,
-,,
-grid_2020,nitrificationSurfaceTemperatureThreshold,5
- type,double,
-,,
-grid_2020,nitrificationSoilTemperatureThreshold,5
- type,double,
-,,
-grid_2020,longTZ,-105
- type,double,
-,,
-grid_2020,locGrw,w
- type,string,
-,,
-grid_2020,tempRes,d
- type,string,
-,,
-grid_2020,angstrom_a,0.25
- type,double,
-,,
-grid_2020,angstrom_b,0.5
- type,double,
-,,
-grid_2020,a_rain,1.961885937
- type,double,
-,,
-grid_2020,a_snow,1.375529952
- type,double,
-,,
-grid_2020,soilMaxDPS,5.939932931
- type,double,
-,,
-grid_2020,soilPolRed,41.59647795
- type,double,
-,,
-grid_2020,soilLinRed,0
- type,double,
-,,
-grid_2020,soilMaxInfSummer,140.3496994
- type,double,
-,,
-grid_2020,soilMaxInfWinter,23.343641
- type,double,
-,,
-grid_2020,soilMaxInfSnow,10.02203592
- type,double,
-,,
-grid_2020,soilImpGT80,0.25
- type,double,
-,,
-grid_2020,soilImpLT80,0.6
- type,double,
-,,
-grid_2020,soilDistMPSLPS,0.004885723
- type,double,
-,,
-grid_2020,soilDiffMPSLPS,8.583292014
- type,double,
-,,
-grid_2020,soilOutLPS,0.060558113
- type,double,
-,,
-grid_2020,soilLatVertLPS,0.129073678
- type,double,
-,,
-grid_2020,soilMaxPerc,1
- type,double,
-,,
-grid_2020,geoMaxPerc,0.683400171
- type,double,
-,,
-grid_2020,kdiff_layer,38.24463186
- type,double,
-,,
-grid_2020,BetaW,10.13684117
- type,double,
-,,
-grid_2020,lagSurfaceRunoff,1.047478564
- type,double,
-,,
-grid_2020,lagInterflow,1.806787956
- type,double,
-,,
-grid_2020,initRG1,0.04
- type,double,
-,,
-grid_2020,initRG2,0.01
- type,double,
-,,
-grid_2020,gwRG1RG2dist,0.222852877
- type,double,
-,,
-grid_2020,gwRG1Fact,1.009498031
- type,double,
-,,
-grid_2020,gwRG2Fact,34.35571635
- type,double,
-,,
-grid_2020,gwCapRise,0.539683144
- type,double,
-,,
-grid_2020,N_delay_RG1,5
- type,double,
-,,
-grid_2020,N_delay_RG2,5
- type,double,
-,,
-grid_2020,N_concRG1,10
- type,double,
-,,
-grid_2020,N_concRG2,10
- type,double,
-,,
-grid_2020,flowRouteTA,0.525210528
- type,double,
-,,
-grid_2020,Ksink,0
- type,double,
-,,
-grid_2020,drspac,1000
- type,double,
-,,
-grid_2020,drrad,15
- type,double,
-,,
-grid_2020,clat,4.2
- type,double,
-,,
-grid_2020,LExCoef,-0.65
- type,double,
-,,
-grid_2020,rootfactor,1.2
- type,double,
-,,
-grid_2020,temp_lag,0.8
- type,double,
-,,
-grid_2020,sceno,0
- type,double,
-,,
-grid_2020,opti,0
- type,int,
-,,
 grid_2012,initMPS,0.1
  type,double,
 ,,
@@ -4232,28 +2624,28 @@ grid_2012,FCAdaptation,1
 grid_2012,ACAdaptation,1
  type,double,
 ,,
-grid_2012,baseTemp,2.352031078
+grid_2012,baseTemp,4.072496676
  type,double,
 ,,
-grid_2012,t_factor,1.229685533
+grid_2012,t_factor,0.957157301
  type,double,
 ,,
-grid_2012,r_factor,3.654537446
+grid_2012,r_factor,2.601670673
  type,double,
 ,,
-grid_2012,g_factor,1.834724314
+grid_2012,g_factor,4.255542366
  type,double,
 ,,
-grid_2012,snowCritDens,0.469508801
+grid_2012,snowCritDens,0.483256505
  type,double,
 ,,
-grid_2012,ccf_factor,0.071395518
+grid_2012,ccf_factor,7.09E-04
  type,double,
 ,,
-grid_2012,snow_trans,1.281720012
+grid_2012,snow_trans,1.805893015
  type,double,
 ,,
-grid_2012,snow_trs,-1.73539527
+grid_2012,snow_trs,4.976867607
  type,double,
 ,,
 grid_2012,piadin,0
@@ -4301,28 +2693,28 @@ grid_2012,angstrom_a,0.25
 grid_2012,angstrom_b,0.5
  type,double,
 ,,
-grid_2012,a_rain,0.246427463
+grid_2012,a_rain,1.985509729
  type,double,
 ,,
-grid_2012,a_snow,1.522033442
+grid_2012,a_snow,0.998695814
  type,double,
 ,,
-grid_2012,soilMaxDPS,6.247326575
+grid_2012,soilMaxDPS,9.733431732
  type,double,
 ,,
-grid_2012,soilPolRed,3.198420514
+grid_2012,soilPolRed,7.376004741
  type,double,
 ,,
 grid_2012,soilLinRed,0
  type,double,
 ,,
-grid_2012,soilMaxInfSummer,33.57833458
+grid_2012,soilMaxInfSummer,29.16246904
  type,double,
 ,,
-grid_2012,soilMaxInfWinter,65.17936673
+grid_2012,soilMaxInfWinter,57.81601176
  type,double,
 ,,
-grid_2012,soilMaxInfSnow,28.56016853
+grid_2012,soilMaxInfSnow,32.31329632
  type,double,
 ,,
 grid_2012,soilImpGT80,0.25
@@ -4331,34 +2723,34 @@ grid_2012,soilImpGT80,0.25
 grid_2012,soilImpLT80,0.6
  type,double,
 ,,
-grid_2012,soilDistMPSLPS,6.895666184
+grid_2012,soilDistMPSLPS,0.140662827
  type,double,
 ,,
-grid_2012,soilDiffMPSLPS,4.332884296
+grid_2012,soilDiffMPSLPS,1.011414583
  type,double,
 ,,
-grid_2012,soilOutLPS,0.659781315
+grid_2012,soilOutLPS,0.238069847
  type,double,
 ,,
-grid_2012,soilLatVertLPS,0.459112517
+grid_2012,soilLatVertLPS,1.623969913
  type,double,
 ,,
 grid_2012,soilMaxPerc,1
  type,double,
 ,,
-grid_2012,geoMaxPerc,0.659722359
+grid_2012,geoMaxPerc,0.692088249
  type,double,
 ,,
-grid_2012,kdiff_layer,22.92482127
+grid_2012,kdiff_layer,45.50709645
  type,double,
 ,,
-grid_2012,BetaW,6.686897692
+grid_2012,BetaW,13.9963746
  type,double,
 ,,
-grid_2012,lagSurfaceRunoff,1.426750707
+grid_2012,lagSurfaceRunoff,1.387726095
  type,double,
 ,,
-grid_2012,lagInterflow,1.921295129
+grid_2012,lagInterflow,1.98823839
  type,double,
 ,,
 grid_2012,initRG1,0.04
@@ -4367,16 +2759,16 @@ grid_2012,initRG1,0.04
 grid_2012,initRG2,0.01
  type,double,
 ,,
-grid_2012,gwRG1RG2dist,0.143247873
+grid_2012,gwRG1RG2dist,0.698355062
  type,double,
 ,,
-grid_2012,gwRG1Fact,1.005317299
+grid_2012,gwRG1Fact,1.007928945
  type,double,
 ,,
-grid_2012,gwRG2Fact,23.08186961
+grid_2012,gwRG2Fact,9.777046755
  type,double,
 ,,
-grid_2012,gwCapRise,0.431562585
+grid_2012,gwCapRise,0.405600872
  type,double,
 ,,
 grid_2012,N_delay_RG1,5
@@ -4391,7 +2783,7 @@ grid_2012,N_concRG1,10
 grid_2012,N_concRG2,10
  type,double,
 ,,
-grid_2012,flowRouteTA,0.103316907
+grid_2012,flowRouteTA,0.104057151
  type,double,
 ,,
 grid_2012,Ksink,0
@@ -4419,4 +2811,1612 @@ grid_2012,sceno,0
  type,double,
 ,,
 grid_2012,opti,0
+ type,int,
+,,
+grid_2013,initMPS,0.1
+ type,double,
+,,
+grid_2013,initLPS,0.05
+ type,double,
+,,
+grid_2013,FCAdaptation,1
+ type,double,
+,,
+grid_2013,ACAdaptation,1
+ type,double,
+,,
+grid_2013,baseTemp,2.328839012
+ type,double,
+,,
+grid_2013,t_factor,1.398958493
+ type,double,
+,,
+grid_2013,r_factor,2.276632585
+ type,double,
+,,
+grid_2013,g_factor,4.029637048
+ type,double,
+,,
+grid_2013,snowCritDens,0.49038131
+ type,double,
+,,
+grid_2013,ccf_factor,0.019298132
+ type,double,
+,,
+grid_2013,snow_trans,1.62266284
+ type,double,
+,,
+grid_2013,snow_trs,4.678853904
+ type,double,
+,,
+grid_2013,piadin,0
+ type,int,
+,,
+grid_2013,Beta_min,0.002
+ type,double,
+,,
+grid_2013,Beta_trans,0.00001
+ type,double,
+,,
+grid_2013,Beta_rsd,0.03
+ type,double,
+,,
+grid_2013,deposition_factor,0.04
+ type,double,
+,,
+grid_2013,delayNitrification,0.2
+ type,double,
+,,
+grid_2013,denitrificationSoilSaturationThreshold,0.6
+ type,double,
+,,
+grid_2013,denitrificationRateCoefficient,1.4
+ type,double,
+,,
+grid_2013,nitrificationSurfaceTemperatureThreshold,5
+ type,double,
+,,
+grid_2013,nitrificationSoilTemperatureThreshold,5
+ type,double,
+,,
+grid_2013,longTZ,-105
+ type,double,
+,,
+grid_2013,locGrw,w
+ type,string,
+,,
+grid_2013,tempRes,d
+ type,string,
+,,
+grid_2013,angstrom_a,0.25
+ type,double,
+,,
+grid_2013,angstrom_b,0.5
+ type,double,
+,,
+grid_2013,a_rain,1.947083649
+ type,double,
+,,
+grid_2013,a_snow,7.36790917
+ type,double,
+,,
+grid_2013,soilMaxDPS,8.252195257
+ type,double,
+,,
+grid_2013,soilPolRed,49.7960073
+ type,double,
+,,
+grid_2013,soilLinRed,0
+ type,double,
+,,
+grid_2013,soilMaxInfSummer,33.26245773
+ type,double,
+,,
+grid_2013,soilMaxInfWinter,88.49130682
+ type,double,
+,,
+grid_2013,soilMaxInfSnow,56.05523817
+ type,double,
+,,
+grid_2013,soilImpGT80,0.25
+ type,double,
+,,
+grid_2013,soilImpLT80,0.6
+ type,double,
+,,
+grid_2013,soilDistMPSLPS,1.396387072
+ type,double,
+,,
+grid_2013,soilDiffMPSLPS,0.10507025
+ type,double,
+,,
+grid_2013,soilOutLPS,2.146405265
+ type,double,
+,,
+grid_2013,soilLatVertLPS,9.924835657
+ type,double,
+,,
+grid_2013,soilMaxPerc,1
+ type,double,
+,,
+grid_2013,geoMaxPerc,0.232628927
+ type,double,
+,,
+grid_2013,kdiff_layer,42.834579
+ type,double,
+,,
+grid_2013,BetaW,2.991043739
+ type,double,
+,,
+grid_2013,lagSurfaceRunoff,1.446130417
+ type,double,
+,,
+grid_2013,lagInterflow,1.990887398
+ type,double,
+,,
+grid_2013,initRG1,0.04
+ type,double,
+,,
+grid_2013,initRG2,0.01
+ type,double,
+,,
+grid_2013,gwRG1RG2dist,0.875944339
+ type,double,
+,,
+grid_2013,gwRG1Fact,16.17727638
+ type,double,
+,,
+grid_2013,gwRG2Fact,62.60648098
+ type,double,
+,,
+grid_2013,gwCapRise,0.351622346
+ type,double,
+,,
+grid_2013,N_delay_RG1,5
+ type,double,
+,,
+grid_2013,N_delay_RG2,5
+ type,double,
+,,
+grid_2013,N_concRG1,10
+ type,double,
+,,
+grid_2013,N_concRG2,10
+ type,double,
+,,
+grid_2013,flowRouteTA,0.101221615
+ type,double,
+,,
+grid_2013,Ksink,0
+ type,double,
+,,
+grid_2013,drspac,1000
+ type,double,
+,,
+grid_2013,drrad,15
+ type,double,
+,,
+grid_2013,clat,4.2
+ type,double,
+,,
+grid_2013,LExCoef,-0.65
+ type,double,
+,,
+grid_2013,rootfactor,1.2
+ type,double,
+,,
+grid_2013,temp_lag,0.8
+ type,double,
+,,
+grid_2013,sceno,0
+ type,double,
+,,
+grid_2013,opti,0
+ type,int,
+,,
+grid_2014,initMPS,0.1
+ type,double,
+,,
+grid_2014,initLPS,0.05
+ type,double,
+,,
+grid_2014,FCAdaptation,1
+ type,double,
+,,
+grid_2014,ACAdaptation,1
+ type,double,
+,,
+grid_2014,baseTemp,3.383577334
+ type,double,
+,,
+grid_2014,t_factor,1.483116079
+ type,double,
+,,
+grid_2014,r_factor,2.474835121
+ type,double,
+,,
+grid_2014,g_factor,4.354414545
+ type,double,
+,,
+grid_2014,snowCritDens,0.72836995
+ type,double,
+,,
+grid_2014,ccf_factor,0.006864355
+ type,double,
+,,
+grid_2014,snow_trans,1.591678016
+ type,double,
+,,
+grid_2014,snow_trs,4.037229778
+ type,double,
+,,
+grid_2014,piadin,0
+ type,int,
+,,
+grid_2014,Beta_min,0.002
+ type,double,
+,,
+grid_2014,Beta_trans,0.00001
+ type,double,
+,,
+grid_2014,Beta_rsd,0.03
+ type,double,
+,,
+grid_2014,deposition_factor,0.04
+ type,double,
+,,
+grid_2014,delayNitrification,0.2
+ type,double,
+,,
+grid_2014,denitrificationSoilSaturationThreshold,0.6
+ type,double,
+,,
+grid_2014,denitrificationRateCoefficient,1.4
+ type,double,
+,,
+grid_2014,nitrificationSurfaceTemperatureThreshold,5
+ type,double,
+,,
+grid_2014,nitrificationSoilTemperatureThreshold,5
+ type,double,
+,,
+grid_2014,longTZ,-105
+ type,double,
+,,
+grid_2014,locGrw,w
+ type,string,
+,,
+grid_2014,tempRes,d
+ type,string,
+,,
+grid_2014,angstrom_a,0.25
+ type,double,
+,,
+grid_2014,angstrom_b,0.5
+ type,double,
+,,
+grid_2014,a_rain,1.942623391
+ type,double,
+,,
+grid_2014,a_snow,0.913714788
+ type,double,
+,,
+grid_2014,soilMaxDPS,5.134989412
+ type,double,
+,,
+grid_2014,soilPolRed,46.48444936
+ type,double,
+,,
+grid_2014,soilLinRed,0
+ type,double,
+,,
+grid_2014,soilMaxInfSummer,61.3493084
+ type,double,
+,,
+grid_2014,soilMaxInfWinter,73.51213006
+ type,double,
+,,
+grid_2014,soilMaxInfSnow,77.23875534
+ type,double,
+,,
+grid_2014,soilImpGT80,0.25
+ type,double,
+,,
+grid_2014,soilImpLT80,0.6
+ type,double,
+,,
+grid_2014,soilDistMPSLPS,0.117407811
+ type,double,
+,,
+grid_2014,soilDiffMPSLPS,6.96948019
+ type,double,
+,,
+grid_2014,soilOutLPS,0.044257669
+ type,double,
+,,
+grid_2014,soilLatVertLPS,1.007093705
+ type,double,
+,,
+grid_2014,soilMaxPerc,1
+ type,double,
+,,
+grid_2014,geoMaxPerc,0.57658739
+ type,double,
+,,
+grid_2014,kdiff_layer,44.25606033
+ type,double,
+,,
+grid_2014,BetaW,14.29935702
+ type,double,
+,,
+grid_2014,lagSurfaceRunoff,1.119274127
+ type,double,
+,,
+grid_2014,lagInterflow,1.934768005
+ type,double,
+,,
+grid_2014,initRG1,0.04
+ type,double,
+,,
+grid_2014,initRG2,0.01
+ type,double,
+,,
+grid_2014,gwRG1RG2dist,0.549286967
+ type,double,
+,,
+grid_2014,gwRG1Fact,1.045941493
+ type,double,
+,,
+grid_2014,gwRG2Fact,19.88175225
+ type,double,
+,,
+grid_2014,gwCapRise,0.458222041
+ type,double,
+,,
+grid_2014,N_delay_RG1,5
+ type,double,
+,,
+grid_2014,N_delay_RG2,5
+ type,double,
+,,
+grid_2014,N_concRG1,10
+ type,double,
+,,
+grid_2014,N_concRG2,10
+ type,double,
+,,
+grid_2014,flowRouteTA,0.150120925
+ type,double,
+,,
+grid_2014,Ksink,0
+ type,double,
+,,
+grid_2014,drspac,1000
+ type,double,
+,,
+grid_2014,drrad,15
+ type,double,
+,,
+grid_2014,clat,4.2
+ type,double,
+,,
+grid_2014,LExCoef,-0.65
+ type,double,
+,,
+grid_2014,rootfactor,1.2
+ type,double,
+,,
+grid_2014,temp_lag,0.8
+ type,double,
+,,
+grid_2014,sceno,0
+ type,double,
+,,
+grid_2014,opti,0
+ type,int,
+,,
+grid_2015,initMPS,0.1
+ type,double,
+,,
+grid_2015,initLPS,0.05
+ type,double,
+,,
+grid_2015,FCAdaptation,1
+ type,double,
+,,
+grid_2015,ACAdaptation,1
+ type,double,
+,,
+grid_2015,baseTemp,2.976897949
+ type,double,
+,,
+grid_2015,t_factor,2.148692635
+ type,double,
+,,
+grid_2015,r_factor,0.423302909
+ type,double,
+,,
+grid_2015,g_factor,0.83792792
+ type,double,
+,,
+grid_2015,snowCritDens,0.26799137
+ type,double,
+,,
+grid_2015,ccf_factor,0.003661795
+ type,double,
+,,
+grid_2015,snow_trans,0.057478544
+ type,double,
+,,
+grid_2015,snow_trs,4.942815917
+ type,double,
+,,
+grid_2015,piadin,0
+ type,int,
+,,
+grid_2015,Beta_min,0.002
+ type,double,
+,,
+grid_2015,Beta_trans,0.00001
+ type,double,
+,,
+grid_2015,Beta_rsd,0.03
+ type,double,
+,,
+grid_2015,deposition_factor,0.04
+ type,double,
+,,
+grid_2015,delayNitrification,0.2
+ type,double,
+,,
+grid_2015,denitrificationSoilSaturationThreshold,0.6
+ type,double,
+,,
+grid_2015,denitrificationRateCoefficient,1.4
+ type,double,
+,,
+grid_2015,nitrificationSurfaceTemperatureThreshold,5
+ type,double,
+,,
+grid_2015,nitrificationSoilTemperatureThreshold,5
+ type,double,
+,,
+grid_2015,longTZ,-105
+ type,double,
+,,
+grid_2015,locGrw,w
+ type,string,
+,,
+grid_2015,tempRes,d
+ type,string,
+,,
+grid_2015,angstrom_a,0.25
+ type,double,
+,,
+grid_2015,angstrom_b,0.5
+ type,double,
+,,
+grid_2015,a_rain,1.953086123
+ type,double,
+,,
+grid_2015,a_snow,0.089341253
+ type,double,
+,,
+grid_2015,soilMaxDPS,7.713558377
+ type,double,
+,,
+grid_2015,soilPolRed,11.49859969
+ type,double,
+,,
+grid_2015,soilLinRed,0
+ type,double,
+,,
+grid_2015,soilMaxInfSummer,28.85233206
+ type,double,
+,,
+grid_2015,soilMaxInfWinter,81.69895531
+ type,double,
+,,
+grid_2015,soilMaxInfSnow,47.87058082
+ type,double,
+,,
+grid_2015,soilImpGT80,0.25
+ type,double,
+,,
+grid_2015,soilImpLT80,0.6
+ type,double,
+,,
+grid_2015,soilDistMPSLPS,0.064627559
+ type,double,
+,,
+grid_2015,soilDiffMPSLPS,8.802369079
+ type,double,
+,,
+grid_2015,soilOutLPS,0.075262846
+ type,double,
+,,
+grid_2015,soilLatVertLPS,0.085727261
+ type,double,
+,,
+grid_2015,soilMaxPerc,1
+ type,double,
+,,
+grid_2015,geoMaxPerc,0.596328834
+ type,double,
+,,
+grid_2015,kdiff_layer,49.71936374
+ type,double,
+,,
+grid_2015,BetaW,4.626313279
+ type,double,
+,,
+grid_2015,lagSurfaceRunoff,1.372025282
+ type,double,
+,,
+grid_2015,lagInterflow,1.873321735
+ type,double,
+,,
+grid_2015,initRG1,0.04
+ type,double,
+,,
+grid_2015,initRG2,0.01
+ type,double,
+,,
+grid_2015,gwRG1RG2dist,0.267709655
+ type,double,
+,,
+grid_2015,gwRG1Fact,1.146059551
+ type,double,
+,,
+grid_2015,gwRG2Fact,75.01984108
+ type,double,
+,,
+grid_2015,gwCapRise,0.562219347
+ type,double,
+,,
+grid_2015,N_delay_RG1,5
+ type,double,
+,,
+grid_2015,N_delay_RG2,5
+ type,double,
+,,
+grid_2015,N_concRG1,10
+ type,double,
+,,
+grid_2015,N_concRG2,10
+ type,double,
+,,
+grid_2015,flowRouteTA,0.459750202
+ type,double,
+,,
+grid_2015,Ksink,0
+ type,double,
+,,
+grid_2015,drspac,1000
+ type,double,
+,,
+grid_2015,drrad,15
+ type,double,
+,,
+grid_2015,clat,4.2
+ type,double,
+,,
+grid_2015,LExCoef,-0.65
+ type,double,
+,,
+grid_2015,rootfactor,1.2
+ type,double,
+,,
+grid_2015,temp_lag,0.8
+ type,double,
+,,
+grid_2015,sceno,0
+ type,double,
+,,
+grid_2015,opti,0
+ type,int,
+,,
+grid_2016,initMPS,0.1
+ type,double,
+,,
+grid_2016,initLPS,0.05
+ type,double,
+,,
+grid_2016,FCAdaptation,1
+ type,double,
+,,
+grid_2016,ACAdaptation,1
+ type,double,
+,,
+grid_2016,baseTemp,3.752974559
+ type,double,
+,,
+grid_2016,t_factor,2.604048364
+ type,double,
+,,
+grid_2016,r_factor,2.363772022
+ type,double,
+,,
+grid_2016,g_factor,3.378538765
+ type,double,
+,,
+grid_2016,snowCritDens,0.449143034
+ type,double,
+,,
+grid_2016,ccf_factor,0.024010819
+ type,double,
+,,
+grid_2016,snow_trans,1.382454978
+ type,double,
+,,
+grid_2016,snow_trs,3.347591269
+ type,double,
+,,
+grid_2016,piadin,0
+ type,int,
+,,
+grid_2016,Beta_min,0.002
+ type,double,
+,,
+grid_2016,Beta_trans,0.00001
+ type,double,
+,,
+grid_2016,Beta_rsd,0.03
+ type,double,
+,,
+grid_2016,deposition_factor,0.04
+ type,double,
+,,
+grid_2016,delayNitrification,0.2
+ type,double,
+,,
+grid_2016,denitrificationSoilSaturationThreshold,0.6
+ type,double,
+,,
+grid_2016,denitrificationRateCoefficient,1.4
+ type,double,
+,,
+grid_2016,nitrificationSurfaceTemperatureThreshold,5
+ type,double,
+,,
+grid_2016,nitrificationSoilTemperatureThreshold,5
+ type,double,
+,,
+grid_2016,longTZ,-105
+ type,double,
+,,
+grid_2016,locGrw,w
+ type,string,
+,,
+grid_2016,tempRes,d
+ type,string,
+,,
+grid_2016,angstrom_a,0.25
+ type,double,
+,,
+grid_2016,angstrom_b,0.5
+ type,double,
+,,
+grid_2016,a_rain,1.778625029
+ type,double,
+,,
+grid_2016,a_snow,5.557897067
+ type,double,
+,,
+grid_2016,soilMaxDPS,8.007072175
+ type,double,
+,,
+grid_2016,soilPolRed,22.21103497
+ type,double,
+,,
+grid_2016,soilLinRed,0
+ type,double,
+,,
+grid_2016,soilMaxInfSummer,17.19576867
+ type,double,
+,,
+grid_2016,soilMaxInfWinter,24.05398335
+ type,double,
+,,
+grid_2016,soilMaxInfSnow,58.72141662
+ type,double,
+,,
+grid_2016,soilImpGT80,0.25
+ type,double,
+,,
+grid_2016,soilImpLT80,0.6
+ type,double,
+,,
+grid_2016,soilDistMPSLPS,0.001547854
+ type,double,
+,,
+grid_2016,soilDiffMPSLPS,1.970310026
+ type,double,
+,,
+grid_2016,soilOutLPS,0.09569779
+ type,double,
+,,
+grid_2016,soilLatVertLPS,0.178955598
+ type,double,
+,,
+grid_2016,soilMaxPerc,1
+ type,double,
+,,
+grid_2016,geoMaxPerc,0.695726518
+ type,double,
+,,
+grid_2016,kdiff_layer,43.61296522
+ type,double,
+,,
+grid_2016,BetaW,9.462764034
+ type,double,
+,,
+grid_2016,lagSurfaceRunoff,1.454867956
+ type,double,
+,,
+grid_2016,lagInterflow,1.832493271
+ type,double,
+,,
+grid_2016,initRG1,0.04
+ type,double,
+,,
+grid_2016,initRG2,0.01
+ type,double,
+,,
+grid_2016,gwRG1RG2dist,0.40948173
+ type,double,
+,,
+grid_2016,gwRG1Fact,1.010260811
+ type,double,
+,,
+grid_2016,gwRG2Fact,24.25133438
+ type,double,
+,,
+grid_2016,gwCapRise,0.343364327
+ type,double,
+,,
+grid_2016,N_delay_RG1,5
+ type,double,
+,,
+grid_2016,N_delay_RG2,5
+ type,double,
+,,
+grid_2016,N_concRG1,10
+ type,double,
+,,
+grid_2016,N_concRG2,10
+ type,double,
+,,
+grid_2016,flowRouteTA,1.697694318
+ type,double,
+,,
+grid_2016,Ksink,0
+ type,double,
+,,
+grid_2016,drspac,1000
+ type,double,
+,,
+grid_2016,drrad,15
+ type,double,
+,,
+grid_2016,clat,4.2
+ type,double,
+,,
+grid_2016,LExCoef,-0.65
+ type,double,
+,,
+grid_2016,rootfactor,1.2
+ type,double,
+,,
+grid_2016,temp_lag,0.8
+ type,double,
+,,
+grid_2016,sceno,0
+ type,double,
+,,
+grid_2016,opti,0
+ type,int,
+,,
+grid_2017,initMPS,0.1
+ type,double,
+,,
+grid_2017,initLPS,0.05
+ type,double,
+,,
+grid_2017,FCAdaptation,1
+ type,double,
+,,
+grid_2017,ACAdaptation,1
+ type,double,
+,,
+grid_2017,baseTemp,3.665549874
+ type,double,
+,,
+grid_2017,t_factor,1.08773395
+ type,double,
+,,
+grid_2017,r_factor,0.506010954
+ type,double,
+,,
+grid_2017,g_factor,2.792956675
+ type,double,
+,,
+grid_2017,snowCritDens,0.491365459
+ type,double,
+,,
+grid_2017,ccf_factor,8.51E-04
+ type,double,
+,,
+grid_2017,snow_trans,0.614796981
+ type,double,
+,,
+grid_2017,snow_trs,4.059152689
+ type,double,
+,,
+grid_2017,piadin,0
+ type,int,
+,,
+grid_2017,Beta_min,0.002
+ type,double,
+,,
+grid_2017,Beta_trans,0.00001
+ type,double,
+,,
+grid_2017,Beta_rsd,0.03
+ type,double,
+,,
+grid_2017,deposition_factor,0.04
+ type,double,
+,,
+grid_2017,delayNitrification,0.2
+ type,double,
+,,
+grid_2017,denitrificationSoilSaturationThreshold,0.6
+ type,double,
+,,
+grid_2017,denitrificationRateCoefficient,1.4
+ type,double,
+,,
+grid_2017,nitrificationSurfaceTemperatureThreshold,5
+ type,double,
+,,
+grid_2017,nitrificationSoilTemperatureThreshold,5
+ type,double,
+,,
+grid_2017,longTZ,-105
+ type,double,
+,,
+grid_2017,locGrw,w
+ type,string,
+,,
+grid_2017,tempRes,d
+ type,string,
+,,
+grid_2017,angstrom_a,0.25
+ type,double,
+,,
+grid_2017,angstrom_b,0.5
+ type,double,
+,,
+grid_2017,a_rain,1.942579724
+ type,double,
+,,
+grid_2017,a_snow,2.147062035
+ type,double,
+,,
+grid_2017,soilMaxDPS,5.133126991
+ type,double,
+,,
+grid_2017,soilPolRed,48.75210181
+ type,double,
+,,
+grid_2017,soilLinRed,0
+ type,double,
+,,
+grid_2017,soilMaxInfSummer,26.43167142
+ type,double,
+,,
+grid_2017,soilMaxInfWinter,30.68339981
+ type,double,
+,,
+grid_2017,soilMaxInfSnow,77.04526286
+ type,double,
+,,
+grid_2017,soilImpGT80,0.25
+ type,double,
+,,
+grid_2017,soilImpLT80,0.6
+ type,double,
+,,
+grid_2017,soilDistMPSLPS,0.004265214
+ type,double,
+,,
+grid_2017,soilDiffMPSLPS,0.102856221
+ type,double,
+,,
+grid_2017,soilOutLPS,0.236013772
+ type,double,
+,,
+grid_2017,soilLatVertLPS,0.296399488
+ type,double,
+,,
+grid_2017,soilMaxPerc,1
+ type,double,
+,,
+grid_2017,geoMaxPerc,0.902282069
+ type,double,
+,,
+grid_2017,kdiff_layer,49.48485501
+ type,double,
+,,
+grid_2017,BetaW,12.66344291
+ type,double,
+,,
+grid_2017,lagSurfaceRunoff,1.388822634
+ type,double,
+,,
+grid_2017,lagInterflow,1.795029638
+ type,double,
+,,
+grid_2017,initRG1,0.04
+ type,double,
+,,
+grid_2017,initRG2,0.01
+ type,double,
+,,
+grid_2017,gwRG1RG2dist,0.132868706
+ type,double,
+,,
+grid_2017,gwRG1Fact,1.001781805
+ type,double,
+,,
+grid_2017,gwRG2Fact,65.32455632
+ type,double,
+,,
+grid_2017,gwCapRise,0.165411298
+ type,double,
+,,
+grid_2017,N_delay_RG1,5
+ type,double,
+,,
+grid_2017,N_delay_RG2,5
+ type,double,
+,,
+grid_2017,N_concRG1,10
+ type,double,
+,,
+grid_2017,N_concRG2,10
+ type,double,
+,,
+grid_2017,flowRouteTA,0.452342456
+ type,double,
+,,
+grid_2017,Ksink,0
+ type,double,
+,,
+grid_2017,drspac,1000
+ type,double,
+,,
+grid_2017,drrad,15
+ type,double,
+,,
+grid_2017,clat,4.2
+ type,double,
+,,
+grid_2017,LExCoef,-0.65
+ type,double,
+,,
+grid_2017,rootfactor,1.2
+ type,double,
+,,
+grid_2017,temp_lag,0.8
+ type,double,
+,,
+grid_2017,sceno,0
+ type,double,
+,,
+grid_2017,opti,0
+ type,int,
+,,
+grid_2018,initMPS,0.1
+ type,double,
+,,
+grid_2018,initLPS,0.05
+ type,double,
+,,
+grid_2018,FCAdaptation,1
+ type,double,
+,,
+grid_2018,ACAdaptation,1
+ type,double,
+,,
+grid_2018,baseTemp,2.876668718
+ type,double,
+,,
+grid_2018,t_factor,1.624715864
+ type,double,
+,,
+grid_2018,r_factor,2.437687315
+ type,double,
+,,
+grid_2018,g_factor,2.709359821
+ type,double,
+,,
+grid_2018,snowCritDens,0.468710338
+ type,double,
+,,
+grid_2018,ccf_factor,0.015209916
+ type,double,
+,,
+grid_2018,snow_trans,1.217187182
+ type,double,
+,,
+grid_2018,snow_trs,3.316976171
+ type,double,
+,,
+grid_2018,piadin,0
+ type,int,
+,,
+grid_2018,Beta_min,0.002
+ type,double,
+,,
+grid_2018,Beta_trans,0.00001
+ type,double,
+,,
+grid_2018,Beta_rsd,0.03
+ type,double,
+,,
+grid_2018,deposition_factor,0.04
+ type,double,
+,,
+grid_2018,delayNitrification,0.2
+ type,double,
+,,
+grid_2018,denitrificationSoilSaturationThreshold,0.6
+ type,double,
+,,
+grid_2018,denitrificationRateCoefficient,1.4
+ type,double,
+,,
+grid_2018,nitrificationSurfaceTemperatureThreshold,5
+ type,double,
+,,
+grid_2018,nitrificationSoilTemperatureThreshold,5
+ type,double,
+,,
+grid_2018,longTZ,-105
+ type,double,
+,,
+grid_2018,locGrw,w
+ type,string,
+,,
+grid_2018,tempRes,d
+ type,string,
+,,
+grid_2018,angstrom_a,0.25
+ type,double,
+,,
+grid_2018,angstrom_b,0.5
+ type,double,
+,,
+grid_2018,a_rain,1.886461461
+ type,double,
+,,
+grid_2018,a_snow,5.77517567
+ type,double,
+,,
+grid_2018,soilMaxDPS,0.179338405
+ type,double,
+,,
+grid_2018,soilPolRed,14.87907991
+ type,double,
+,,
+grid_2018,soilLinRed,0
+ type,double,
+,,
+grid_2018,soilMaxInfSummer,103.9972489
+ type,double,
+,,
+grid_2018,soilMaxInfWinter,48.23977068
+ type,double,
+,,
+grid_2018,soilMaxInfSnow,17.58108169
+ type,double,
+,,
+grid_2018,soilImpGT80,0.25
+ type,double,
+,,
+grid_2018,soilImpLT80,0.6
+ type,double,
+,,
+grid_2018,soilDistMPSLPS,0.001363077
+ type,double,
+,,
+grid_2018,soilDiffMPSLPS,0.365067951
+ type,double,
+,,
+grid_2018,soilOutLPS,0.105446068
+ type,double,
+,,
+grid_2018,soilLatVertLPS,0.205442969
+ type,double,
+,,
+grid_2018,soilMaxPerc,1
+ type,double,
+,,
+grid_2018,geoMaxPerc,0.734985524
+ type,double,
+,,
+grid_2018,kdiff_layer,40.11337001
+ type,double,
+,,
+grid_2018,BetaW,6.531565571
+ type,double,
+,,
+grid_2018,lagSurfaceRunoff,1.385127302
+ type,double,
+,,
+grid_2018,lagInterflow,1.833093609
+ type,double,
+,,
+grid_2018,initRG1,0.04
+ type,double,
+,,
+grid_2018,initRG2,0.01
+ type,double,
+,,
+grid_2018,gwRG1RG2dist,0.546112727
+ type,double,
+,,
+grid_2018,gwRG1Fact,1.006988605
+ type,double,
+,,
+grid_2018,gwRG2Fact,65.58494288
+ type,double,
+,,
+grid_2018,gwCapRise,0.526303719
+ type,double,
+,,
+grid_2018,N_delay_RG1,5
+ type,double,
+,,
+grid_2018,N_delay_RG2,5
+ type,double,
+,,
+grid_2018,N_concRG1,10
+ type,double,
+,,
+grid_2018,N_concRG2,10
+ type,double,
+,,
+grid_2018,flowRouteTA,1.695514389
+ type,double,
+,,
+grid_2018,Ksink,0
+ type,double,
+,,
+grid_2018,drspac,1000
+ type,double,
+,,
+grid_2018,drrad,15
+ type,double,
+,,
+grid_2018,clat,4.2
+ type,double,
+,,
+grid_2018,LExCoef,-0.65
+ type,double,
+,,
+grid_2018,rootfactor,1.2
+ type,double,
+,,
+grid_2018,temp_lag,0.8
+ type,double,
+,,
+grid_2018,sceno,0
+ type,double,
+,,
+grid_2018,opti,0
+ type,int,
+,,
+grid_2019,initMPS,0.1
+ type,double,
+,,
+grid_2019,initLPS,0.05
+ type,double,
+,,
+grid_2019,FCAdaptation,1
+ type,double,
+,,
+grid_2019,ACAdaptation,1
+ type,double,
+,,
+grid_2019,baseTemp,3.280122024
+ type,double,
+,,
+grid_2019,t_factor,1.361459569
+ type,double,
+,,
+grid_2019,r_factor,2.622326131
+ type,double,
+,,
+grid_2019,g_factor,2.544559601
+ type,double,
+,,
+grid_2019,snowCritDens,0.677882432
+ type,double,
+,,
+grid_2019,ccf_factor,0.002015246
+ type,double,
+,,
+grid_2019,snow_trans,0.860852048
+ type,double,
+,,
+grid_2019,snow_trs,3.80197707
+ type,double,
+,,
+grid_2019,piadin,0
+ type,int,
+,,
+grid_2019,Beta_min,0.002
+ type,double,
+,,
+grid_2019,Beta_trans,0.00001
+ type,double,
+,,
+grid_2019,Beta_rsd,0.03
+ type,double,
+,,
+grid_2019,deposition_factor,0.04
+ type,double,
+,,
+grid_2019,delayNitrification,0.2
+ type,double,
+,,
+grid_2019,denitrificationSoilSaturationThreshold,0.6
+ type,double,
+,,
+grid_2019,denitrificationRateCoefficient,1.4
+ type,double,
+,,
+grid_2019,nitrificationSurfaceTemperatureThreshold,5
+ type,double,
+,,
+grid_2019,nitrificationSoilTemperatureThreshold,5
+ type,double,
+,,
+grid_2019,longTZ,-105
+ type,double,
+,,
+grid_2019,locGrw,w
+ type,string,
+,,
+grid_2019,tempRes,d
+ type,string,
+,,
+grid_2019,angstrom_a,0.25
+ type,double,
+,,
+grid_2019,angstrom_b,0.5
+ type,double,
+,,
+grid_2019,a_rain,1.924649867
+ type,double,
+,,
+grid_2019,a_snow,0.560131446
+ type,double,
+,,
+grid_2019,soilMaxDPS,8.283353387
+ type,double,
+,,
+grid_2019,soilPolRed,36.36458993
+ type,double,
+,,
+grid_2019,soilLinRed,0
+ type,double,
+,,
+grid_2019,soilMaxInfSummer,80.93586488
+ type,double,
+,,
+grid_2019,soilMaxInfWinter,2.858188011
+ type,double,
+,,
+grid_2019,soilMaxInfSnow,76.84215786
+ type,double,
+,,
+grid_2019,soilImpGT80,0.25
+ type,double,
+,,
+grid_2019,soilImpLT80,0.6
+ type,double,
+,,
+grid_2019,soilDistMPSLPS,0.091402319
+ type,double,
+,,
+grid_2019,soilDiffMPSLPS,0.374946607
+ type,double,
+,,
+grid_2019,soilOutLPS,0.016076394
+ type,double,
+,,
+grid_2019,soilLatVertLPS,0.72566544
+ type,double,
+,,
+grid_2019,soilMaxPerc,1
+ type,double,
+,,
+grid_2019,geoMaxPerc,0.628928687
+ type,double,
+,,
+grid_2019,kdiff_layer,43.47975728
+ type,double,
+,,
+grid_2019,BetaW,14.67639292
+ type,double,
+,,
+grid_2019,lagSurfaceRunoff,1.348508521
+ type,double,
+,,
+grid_2019,lagInterflow,1.855193224
+ type,double,
+,,
+grid_2019,initRG1,0.04
+ type,double,
+,,
+grid_2019,initRG2,0.01
+ type,double,
+,,
+grid_2019,gwRG1RG2dist,0.20478279
+ type,double,
+,,
+grid_2019,gwRG1Fact,1.048332529
+ type,double,
+,,
+grid_2019,gwRG2Fact,48.57036439
+ type,double,
+,,
+grid_2019,gwCapRise,0.29717076
+ type,double,
+,,
+grid_2019,N_delay_RG1,5
+ type,double,
+,,
+grid_2019,N_delay_RG2,5
+ type,double,
+,,
+grid_2019,N_concRG1,10
+ type,double,
+,,
+grid_2019,N_concRG2,10
+ type,double,
+,,
+grid_2019,flowRouteTA,0.201762026
+ type,double,
+,,
+grid_2019,Ksink,0
+ type,double,
+,,
+grid_2019,drspac,1000
+ type,double,
+,,
+grid_2019,drrad,15
+ type,double,
+,,
+grid_2019,clat,4.2
+ type,double,
+,,
+grid_2019,LExCoef,-0.65
+ type,double,
+,,
+grid_2019,rootfactor,1.2
+ type,double,
+,,
+grid_2019,temp_lag,0.8
+ type,double,
+,,
+grid_2019,sceno,0
+ type,double,
+,,
+grid_2019,opti,0
+ type,int,
+,,
+grid_2020,initMPS,0.1
+ type,double,
+,,
+grid_2020,initLPS,0.05
+ type,double,
+,,
+grid_2020,FCAdaptation,1
+ type,double,
+,,
+grid_2020,ACAdaptation,1
+ type,double,
+,,
+grid_2020,baseTemp,1.997072309
+ type,double,
+,,
+grid_2020,t_factor,2.252606059
+ type,double,
+,,
+grid_2020,r_factor,1.244769772
+ type,double,
+,,
+grid_2020,g_factor,3.841399071
+ type,double,
+,,
+grid_2020,snowCritDens,0.450454386
+ type,double,
+,,
+grid_2020,ccf_factor,0.024280931
+ type,double,
+,,
+grid_2020,snow_trans,0.67581644
+ type,double,
+,,
+grid_2020,snow_trs,4.239168134
+ type,double,
+,,
+grid_2020,piadin,0
+ type,int,
+,,
+grid_2020,Beta_min,0.002
+ type,double,
+,,
+grid_2020,Beta_trans,0.00001
+ type,double,
+,,
+grid_2020,Beta_rsd,0.03
+ type,double,
+,,
+grid_2020,deposition_factor,0.04
+ type,double,
+,,
+grid_2020,delayNitrification,0.2
+ type,double,
+,,
+grid_2020,denitrificationSoilSaturationThreshold,0.6
+ type,double,
+,,
+grid_2020,denitrificationRateCoefficient,1.4
+ type,double,
+,,
+grid_2020,nitrificationSurfaceTemperatureThreshold,5
+ type,double,
+,,
+grid_2020,nitrificationSoilTemperatureThreshold,5
+ type,double,
+,,
+grid_2020,longTZ,-105
+ type,double,
+,,
+grid_2020,locGrw,w
+ type,string,
+,,
+grid_2020,tempRes,d
+ type,string,
+,,
+grid_2020,angstrom_a,0.25
+ type,double,
+,,
+grid_2020,angstrom_b,0.5
+ type,double,
+,,
+grid_2020,a_rain,1.985352023
+ type,double,
+,,
+grid_2020,a_snow,8.57237111
+ type,double,
+,,
+grid_2020,soilMaxDPS,9.52252525
+ type,double,
+,,
+grid_2020,soilPolRed,2.897041203
+ type,double,
+,,
+grid_2020,soilLinRed,0
+ type,double,
+,,
+grid_2020,soilMaxInfSummer,106.8899586
+ type,double,
+,,
+grid_2020,soilMaxInfWinter,87.62313128
+ type,double,
+,,
+grid_2020,soilMaxInfSnow,80.99336012
+ type,double,
+,,
+grid_2020,soilImpGT80,0.25
+ type,double,
+,,
+grid_2020,soilImpLT80,0.6
+ type,double,
+,,
+grid_2020,soilDistMPSLPS,3.007015867
+ type,double,
+,,
+grid_2020,soilDiffMPSLPS,1.510649689
+ type,double,
+,,
+grid_2020,soilOutLPS,0.355038727
+ type,double,
+,,
+grid_2020,soilLatVertLPS,0.64165566
+ type,double,
+,,
+grid_2020,soilMaxPerc,1
+ type,double,
+,,
+grid_2020,geoMaxPerc,0.989002712
+ type,double,
+,,
+grid_2020,kdiff_layer,36.20585003
+ type,double,
+,,
+grid_2020,BetaW,14.10856788
+ type,double,
+,,
+grid_2020,lagSurfaceRunoff,1.228958874
+ type,double,
+,,
+grid_2020,lagInterflow,1.940395026
+ type,double,
+,,
+grid_2020,initRG1,0.04
+ type,double,
+,,
+grid_2020,initRG2,0.01
+ type,double,
+,,
+grid_2020,gwRG1RG2dist,0.651114833
+ type,double,
+,,
+grid_2020,gwRG1Fact,1.002721564
+ type,double,
+,,
+grid_2020,gwRG2Fact,18.08602522
+ type,double,
+,,
+grid_2020,gwCapRise,0.57988977
+ type,double,
+,,
+grid_2020,N_delay_RG1,5
+ type,double,
+,,
+grid_2020,N_delay_RG2,5
+ type,double,
+,,
+grid_2020,N_concRG1,10
+ type,double,
+,,
+grid_2020,N_concRG2,10
+ type,double,
+,,
+grid_2020,flowRouteTA,0.193710153
+ type,double,
+,,
+grid_2020,Ksink,0
+ type,double,
+,,
+grid_2020,drspac,1000
+ type,double,
+,,
+grid_2020,drrad,15
+ type,double,
+,,
+grid_2020,clat,4.2
+ type,double,
+,,
+grid_2020,LExCoef,-0.65
+ type,double,
+,,
+grid_2020,rootfactor,1.2
+ type,double,
+,,
+grid_2020,temp_lag,0.8
+ type,double,
+,,
+grid_2020,sceno,0
+ type,double,
+,,
+grid_2020,opti,0
  type,int,

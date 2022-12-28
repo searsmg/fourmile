@@ -28,8 +28,8 @@ library(hydroGOF)
 
 kge <- read_csv('calruns_KGE.csv')
 
-params <- read_csv('calruns_params.csv') %>%
-  drop_na()
+# params <- read_csv('calruns_params.csv') %>%
+#   drop_na()
 
 ```
 
@@ -50,18 +50,25 @@ ggplotly(kge_plot)
 
 ```{r params, echo = F}
 
-params <- params %>%
-  mutate(input_data = case_when(
-    grepl('station', run) ~ 'station',
-    grepl('grid', run) ~ 'grid'
-  )) %>%
-  mutate(year_missing_almost = gsub('station_|grid_', '', run)) %>%
-  mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
-  select(-c(year_missing_almost)) %>%
-  filter(!param == 'locGrw',
-         !param == 'tempRes') %>%
+# params <- params %>%
+#   mutate(input_data = case_when(
+#     grepl('station', run) ~ 'station',
+#     grepl('grid', run) ~ 'grid'
+#   )) %>%
+#   mutate(year_missing_almost = gsub('station_|grid_', '', run)) %>%
+#   mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+#   select(-c(year_missing_almost)) %>%
+#   filter(!param == 'locGrw',
+#          !param == 'tempRes') %>%
+#   mutate(value = as.numeric(value),
+#          param = as.factor(param))
+
+# write_csv(params, 'paramsnew.csv')
+
+params <- read_csv('paramsnew.csv') %>%
   mutate(value = as.numeric(value),
          param = as.factor(param))
+  
 
 #function to plot all params
 plot_params <- function(param_name) {
@@ -117,19 +124,19 @@ lapply(name, plotdens_params)
 ### Hydrograph (outlet)
 
 ```{r hydrographs, echo = F}
-flow <- read_csv('discharge_all.csv') %>%
-  replace(.==-9999, NA)
-
-
-flow_pivot <- flow %>%
-  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
-  mutate(WY = as.factor(calcWaterYear(date)))
-  
-
-q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) +
-  geom_line()
-
-ggplotly(q)
+# flow <- read_csv('discharge_all.csv') %>%
+#   replace(.==-9999, NA)
+# 
+# 
+# flow_pivot <- flow %>%
+#   pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+#   mutate(WY = as.factor(calcWaterYear(date)))
+#   
+# 
+# q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) +
+#   geom_line()
+# 
+# ggplotly(q)
 
 ```
 
@@ -137,24 +144,24 @@ ggplotly(q)
 
 ```{r wy hydrographs, echo = F}
 
-plotq_wy <- function(wateryear) {
-  {flow_pivot %>%
-    filter(WY == wateryear) %>%
-    ggplot(aes(x = date,
-               y = q_m3s,
-               color = cal_run)) + 
-    geom_line() + 
-    ggtitle(wateryear) +
-    theme_bw()} %>%
-    ggplotly()
-  
-}
-
-name <- levels(flow_pivot$WY)
-
-try <- lapply(name, plotq_wy)
-
-htmltools::tagList(try)
+# plotq_wy <- function(wateryear) {
+#   {flow_pivot %>%
+#     filter(WY == wateryear) %>%
+#     ggplot(aes(x = date,
+#                y = q_m3s,
+#                color = cal_run)) + 
+#     geom_line() + 
+#     ggtitle(wateryear) +
+#     theme_bw()} %>%
+#     ggplotly()
+#   
+# }
+# 
+# name <- levels(flow_pivot$WY)
+# 
+# try <- lapply(name, plotq_wy)
+# 
+# htmltools::tagList(try)
 
 ```
 
@@ -162,39 +169,39 @@ htmltools::tagList(try)
 
 ```{r kge overall, echo = F}
 
-flow_kge_all <- flow %>%
-  summarize(grid2011 = KGE(grid_2011, obs),
-            grid2012 = KGE(grid_2012, obs),
-            grid2013 = KGE(grid_2013, obs),
-            grid2014 = KGE(grid_2014, obs),
-            grid2015 = KGE(grid_2015, obs),
-            grid2016 = KGE(grid_2016, obs),
-            grid2017 = KGE(grid_2017, obs),
-            grid2018 = KGE(grid_2018, obs),
-            grid2019 = KGE(grid_2019, obs),
-            grid2020 = KGE(grid_2020, obs),
-            gridall = KGE(grid_all, obs),
-            statn2011 = KGE(statn_2011, obs),
-            statn2012 = KGE(statn_2012, obs),
-            statn2013 = KGE(statn_2013, obs),
-            statn2014 = KGE(statn_2014, obs),
-            statn2015 = KGE(statn_2015, obs),
-            statn2016 = KGE(statn_2016, obs),
-            statn2017 = KGE(statn_2017, obs),
-            statn2018 = KGE(statn_2018, obs),
-            statn2019 = KGE(statn_2019, obs),
-            statn2020 = KGE(statn_2020, obs),
-            statnall = KGE(statn_all, obs)) %>%
-    mutate_if(is.numeric,
-            round,
-            digits = 2)
-
-flow_kge_all <- flow_kge_all %>%
-  pivot_longer(everything()) %>%
-  arrange(value)
-
-kable(flow_kge_all) %>%
-  kable_styling(full_width = F)
+# flow_kge_all <- flow %>%
+#   summarize(grid2011 = KGE(grid_2011, obs),
+#             grid2012 = KGE(grid_2012, obs),
+#             grid2013 = KGE(grid_2013, obs),
+#             grid2014 = KGE(grid_2014, obs),
+#             grid2015 = KGE(grid_2015, obs),
+#             grid2016 = KGE(grid_2016, obs),
+#             grid2017 = KGE(grid_2017, obs),
+#             grid2018 = KGE(grid_2018, obs),
+#             grid2019 = KGE(grid_2019, obs),
+#             grid2020 = KGE(grid_2020, obs),
+#             gridall = KGE(grid_all, obs),
+#             statn2011 = KGE(statn_2011, obs),
+#             statn2012 = KGE(statn_2012, obs),
+#             statn2013 = KGE(statn_2013, obs),
+#             statn2014 = KGE(statn_2014, obs),
+#             statn2015 = KGE(statn_2015, obs),
+#             statn2016 = KGE(statn_2016, obs),
+#             statn2017 = KGE(statn_2017, obs),
+#             statn2018 = KGE(statn_2018, obs),
+#             statn2019 = KGE(statn_2019, obs),
+#             statn2020 = KGE(statn_2020, obs),
+#             statnall = KGE(statn_all, obs)) %>%
+#     mutate_if(is.numeric,
+#             round,
+#             digits = 2)
+# 
+# flow_kge_all <- flow_kge_all %>%
+#   pivot_longer(everything()) %>%
+#   arrange(value)
+# 
+# kable(flow_kge_all) %>%
+#   kable_styling(full_width = F)
 
 ```
 
@@ -202,53 +209,53 @@ kable(flow_kge_all) %>%
 
 ```{r kge by year, echo = F}
 
-flow_year <- flow %>%
-  mutate(WY = calcWaterYear(date)) %>%
-  group_by(WY) %>%
-  summarize(grid2011 = KGE(grid_2011, obs),
-            grid2012 = KGE(grid_2012, obs),
-            grid2013 = KGE(grid_2013, obs),
-            grid2014 = KGE(grid_2014, obs),
-            grid2015 = KGE(grid_2015, obs),
-            grid2016 = KGE(grid_2016, obs),
-            grid2017 = KGE(grid_2017, obs),
-            grid2018 = KGE(grid_2018, obs),
-            grid2019 = KGE(grid_2019, obs),
-            grid2020 = KGE(grid_2020, obs),
-            gridall = KGE(grid_all, obs),
-            statn2011 = KGE(statn_2011, obs),
-            statn2012 = KGE(statn_2012, obs),
-            statn2013 = KGE(statn_2013, obs),
-            statn2014 = KGE(statn_2014, obs),
-            statn2015 = KGE(statn_2015, obs),
-            statn2016 = KGE(statn_2016, obs),
-            statn2017 = KGE(statn_2017, obs),
-            statn2018 = KGE(statn_2018, obs),
-            statn2019 = KGE(statn_2019, obs),
-            statn2020 = KGE(statn_2020, obs),
-            statnall = KGE(statn_all, obs)) %>%
-    mutate_if(is.numeric,
-            round,
-            digits = 2)
-
-flow_kge <- flow_year %>%
-  pivot_longer(!WY, names_to = 'model_run', values_to = 'kge') %>%
-  pivot_wider(names_from = 'WY', values_from = 'kge')
-
-flow_kge %>%
-  kable(.) %>%
-  kable_styling()
-
-
-flow_plot <- flow_year %>%
-  pivot_longer(!WY, names_to = 'model_run', values_to = 'kge') %>%
-  mutate(WY = as.factor(WY))
-
-
-kge_plot_wy <- ggplot(flow_plot, aes(WY, kge, color = model_run)) + geom_point(size = 3) +
-  theme_bw()
-
-ggplotly(kge_plot_wy)
+# flow_year <- flow %>%
+#   mutate(WY = calcWaterYear(date)) %>%
+#   group_by(WY) %>%
+#   summarize(grid2011 = KGE(grid_2011, obs),
+#             grid2012 = KGE(grid_2012, obs),
+#             grid2013 = KGE(grid_2013, obs),
+#             grid2014 = KGE(grid_2014, obs),
+#             grid2015 = KGE(grid_2015, obs),
+#             grid2016 = KGE(grid_2016, obs),
+#             grid2017 = KGE(grid_2017, obs),
+#             grid2018 = KGE(grid_2018, obs),
+#             grid2019 = KGE(grid_2019, obs),
+#             grid2020 = KGE(grid_2020, obs),
+#             gridall = KGE(grid_all, obs),
+#             statn2011 = KGE(statn_2011, obs),
+#             statn2012 = KGE(statn_2012, obs),
+#             statn2013 = KGE(statn_2013, obs),
+#             statn2014 = KGE(statn_2014, obs),
+#             statn2015 = KGE(statn_2015, obs),
+#             statn2016 = KGE(statn_2016, obs),
+#             statn2017 = KGE(statn_2017, obs),
+#             statn2018 = KGE(statn_2018, obs),
+#             statn2019 = KGE(statn_2019, obs),
+#             statn2020 = KGE(statn_2020, obs),
+#             statnall = KGE(statn_all, obs)) %>%
+#     mutate_if(is.numeric,
+#             round,
+#             digits = 2)
+# 
+# flow_kge <- flow_year %>%
+#   pivot_longer(!WY, names_to = 'model_run', values_to = 'kge') %>%
+#   pivot_wider(names_from = 'WY', values_from = 'kge')
+# 
+# flow_kge %>%
+#   kable(.) %>%
+#   kable_styling()
+# 
+# 
+# flow_plot <- flow_year %>%
+#   pivot_longer(!WY, names_to = 'model_run', values_to = 'kge') %>%
+#   mutate(WY = as.factor(WY))
+# 
+# 
+# kge_plot_wy <- ggplot(flow_plot, aes(WY, kge, color = model_run)) + geom_point(size = 3) +
+#   theme_bw()
+# 
+# ggplotly(kge_plot_wy)
 
 
 ```
@@ -257,20 +264,20 @@ ggplotly(kge_plot_wy)
 
 ```{r wy plots, echo = F}
 
-plot_kge <- function(wateryear) {
-  flow_plot %>%
-    filter(WY == wateryear) %>%
-    ggplot(aes(x = model_run,
-               y = kge)) + 
-    geom_col() + 
-    ggtitle(wateryear) +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 45, hjust=1))
-}
-
-name <- levels(flow_plot$WY)
-
-lapply(name, plot_kge)
+# plot_kge <- function(wateryear) {
+#   flow_plot %>%
+#     filter(WY == wateryear) %>%
+#     ggplot(aes(x = model_run,
+#                y = kge)) + 
+#     geom_col() + 
+#     ggtitle(wateryear) +
+#     theme_bw() +
+#     theme(axis.text.x = element_text(angle = 45, hjust=1))
+# }
+# 
+# name <- levels(flow_plot$WY)
+# 
+# lapply(name, plot_kge)
 
 ```
 
@@ -280,86 +287,86 @@ lapply(name, plot_kge)
 
 ```{r reach hydrographs, echo = F}
 
-reach <- read_csv('reach_all.csv') %>%
-  mutate(reach = as.factor(reach)) %>%
-  pivot_longer(!c(date, reach, WY), names_to = 'cal', values_to = 'q_cms')
-
-  
-plotq_reach <- function(reach_name) {
-  {reach %>%
-    filter(reach == reach_name) %>%
-    ggplot(aes(x = date,
-               y = q_cms,
-               color = cal)) + 
-    geom_line() + 
-    ggtitle(reach_name) +
-    theme_bw()} %>%
-    ggplotly()
-  
-}
-
-name <- levels(reach$reach)
-
-try2 <- lapply(name, plotq_reach)
-
-htmltools::tagList(try2)
-
-```
-
-### Overall KGE by reach
-
-```{r reach kge, echo = F}
-
-reach_pivot <- reach %>%
-  pivot_wider(names_from = 'cal', values_from = 'q_cms') %>%
-  mutate(WY = as.factor(calcWaterYear(date)))
-
-reach_kge_all <- reach_pivot %>%
-  group_by(reach) %>%
-  summarize(grid2011 = KGE(grid_2011, obs),
-            grid2012 = KGE(grid_2012, obs),
-            grid2013 = KGE(grid_2013, obs),
-            grid2014 = KGE(grid_2014, obs),
-            grid2015 = KGE(grid_2015, obs),
-            grid2016 = KGE(grid_2016, obs),
-            grid2017 = KGE(grid_2017, obs),
-            grid2018 = KGE(grid_2018, obs),
-            grid2019 = KGE(grid_2019, obs),
-            grid2020 = KGE(grid_2020, obs),
-            gridall = KGE(grid_all, obs),
-            statn2011 = KGE(statn_2011, obs),
-            statn2012 = KGE(statn_2012, obs),
-            statn2013 = KGE(statn_2013, obs),
-            statn2014 = KGE(statn_2014, obs),
-            statn2015 = KGE(statn_2015, obs),
-            statn2016 = KGE(statn_2016, obs),
-            statn2017 = KGE(statn_2017, obs),
-            statn2018 = KGE(statn_2018, obs),
-            statn2019 = KGE(statn_2019, obs),
-            statn2020 = KGE(statn_2020, obs),
-            statnall = KGE(statn_all, obs)) %>%
-    mutate_if(is.numeric,
-            round,
-            digits = 2)
-
-
-reach_kge_all <- reach_kge_all %>%
-  pivot_longer(!reach, names_to = 'cal_runs', values_to = 'KGE') %>%
-  pivot_wider(names_from = 'reach', values_from = 'KGE')
-
-
-kable(reach_kge_all) %>%
-  kable_styling(full_width = F)
-
-
-obs_count <- reach_pivot %>%
-  select(obs, reach) %>%
-  drop_na() %>%
-  group_by(reach) %>%
-  summarize(count_obs = n())
-
-kable(obs_count, caption = 'Streamflow observation count') %>%
-  kable_styling(full_width = F)
+# reach <- read_csv('reach_all.csv') %>%
+#   mutate(reach = as.factor(reach)) %>%
+#   pivot_longer(!c(date, reach, WY), names_to = 'cal', values_to = 'q_cms')
+# 
+#   
+# plotq_reach <- function(reach_name) {
+#   {reach %>%
+#     filter(reach == reach_name) %>%
+#     ggplot(aes(x = date,
+#                y = q_cms,
+#                color = cal)) + 
+#     geom_line() + 
+#     ggtitle(reach_name) +
+#     theme_bw()} %>%
+#     ggplotly()
+#   
+# }
+# 
+# name <- levels(reach$reach)
+# 
+# try2 <- lapply(name, plotq_reach)
+# 
+# htmltools::tagList(try2)
+# 
+# ```
+# 
+# ### Overall KGE by reach
+# 
+# ```{r reach kge, echo = F}
+# 
+# reach_pivot <- reach %>%
+#   pivot_wider(names_from = 'cal', values_from = 'q_cms') %>%
+#   mutate(WY = as.factor(calcWaterYear(date)))
+# 
+# reach_kge_all <- reach_pivot %>%
+#   group_by(reach) %>%
+#   summarize(grid2011 = KGE(grid_2011, obs),
+#             grid2012 = KGE(grid_2012, obs),
+#             grid2013 = KGE(grid_2013, obs),
+#             grid2014 = KGE(grid_2014, obs),
+#             grid2015 = KGE(grid_2015, obs),
+#             grid2016 = KGE(grid_2016, obs),
+#             grid2017 = KGE(grid_2017, obs),
+#             grid2018 = KGE(grid_2018, obs),
+#             grid2019 = KGE(grid_2019, obs),
+#             grid2020 = KGE(grid_2020, obs),
+#             gridall = KGE(grid_all, obs),
+#             statn2011 = KGE(statn_2011, obs),
+#             statn2012 = KGE(statn_2012, obs),
+#             statn2013 = KGE(statn_2013, obs),
+#             statn2014 = KGE(statn_2014, obs),
+#             statn2015 = KGE(statn_2015, obs),
+#             statn2016 = KGE(statn_2016, obs),
+#             statn2017 = KGE(statn_2017, obs),
+#             statn2018 = KGE(statn_2018, obs),
+#             statn2019 = KGE(statn_2019, obs),
+#             statn2020 = KGE(statn_2020, obs),
+#             statnall = KGE(statn_all, obs)) %>%
+#     mutate_if(is.numeric,
+#             round,
+#             digits = 2)
+# 
+# 
+# reach_kge_all <- reach_kge_all %>%
+#   pivot_longer(!reach, names_to = 'cal_runs', values_to = 'KGE') %>%
+#   pivot_wider(names_from = 'reach', values_from = 'KGE')
+# 
+# 
+# kable(reach_kge_all) %>%
+#   kable_styling(full_width = F)
+# 
+# 
+# obs_count <- reach_pivot %>%
+#   select(obs, reach) %>%
+#   drop_na() %>%
+#   group_by(reach) %>%
+#   summarize(count_obs = n())
+# 
+# kable(obs_count, caption = 'Streamflow observation count') %>%
+#   kable_styling(full_width = F)
 
 
 ```
