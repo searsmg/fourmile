@@ -28,12 +28,13 @@ library(hydroGOF)
 
 kge <- read_csv('calruns_KGE.csv')
 
+# #these are old -- no longer in use
 # params <- read_csv('calruns_params.csv') %>%
 #   drop_na()
 
 ```
 
-## KGE for calibrations
+# KGE for calibrations
 
 ```{r look at kge, echo = F}
 
@@ -44,9 +45,9 @@ ggplotly(kge_plot)
 
 ```
 
-## Parameters
+# Parameters
 
-### Parameters for each calibration run
+## Scatter plots
 
 ```{r params, echo = F}
 
@@ -91,7 +92,7 @@ lapply(name, plot_params)
 
 ```
 
-### Density plots: station vs. grid
+## Histograms
 
 ```{r density plots, echo = F}
 
@@ -105,7 +106,7 @@ plotdens_params <- function(param_name) {
     ggplot(aes(x = value,
                fill = input_data, 
                color = input_data)) + 
-    geom_density(alpha=0.4) +
+    geom_histogram(position="identity", alpha=0.5) +
     geom_vline(data=filter(mean_params, param == param_name), 
                aes(xintercept=mean, color=input_data),
              linetype="dashed", size=0.75) +
@@ -119,9 +120,9 @@ lapply(name, plotdens_params)
 
 ```
 
-## Outlet results
+# Outlet results
 
-### Hydrograph (outlet)
+## Hydrograph
 
 ```{r hydrographs, echo = F}
 flow <- read_csv('discharge_all.csv') %>%
@@ -140,9 +141,9 @@ ggplotly(q)
 
 ```
 
-### Hydrograph by calendar year
+## Annual hydrographs
 
-```{r wy hydrographs, echo = F}
+```{r cy hydrographs, echo = F}
 
 plotq_cy <- function(calyear) {
   {flow_pivot %>%
@@ -163,11 +164,11 @@ try <- lapply(name, plotq_cy)
 
 htmltools::tagList(try)
 
-#try
-
 ```
 
-### Overall KGE (outlet)
+## KGE
+
+### Overall KGE
 
 ```{r kge overall, echo = F}
 
@@ -207,7 +208,7 @@ kable(flow_kge_all) %>%
 
 ```
 
-### Model run KGE by calendar year (outlet)
+### KGE by year
 
 ```{r kge by year, echo = F}
 
@@ -262,7 +263,7 @@ ggplotly(kge_plot_cy)
 
 ```
 
-### Model run KGE plots by calendar year
+### Annual KGE plots
 
 ```{r wy plots, echo = F}
 
@@ -283,6 +284,281 @@ lapply(name, plot_kge)
 
 ```
 
+# Ensembles
+
+## Hydrograph
+
+```{r ensemble hydrographs, echo = F}
+
+ensem <- flow %>%
+  rowwise() %>%
+  mutate(grid_ensemble = mean(c(grid_2011, grid_2012,
+                                grid_2013, grid_2014,
+                                grid_2015, grid_2016,
+                                grid_2017, grid_2018,
+                                grid_2019, grid_2020)),
+         statn_ensemble = mean(c(statn_2011, statn_2012,
+                                 statn_2013, statn_2014,
+                                 statn_2015, statn_2016,
+                                 statn_2017, statn_2018,
+                                 statn_2019, statn_2020)),
+         all_ensemble = mean(c(grid_2011, grid_2012,
+                               grid_2013, grid_2014,
+                               grid_2015, grid_2016,
+                               grid_2017, grid_2018,
+                               grid_2019, grid_2020,
+                               statn_2011, statn_2012,
+                               statn_2013, statn_2014,
+                               statn_2015, statn_2016,
+                               statn_2017, statn_2018,
+                               statn_2019, statn_2020,
+                               grid_all, statn_all))) %>%
+  select(date, grid_ensemble, statn_ensemble, 
+         all_ensemble, grid_all, 
+         statn_all, obs)
+
+
+ensem_pivot <- ensem %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(year = as.factor(year(date)))
+
+
+q_ensemble <- ggplot(ensem_pivot, aes(date, q_m3s, color = cal_run)) +
+  geom_line()
+
+ggplotly(q_ensemble)
+
+
+```
+
+## Annual hydrographs
+
+```{r hydrogs by cy, echo = F}
+
+plotqensem_cy <- function(calyear) {
+  {ensem_pivot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = date,
+               y = q_m3s,
+               color = cal_run)) +
+    geom_line() +
+    ggtitle(calyear) +
+    theme_bw()} %>%
+    ggplotly()
+
+}
+
+name <- levels(ensem_pivot$year)
+
+try <- lapply(name, plotqensem_cy)
+
+htmltools::tagList(try)
+
+```
+
+## KGE
+
+### KGE for ensembles (entire period)
+
+```{r ensemble kge, echo = F}
+
+ensem_kge_all <- ensem %>%
+  ungroup() %>%
+  summarize(grid_ensemble = KGE(grid_ensemble, obs),
+            statn_ensemble = KGE(statn_ensemble, obs),
+            all_ensemble = KGE(all_ensemble, obs),
+            grid_all = KGE(grid_all, obs),
+            statn_all = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+kable(ensem_kge_all) %>%
+  kable_styling(full_width = F)
+
+
+```
+
+### Annual KGEs for ensembles
+
+```{r annual kge ensemble, echo = F}
+
+yr_kge_ensem <- ensem %>%
+  ungroup() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_ensemble = KGE(grid_ensemble, obs),
+            statn_ensemble = KGE(statn_ensemble, obs),
+            all_ensemble = KGE(all_ensemble, obs),
+            grid_all = KGE(grid_all, obs),
+            statn_all = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+yr_kge_table <- yr_kge_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  pivot_wider(names_from = 'year', values_from = 'kge')
+
+yr_kge_table %>%
+  kable(.) %>%
+  kable_styling()
+
+yr_kge_plot <- yr_kge_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  mutate(year = as.factor(year))
+
+#plot annual kge vals for ensembles
+plot_kge_yr_ensem <- function(calyear) {
+  yr_kge_plot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = model_run,
+               y = kge)) +
+    geom_col() +
+    ggtitle(calyear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(yr_kge_plot$year)
+
+lapply(name, plot_kge_yr_ensem)
+
+
+```
+
+### Monthly KGEs for ensembles
+
+```{r monthly kge ensemble, echo = F}
+
+mo_kge <- ensem %>%
+  ungroup() %>%
+  drop_na() %>% 
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  summarize(grid_ensemble = KGE(grid_ensemble, obs),
+            statn_ensemble = KGE(statn_ensemble, obs),
+            all_ensemble = KGE(all_ensemble, obs),
+            grid_all = KGE(grid_all, obs),
+            statn_all = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+kable(mo_kge) %>%
+  kable_styling(full_width = F)
+
+mo_pivot <- mo_kge %>%
+  pivot_longer(!month, names_to = 'cal_run', values_to = 'KGE') %>%
+  drop_na()
+
+kge_plot_mo <- ggplot(mo_pivot, aes(month, KGE, color = cal_run)) + geom_point(size = 3) +
+  theme_bw()
+
+ggplotly(kge_plot_mo)
+
+```
+
+## RMSE
+
+### Ensemble RMSE for entire period
+
+```{r ensemble rmse, echo = F}
+
+ensem_rmse_all <- ensem %>%
+  ungroup() %>%
+  summarize(grid_ensemble = rmse(grid_ensemble, obs),
+            statn_ensemble = rmse(statn_ensemble, obs),
+            all_ensemble = rmse(all_ensemble, obs),
+            grid_all = rmse(grid_all, obs),
+            statn_all = rmse(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+kable(ensem_rmse_all) %>%
+  kable_styling(full_width = F)
+
+```
+
+### Annual RMSE for ensembles
+
+```{r annual rmse ensem, echo = F}
+
+yr_rmse_ensem <- ensem %>%
+  ungroup() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_ensemble = rmse(grid_ensemble, obs),
+            statn_ensemble = rmse(statn_ensemble, obs),
+            all_ensemble = rmse(all_ensemble, obs),
+            grid_all = rmse(grid_all, obs),
+            statn_all = rmse(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+yr_rmse_table <- yr_rmse_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'rmse') %>%
+  pivot_wider(names_from = 'year', values_from = 'rmse')
+
+yr_rmse_table %>%
+  kable(.) %>%
+  kable_styling()
+
+yr_rmse_plot <- yr_rmse_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'rmse') %>%
+  mutate(year = as.factor(year))
+
+#plot annual rmse vals for ensembles
+plot_rmse_yr_ensem <- function(calyear) {
+  yr_rmse_plot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = model_run,
+               y = rmse)) +
+    geom_col() +
+    ggtitle(calyear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(yr_rmse_plot$year)
+
+lapply(name, plot_rmse_yr_ensem)
+
+
+```
+
+### Monthly RMSEs for ensembles
+
+```{r month ensem rmse, echo = F}
+
+mo_rmse <- ensem %>%
+  ungroup() %>%
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  summarize(grid_ensemble = rmse(grid_ensemble, obs),
+            statn_ensemble = rmse(statn_ensemble, obs),
+            all_ensemble = rmse(all_ensemble, obs),
+            grid_all = rmse(grid_all, obs),
+            statn_all = rmse(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+kable(mo_rmse) %>%
+  kable_styling(full_width = F)
+
+mo_pivot2 <- mo_rmse %>%
+  pivot_longer(!month, names_to = 'cal_run', values_to = 'RMSE') %>%
+  drop_na()
+
+rmse_plot_mo <- ggplot(mo_pivot2, aes(month, RMSE, color = cal_run)) + geom_point(size = 3) +
+  theme_bw()
+
+ggplotly(rmse_plot_mo)
+
+```
 
 ```{r reach hydrographs, echo = F}
 
@@ -369,4 +645,3 @@ lapply(name, plot_kge)
 
 
 ```
-
