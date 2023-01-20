@@ -474,7 +474,7 @@ ensem_rmse_all <- ensem %>%
             statn_all = rmse(statn_all, obs)) %>%
     mutate_if(is.numeric,
             round,
-            digits = 2)
+            digits = 4)
 
 kable(ensem_rmse_all) %>%
   kable_styling(full_width = F)
@@ -496,7 +496,7 @@ yr_rmse_ensem <- ensem %>%
             statn_all = rmse(statn_all, obs)) %>%
     mutate_if(is.numeric,
             round,
-            digits = 2)
+            digits = 4)
 
 yr_rmse_table <- yr_rmse_ensem %>%
   pivot_longer(!year, names_to = 'model_run', values_to = 'rmse') %>%
@@ -544,7 +544,7 @@ mo_rmse <- ensem %>%
             statn_all = rmse(statn_all, obs)) %>%
     mutate_if(is.numeric,
             round,
-            digits = 2)
+            digits = 4)
 
 kable(mo_rmse) %>%
   kable_styling(full_width = F)
@@ -559,6 +559,246 @@ rmse_plot_mo <- ggplot(mo_pivot2, aes(month, RMSE, color = cal_run)) + geom_poin
 ggplotly(rmse_plot_mo)
 
 ```
+
+## NSE
+
+### Ensemble NSE for entire period
+
+```{r nse all, echo = F}
+
+ensem_nse_all <- ensem %>%
+  ungroup() %>%
+  summarize(grid_ensemble = NSE(grid_ensemble, obs),
+            statn_ensemble = NSE(statn_ensemble, obs),
+            all_ensemble = NSE(all_ensemble, obs),
+            grid_all = NSE(grid_all, obs),
+            statn_all = NSE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+kable(ensem_nse_all) %>%
+  kable_styling(full_width = F)
+
+
+```
+
+### Annual NSE for ensembles
+
+```{r annual nse, echo = F}
+
+yr_nse_ensem <- ensem %>%
+  ungroup() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_ensemble = NSE(grid_ensemble, obs),
+            statn_ensemble = NSE(statn_ensemble, obs),
+            all_ensemble = NSE(all_ensemble, obs),
+            grid_all = NSE(grid_all, obs),
+            statn_all = NSE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 4)
+
+yr_nse_table <- yr_nse_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'nse') %>%
+  pivot_wider(names_from = 'year', values_from = 'nse')
+
+yr_nse_table %>%
+  kable(.) %>%
+  kable_styling()
+
+yr_nse_plot <- yr_nse_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'nse') %>%
+  mutate(year = as.factor(year))
+
+#plot annual nse vals for ensembles
+plot_nse_yr_ensem <- function(calyear) {
+  yr_nse_plot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = model_run,
+               y = nse)) +
+    geom_col() +
+    ggtitle(calyear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(yr_nse_plot$year)
+
+lapply(name, plot_nse_yr_ensem)
+
+
+
+```
+
+### Monthly NSE for ensembles
+
+```{r monthly rmse, echo =F}
+
+mo_nse <- ensem %>%
+  ungroup() %>%
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  summarize(grid_ensemble = NSE(grid_ensemble, obs),
+            statn_ensemble = NSE(statn_ensemble, obs),
+            all_ensemble = NSE(all_ensemble, obs),
+            grid_all = NSE(grid_all, obs),
+            statn_all = NSE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 4)
+
+kable(mo_nse) %>%
+  kable_styling(full_width = F)
+
+mo_pivot2 <- mo_nse %>%
+  pivot_longer(!month, names_to = 'cal_run', values_to = 'nse') %>%
+  drop_na()
+
+nse_plot_mo <- ggplot(mo_pivot2, aes(month, nse, color = cal_run)) + geom_point(size = 3) +
+  theme_bw()
+
+ggplotly(nse_plot_mo)
+
+```
+
+## Percent bias
+
+Positive values indicate model overestimation and negative values model underestimation. 
+
+### Ensemble pbias for entire period
+
+```{r nse all, echo = F}
+
+ensem_pbias_all <- ensem %>%
+  ungroup() %>%
+  summarize(grid_ensemble = pbias(grid_ensemble, obs),
+            statn_ensemble = pbias(statn_ensemble, obs),
+            all_ensemble = pbias(all_ensemble, obs),
+            grid_all = pbias(grid_all, obs),
+            statn_all = pbias(statn_all, obs))
+
+kable(ensem_pbias_all) %>%
+  kable_styling(full_width = F)
+
+
+```
+
+### Annual pbias for ensembles
+
+```{r annual nse, echo = F}
+
+yr_pbias_ensem <- ensem %>%
+  ungroup() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_ensemble = pbias(grid_ensemble, obs),
+            statn_ensemble = pbias(statn_ensemble, obs),
+            all_ensemble = pbias(all_ensemble, obs),
+            grid_all = pbias(grid_all, obs),
+            statn_all = pbias(statn_all, obs))
+
+yr_pbias_table <- yr_pbias_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'pbias') %>%
+  pivot_wider(names_from = 'year', values_from = 'pbias')
+
+yr_pbias_table %>%
+  kable(.) %>%
+  kable_styling()
+
+yr_pbias_plot <- yr_pbias_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'pbias') %>%
+  mutate(year = as.factor(year))
+
+#plot annual pbias vals for ensembles
+plot_pbias_yr_ensem <- function(calyear) {
+  yr_pbias_plot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = model_run,
+               y = pbias)) +
+    geom_col() +
+    ggtitle(calyear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(yr_pbias_plot$year)
+
+lapply(name, plot_pbias_yr_ensem)
+
+```
+
+### Monthly pbias for ensembles
+
+```{r monthly rmse, echo =F}
+
+mo_pbias <- ensem %>%
+  ungroup() %>%
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  summarize(grid_ensemble = pbias(grid_ensemble, obs),
+            statn_ensemble = pbias(statn_ensemble, obs),
+            all_ensemble = pbias(all_ensemble, obs),
+            grid_all = pbias(grid_all, obs),
+            statn_all = pbias(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 4)
+
+kable(mo_pbias) %>%
+  kable_styling(full_width = F)
+
+mo_pivot2 <- mo_pbias %>%
+  pivot_longer(!month, names_to = 'cal_run', values_to = 'pbias') %>%
+  drop_na()
+
+pbias_plot_mo <- ggplot(mo_pivot2, aes(month, pbias, color = cal_run)) + geom_point(size = 3) +
+  theme_bw()
+
+ggplotly(pbias_plot_mo)
+
+```
+
+## Cumulative Q
+
+```{r}
+
+ensem_cumq <- ensem %>%
+  mutate(month = month(date)) %>%
+  filter(month %in% c(4:9)) %>%
+  select(-month) %>% 
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  group_by(cal_run, year(date)) %>%
+  mutate(cumsum = cumsum(replace_na(q_m3s, 0))) %>%
+  rename(year = 4) %>%
+  mutate(year = as.factor(year))
+
+#plot annual cumulative Q vals for ensembles
+plot_cumulq_yr_ensem <- function(calyear) {
+  {ensem_cumq %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = date,
+               y = cumsum,
+               color = cal_run)) +
+    geom_line() +
+    geom_line(data=ensem_cumq[ensem_cumq$cal_run=='obs',], aes(group=cal_run), color = "black") +
+    ggtitle(calyear) +
+    theme_bw() +
+    labs(y = 'cumulative Q (m3s)')} %>%
+    ggplotly()
+}
+
+name <- levels(ensem_cumq$year)
+
+cumulative_plots <- lapply(name, plot_cumulq_yr_ensem)
+
+htmltools::tagList(cumulative_plots)
+
+cumulative_plots
+
+```
+
 
 ```{r reach hydrographs, echo = F}
 
