@@ -135,7 +135,30 @@ flow_pivot <- flow %>%
 
 
 q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) +
-  geom_line()
+  geom_line() +
+  scale_color_manual(name="cal_run", values=c('obs' = 'black',
+                                            "grid_2011"="seagreen", 
+                                            "grid_2012"="seagreen2", 
+                                            "grid_2013"="steelblue",
+                                            "grid_2014"='dodgerblue', 
+                                            "grid_2015" = "cyan3",
+                                            'grid_2016' = 'blue',
+                                            'grid_2017' = 'blue4',
+                                            'grid_2018' = 'cadetblue',
+                                            'grid_2019' = 'lightgreen',
+                                            'grid_2020' = 'olivedrab',
+                                            'grid_all' = 'steelblue3',
+                                            "statn_2011"="maroon", 
+                                            "statn_2012"="deeppink4", 
+                                            "statn_2013"="deeppink",
+                                            "statn_2014"='purple', 
+                                            "statn_2015" = "mediumorchid1",
+                                            'statn_2016' = 'indianred',
+                                            'statn_2017' = 'sienna',
+                                            'statn_2018' = 'salmon2',
+                                            'statn_2019' = 'mediumpurple1',
+                                            'statn_2020' = 'violetred',
+                                            'statn_all' = 'red')) 
 
 ggplotly(q)
 
@@ -152,6 +175,29 @@ plotq_cy <- function(calyear) {
                y = q_m3s,
                color = cal_run)) +
     geom_line() +
+        scale_color_manual(name="cal_run", values=c('obs' = 'black',
+                                            "grid_2011"="seagreen", 
+                                            "grid_2012"="seagreen2", 
+                                            "grid_2013"="steelblue",
+                                            "grid_2014"='dodgerblue', 
+                                            "grid_2015" = "cyan3",
+                                            'grid_2016' = 'blue',
+                                            'grid_2017' = 'blue4',
+                                            'grid_2018' = 'cadetblue',
+                                            'grid_2019' = 'lightgreen',
+                                            'grid_2020' = 'olivedrab',
+                                            'grid_all' = 'steelblue3',
+                                            "statn_2011"="maroon", 
+                                            "statn_2012"="deeppink4", 
+                                            "statn_2013"="deeppink",
+                                            "statn_2014"='purple', 
+                                            "statn_2015" = "mediumorchid1",
+                                            'statn_2016' = 'indianred',
+                                            'statn_2017' = 'sienna',
+                                            'statn_2018' = 'salmon2',
+                                            'statn_2019' = 'mediumpurple1',
+                                            'statn_2020' = 'violetred',
+                                            'statn_all' = 'red')) +
     ggtitle(calyear) +
     theme_bw()} %>%
     ggplotly()
@@ -164,6 +210,7 @@ try <- lapply(name, plotq_cy)
 
 htmltools::tagList(try)
 
+try
 ```
 
 ## KGE
@@ -255,7 +302,30 @@ flow_plot <- flow_year %>%
   mutate(year = as.factor(year))
 
 
-kge_plot_cy <- ggplot(flow_plot, aes(year, kge, color = model_run)) + geom_point(size = 3) +
+kge_plot_cy <- ggplot(flow_plot, aes(year, kge, color = model_run)) + 
+  geom_point(size = 3) +
+  scale_color_manual(name="model_run", values=c("grid2011"="seagreen", 
+                                            "grid2012"="seagreen2", 
+                                            "grid2013"="steelblue",
+                                            "grid2014"='dodgerblue', 
+                                            "grid2015" = "cyan3",
+                                            'grid2016' = 'blue',
+                                            'grid2017' = 'blue4',
+                                            'grid2018' = 'cadetblue',
+                                            'grid2019' = 'lightgreen',
+                                            'grid2020' = 'olivedrab',
+                                            'gridall' = 'steelblue3',
+                                            "statn2011"="maroon", 
+                                            "statn2012"="deeppink4", 
+                                            "statn2013"="deeppink",
+                                            "statn2014"='purple', 
+                                            "statn2015" = "mediumorchid1",
+                                            'statn2016' = 'indianred',
+                                            'statn2017' = 'sienna',
+                                            'statn2018' = 'salmon2',
+                                            'statn2019' = 'mediumpurple1',
+                                            'statn2020' = 'violetred',
+                                            'statnall' = 'red')) +
   theme_bw()
 
 ggplotly(kge_plot_cy)
@@ -324,7 +394,13 @@ ensem_pivot <- ensem %>%
 
 
 q_ensemble <- ggplot(ensem_pivot, aes(date, q_m3s, color = cal_run)) +
-  geom_line()
+  geom_line() +
+  scale_color_manual(name="cal_run", values=c('obs'='black',
+                                            "grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) 
 
 ggplotly(q_ensemble)
 
@@ -342,6 +418,12 @@ plotqensem_cy <- function(calyear) {
                y = q_m3s,
                color = cal_run)) +
     geom_line() +
+    scale_color_manual(name="cal_run", values=c('obs' = 'black',
+                                            "grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) +
     ggtitle(calyear) +
     theme_bw()} %>%
     ggplotly()
@@ -353,6 +435,8 @@ name <- levels(ensem_pivot$year)
 try <- lapply(name, plotqensem_cy)
 
 htmltools::tagList(try)
+
+try
 
 ```
 
@@ -453,6 +537,11 @@ mo_pivot <- mo_kge %>%
   drop_na()
 
 kge_plot_mo <- ggplot(mo_pivot, aes(month, KGE, color = cal_run)) + geom_point(size = 3) +
+    scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) +
   theme_bw()
 
 ggplotly(kge_plot_mo)
@@ -554,6 +643,11 @@ mo_pivot2 <- mo_rmse %>%
   drop_na()
 
 rmse_plot_mo <- ggplot(mo_pivot2, aes(month, RMSE, color = cal_run)) + geom_point(size = 3) +
+    scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) +
   theme_bw()
 
 ggplotly(rmse_plot_mo)
@@ -638,6 +732,7 @@ lapply(name, plot_nse_yr_ensem)
 
 mo_nse <- ensem %>%
   ungroup() %>%
+  drop_na() %>% 
   mutate(month = month(date)) %>%
   group_by(month) %>%
   summarize(grid_ensemble = NSE(grid_ensemble, obs),
@@ -657,7 +752,12 @@ mo_pivot2 <- mo_nse %>%
   drop_na()
 
 nse_plot_mo <- ggplot(mo_pivot2, aes(month, nse, color = cal_run)) + geom_point(size = 3) +
-  theme_bw()
+  theme_bw() +
+  scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) 
 
 ggplotly(nse_plot_mo)
 
@@ -669,7 +769,7 @@ Positive values indicate model overestimation and negative values model underest
 
 ### Ensemble pbias for entire period
 
-```{r nse all, echo = F}
+```{r pbias all, echo = F}
 
 ensem_pbias_all <- ensem %>%
   ungroup() %>%
@@ -687,7 +787,7 @@ kable(ensem_pbias_all) %>%
 
 ### Annual pbias for ensembles
 
-```{r annual nse, echo = F}
+```{r annualpbias, echo = F}
 
 yr_pbias_ensem <- ensem %>%
   ungroup() %>%
@@ -731,10 +831,11 @@ lapply(name, plot_pbias_yr_ensem)
 
 ### Monthly pbias for ensembles
 
-```{r monthly rmse, echo =F}
+```{r monthly pbias, echo =F}
 
 mo_pbias <- ensem %>%
   ungroup() %>%
+  drop_na() %>% 
   mutate(month = month(date)) %>%
   group_by(month) %>%
   summarize(grid_ensemble = pbias(grid_ensemble, obs),
@@ -753,7 +854,13 @@ mo_pivot2 <- mo_pbias %>%
   pivot_longer(!month, names_to = 'cal_run', values_to = 'pbias') %>%
   drop_na()
 
-pbias_plot_mo <- ggplot(mo_pivot2, aes(month, pbias, color = cal_run)) + geom_point(size = 3) +
+pbias_plot_mo <- ggplot(mo_pivot2, aes(month, pbias, color = cal_run)) + 
+  geom_point(size = 3) +
+  scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) +
   theme_bw()
 
 ggplotly(pbias_plot_mo)
@@ -762,7 +869,7 @@ ggplotly(pbias_plot_mo)
 
 ## Cumulative Q
 
-```{r}
+```{r cumq, echo = F}
 
 ensem_cumq <- ensem %>%
   mutate(month = month(date)) %>%
@@ -772,7 +879,8 @@ ensem_cumq <- ensem %>%
   group_by(cal_run, year(date)) %>%
   mutate(cumsum = cumsum(replace_na(q_m3s, 0))) %>%
   rename(year = 4) %>%
-  mutate(year = as.factor(year))
+  mutate(year = as.factor(year)) %>%
+  ungroup()
 
 #plot annual cumulative Q vals for ensembles
 plot_cumulq_yr_ensem <- function(calyear) {
@@ -782,7 +890,12 @@ plot_cumulq_yr_ensem <- function(calyear) {
                y = cumsum,
                color = cal_run)) +
     geom_line() +
-    geom_line(data=ensem_cumq[ensem_cumq$cal_run=='obs',], aes(group=cal_run), color = "black") +
+    scale_color_manual(name="cal_run", values=c("obs"="black",
+                                             "grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) +
     ggtitle(calyear) +
     theme_bw() +
     labs(y = 'cumulative Q (m3s)')} %>%
@@ -796,6 +909,131 @@ cumulative_plots <- lapply(name, plot_cumulq_yr_ensem)
 htmltools::tagList(cumulative_plots)
 
 cumulative_plots
+
+```
+
+## Percentiles
+
+```{r percentiles, echo = F}
+
+
+quantile_calc <- function(x, probs, date) {
+  tibble(x = quantile(x, probs), probs = probs,
+         date = date[x = quantile(x, probs)])
+}
+
+
+percent <- ensem_cumq %>%
+  group_by(year, cal_run) %>%
+  summarize(quantile_calc(cumsum, c(0.25, 0.5, 0.75), date)) %>%
+  mutate(date = as.Date(date)) %>%
+  mutate(probs = as.factor(probs))
+
+###
+# quantile_cal <- function(data, prob) {
+#   data %>%
+#     dplyr::group_by(cal_run, year) %>%
+#     mutate(quantile = paste0(prob),
+#            value = quantile(cumsum, prob)) %>%
+#     filter(cumsum >= value) %>%
+#     filter(date == min(date))
+#   }
+# 
+# quantiles <- c(0.25, 0.5, 0.75)
+# 
+# quants <- quantiles %>% 
+#   map(~ quantile_cal(data = ensem_cumq, prob = .)) %>%
+#   bind_rows()
+####
+
+
+#plot percentiles
+plot_perc_ensem <- function(perc) {
+  {percent %>%
+    filter(probs == perc) %>%
+    ggplot(aes(x = year,
+               y = x,
+               color = cal_run)) +
+    geom_point(size=3) +
+    scale_color_manual(name="cal_run", values=c("obs"="black",
+                                             "grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) +
+    ggtitle(perc) +
+    ylab('Streamflow (cms)') +
+    theme_bw()} %>%
+    ggplotly()
+}
+
+name <- levels(percent$probs)
+
+perc_plots <- lapply(name, perc_plots)
+
+htmltools::tagList(plot_perc_ensem)
+
+perc_plots
+
+```
+
+# Catchment results
+
+```{r catch, echo = F}
+
+setwd("C:/Users/sears/Documents/Repos/fourmile/catchments")
+
+statn <- read_csv('statnall.csv')
+grid <- read_csv('gridall.csv')
+ 
+grid <- grid %>% mutate(site = 'grid')
+statn <- statn %>% mutate(site = 'statn')
+
+catchment <- bind_rows(grid, statn) %>%
+  mutate(year = as.factor(year(time))) %>%
+  group_by(year, site) %>%
+  mutate(cumulative_p = cumsum(precip))
+
+#plot cumulative precip by year
+plot_cumprecip <- function(calyear) {
+  {catchment %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = time,
+               y = cumulative_p, color = site)) +
+    geom_line(size=1) +
+    ggtitle(calyear) +
+    ylab('Cumulative precip (mm)') +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))} %>%
+    ggplotly()
+}
+
+name <- levels(catchment$year)
+
+precip_plots <- lapply(name, plot_cumprecip)
+
+htmltools::tagList(precip_plots)
+
+precip_plots
+
+## total P
+max_cumulativep <- catchment %>%
+  group_by(year, site) %>%
+  summarize(total_cumulativep = max(cumulative_p))
+
+ggplot(max_cumulativep, aes(x=year, y=total_cumulativep, color=site)) + 
+  geom_point(size=3) +
+  ggtitle('Total cumulative precip (mm) by year')
+
+##tmean 
+tmean <- catchment %>%
+  group_by(year, site) %>%
+  summarize(tmean = mean(tmean)) %>%
+  ggplot(aes(x = year, y=tmean, color = site)) +
+  geom_point(size=3) +
+  ggtitle('Average temp by year')
+
+tmean
 
 ```
 
