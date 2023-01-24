@@ -624,6 +624,7 @@ lapply(name, plot_rmse_yr_ensem)
 
 mo_rmse <- ensem %>%
   ungroup() %>%
+  drop_na() %>% 
   mutate(month = month(date)) %>%
   group_by(month) %>%
   summarize(grid_ensemble = rmse(grid_ensemble, obs),
@@ -721,8 +722,6 @@ plot_nse_yr_ensem <- function(calyear) {
 name <- levels(yr_nse_plot$year)
 
 lapply(name, plot_nse_yr_ensem)
-
-
 
 ```
 
@@ -930,20 +929,21 @@ percent <- ensem_cumq %>%
   mutate(probs = as.factor(probs))
 
 ###
-# quantile_cal <- function(data, prob) {
-#   data %>%
-#     dplyr::group_by(cal_run, year) %>%
-#     mutate(quantile = paste0(prob),
-#            value = quantile(cumsum, prob)) %>%
-#     filter(cumsum >= value) %>%
-#     filter(date == min(date))
-#   }
-# 
-# quantiles <- c(0.25, 0.5, 0.75)
-# 
-# quants <- quantiles %>% 
-#   map(~ quantile_cal(data = ensem_cumq, prob = .)) %>%
-#   bind_rows()
+quantile_cal <- function(data, prob) {
+  data %>%
+    dplyr::group_by(cal_run, year) %>%
+    mutate(quantile = paste0(prob),
+           value = quantile(cumsum, prob)) %>%
+    group_by(cal_run, year, quantile) %>% 
+    filter(cumsum >= value) %>%
+    filter(date == min(date))
+  }
+
+quantiles <- c(0.25, 0.5, 0.75)
+
+quants <- quantiles %>%
+  map(~ quantile_cal(data = ensem_cumq, prob = .)) %>%
+  bind_rows()
 ####
 
 
@@ -969,9 +969,9 @@ plot_perc_ensem <- function(perc) {
 
 name <- levels(percent$probs)
 
-perc_plots <- lapply(name, perc_plots)
+perc_plots <- lapply(name, plot_perc_ensem)
 
-htmltools::tagList(plot_perc_ensem)
+htmltools::tagList(perc_plots)
 
 perc_plots
 
@@ -1025,7 +1025,7 @@ ggplot(max_cumulativep, aes(x=year, y=total_cumulativep, color=site)) +
   geom_point(size=3) +
   ggtitle('Total cumulative precip (mm) by year')
 
-##tmean 
+## tmean 
 tmean <- catchment %>%
   group_by(year, site) %>%
   summarize(tmean = mean(tmean)) %>%
@@ -1034,6 +1034,109 @@ tmean <- catchment %>%
   ggtitle('Average temp by year')
 
 tmean
+
+
+```
+
+## Niwot
+
+### SWE
+
+-Look at SWE dataframe as a group
+
+```{r niwot, echo = F}
+library(snotelr)
+
+niwot_snotel <- snotel_download(site_id = 663, internal = T)
+
+niwot_snotel <- niwot_snotel %>%
+  select(date, snow_water_equivalent, precipitation) %>%
+  mutate(date = as.Date(date)) %>%
+  rename(swe_mm_snotel = snow_water_equivalent,
+         precip_mm_snotel = precipitation) %>%
+  #mutate(swe_mm_snotel = swe_mm_snotel*25.4,
+         #precip_mm_snotel = precip_mm_snotel*25.4) %>%
+  filter(date > '2010-12-31' & date < '2020-10-01')
+  
+hru7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
+  select(date, precip_mm, swe_mm) %>%
+  rename(precip_mm_hrugrid = precip_mm,
+         swe_mm_hrugrid = swe_mm)
+
+hru7_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_statn.csv') %>%
+  select(date, precip_mm, swe_mm) %>%
+  rename(precip_mm_hrustatn = precip_mm,
+         swe_mm_hrustatn = swe_mm)
+
+niwot <- niwot_snotel %>%
+  left_join(hru7_grid, by = 'date') %>%
+  left_join(hru7_statn, by = 'date')
+
+#look at swe -- ****** ask about this
+niwot_swe <- niwot %>%
+  dplyr::select(date, swe_mm_snotel, swe_mm_hrugrid, swe_mm_hrustatn) %>%
+  mutate(swe_mm_snotel2 = swe_mm_snotel - lag(swe_mm_snotel))
+
+kable(niwot_swe) %>%
+  kable_styling(full_width = F) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+# niwot_swe <- niwot_swe %>% 
+#   pivot_longer(!date, names_to = 'source', values_to = 'swe_mm')
+
+
+```
+
+### ET
+
+```{r ET, echo = F}
+
+niwot_et <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/Niwot_daily_et.csv') %>%
+  filter(year > 2010) %>%
+  mutate(date = make_date(year = year, month = month, day = day)) %>%
+  select(date, et) %>%
+  rename(et_niwot = et)
+  
+
+hru7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
+  select(date, AET_mm) %>%
+  rename(et_hru7grid = AET_mm)
+
+hru7_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_statn.csv') %>%
+  select(date, AET_mm) %>%
+  rename(et_hru7statn = AET_mm)
+
+niwot_et_compare <- niwot_et %>%
+  left_join(hru7_grid, by = 'date') %>%
+  left_join(hru7_statn, by = 'date') %>%
+  mutate(year = year(date)) %>%
+  filter(year < 2021) %>% 
+  pivot_longer(!c(date, year), names_to= 'source', values_to = 'et_mm') %>%
+  mutate(year = as.factor(year))
+
+
+#plot ET by year
+plot_ET <- function(calyear) {
+  {niwot_et_compare %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = date,
+               y = et_mm, color = source)) +
+    geom_line(size=1) +
+    ggtitle(calyear) +
+    ylab('ET (mm/day)') +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))} %>%
+    ggplotly()
+}
+
+name <- levels(niwot_et_compare$year)
+
+ET_plots <- lapply(name, plot_ET)
+
+htmltools::tagList(ET_plots)
+
+ET_plots
+
 
 ```
 
