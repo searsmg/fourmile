@@ -21,6 +21,13 @@ library(knitr)
 library(kableExtra)
 library(dataRetrieval)
 library(hydroGOF)
+library(sp)
+library(raster)
+library(sf)
+library(mapview)
+library(here)
+library(scales)
+library(dataRetrieval)
 
 ```
 
@@ -121,6 +128,22 @@ lapply(name, plotdens_params)
 ```
 
 # Outlet results
+
+```{r map, echo = F}
+
+locations <- read_csv(here('data/GIS', 'fourmile_sensors.csv'))
+
+hrus <- st_read(here('data/GIS', 'hrus_final.shp'))
+
+locations <- locations %>%
+  st_as_sf(., coords=c('y','x'), crs = 4326)
+
+mapviewOptions(basemaps = c("Esri.WorldShadedRelief", "OpenStreetMap.DE"),
+               layers.control.pos = "topright")
+
+mapview(locations, zcol = 'type') + mapview(hrus)
+
+```
 
 ## Hydrograph
 
@@ -358,6 +381,23 @@ lapply(name, plot_kge)
 
 ## Hydrograph
 
+```{r boulder cr gage, echo = F}
+
+#pull in Boulder Creek @ N 75th gage
+
+bouldcr <- readNWISdv(siteNumbers = "06730200",
+                          parameterCd = "00060", 
+                          startDate = "2011-01-01", 
+                          endDate = "2020-12-31")  %>%
+  select(date = Date,
+         q_cfs = X_00060_00003) %>%
+  mutate(bouldcr = q_cfs/35.3146662) %>%
+  select(-q_cfs) %>%
+  mutate(year = year(date))
+
+```
+
+
 ```{r ensemble hydrographs, echo = F}
 
 ensem <- flow %>%
@@ -385,8 +425,7 @@ ensem <- flow %>%
                                grid_all, statn_all))) %>%
   select(date, grid_ensemble, statn_ensemble, 
          all_ensemble, grid_all, 
-         statn_all, obs)
-
+         statn_all, obs) 
 
 ensem_pivot <- ensem %>%
   pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
@@ -400,10 +439,20 @@ q_ensemble <- ggplot(ensem_pivot, aes(date, q_m3s, color = cal_run)) +
                                             "statn_ensemble"="darkturquoise", 
                                             "grid_all"="purple1",
                                             "statn_all"='springgreen4', 
-                                            "all_ensemble" = "orange")) 
+                                            "all_ensemble" = "orange")) +
+  geom_line(data = bouldcr, aes(date, bouldcr/10), color = 'darkgrey') +
+  scale_y_continuous(name = 'Q_m3s',
+                    sec.axis = sec_axis(~.*10, name='BoulderCr_cms')) +
+  theme_bw()
 
-ggplotly(q_ensemble)
 
+ggplotly(q_ensemble) %>%
+  add_lines(data=bouldcr, x=~date, y=~bouldcr, colors=NULL, yaxis="y2", 
+              inherit=FALSE, showlegend = FALSE) %>%
+  layout(yaxis2 = list(overlaying = "y", side = "right",
+                       color = 'darkgray',
+                       title = "BoulderCr_cms"),
+         legend = list(x = 1.1, y = 0.95))
 
 ```
 
@@ -425,9 +474,9 @@ plotqensem_cy <- function(calyear) {
                                             "statn_all"='springgreen4', 
                                             "all_ensemble" = "orange")) +
     ggtitle(calyear) +
-    theme_bw()} %>%
+    theme_bw()
+    } %>%
     ggplotly()
-
 }
 
 name <- levels(ensem_pivot$year)
@@ -977,11 +1026,71 @@ perc_plots
 
 ```
 
+## Max Q prior to April 1
+
+```{r}
+
+ensem_bould <- left_join(ensem, bouldcr, by = 'date') %>%
+  pivot_longer(!c(date, year), names_to = 'source', values_to = 'q_m3s') %>%
+  mutate(month = month(date)) %>%
+  filter(month %in% 1:3) %>%
+  group_by(source, year) %>%
+  slice_max(q_m3s, n=1)
+
+early_peakq <- ensem_bould %>%
+  mutate(doy = yday(date)) %>%
+  select(c(doy, source, q_m3s, year)) %>%
+  pivot_wider(names_from = 'source', values_from = c('q_m3s', 'doy'))
+
+ggplot(early_peakq, aes(doy_bouldcr, doy_all_ensemble)) +
+  geom_point(size=2.5) +
+  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+  theme_bw() +
+  ggtitle('DOY of peak Q prior to April 1st - All Ensemble')
+
+ggplot(early_peakq, aes(doy_bouldcr, doy_grid_all)) +
+  geom_point(size=2.5) +
+  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+  theme_bw() +
+  ggtitle('DOY of peak Q prior to April 1st - Grid All')
+
+
+ggplot(early_peakq, aes(doy_bouldcr, doy_grid_ensemble)) +
+  geom_point(size=2.5) +
+  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+  theme_bw() +
+  ggtitle('DOY of peak Q prior to April 1st - Grid Ensemble')
+
+
+ggplot(early_peakq, aes(doy_bouldcr, doy_statn_all)) +
+  geom_point(size=2.5) +
+  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+  theme_bw() +
+  ggtitle('DOY of peak Q prior to April 1st - Station All')
+
+
+ggplot(early_peakq, aes(doy_bouldcr, doy_statn_ensemble)) +
+  geom_point(size=2.5) +
+  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+  theme_bw() +
+  ggtitle('DOY of peak Q prior to April 1st - Station Ensemble')
+
+early_peakq_table <- ensem_bould %>%
+  mutate(doy = yday(date)) %>%
+  dplyr::arrange(date)
+
+kable(early_peakq_table) %>%
+  kable_styling(full_width = F) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+
 # Catchment results
 
-```{r catch, echo = F}
+## Precip
 
-setwd("C:/Users/sears/Documents/Repos/fourmile/catchments")
+```{r catch precip, echo = F}
+setwd("C:/Users/sears/Documents/Repos/fourmile/catchment_output")
 
 statn <- read_csv('statnall.csv')
 grid <- read_csv('gridall.csv')
@@ -1025,6 +1134,11 @@ ggplot(max_cumulativep, aes(x=year, y=total_cumulativep, color=site)) +
   geom_point(size=3) +
   ggtitle('Total cumulative precip (mm) by year')
 
+```
+
+## Tmean
+
+```{r tmean catch, echo = F}
 ## tmean 
 tmean <- catchment %>%
   group_by(year, site) %>%
@@ -1038,11 +1152,9 @@ tmean
 
 ```
 
-## Niwot
+# Niwot and HRU7
 
-### SWE
-
--Look at SWE dataframe as a group
+## SWE and precip
 
 ```{r niwot, echo = F}
 library(snotelr)
@@ -1072,22 +1184,55 @@ niwot <- niwot_snotel %>%
   left_join(hru7_grid, by = 'date') %>%
   left_join(hru7_statn, by = 'date')
 
-#look at swe -- ****** ask about this
+# look at swe
 niwot_swe <- niwot %>%
-  dplyr::select(date, swe_mm_snotel, swe_mm_hrugrid, swe_mm_hrustatn) %>%
-  mutate(swe_mm_snotel2 = swe_mm_snotel - lag(swe_mm_snotel))
+  dplyr::select(date, swe_mm_snotel, swe_mm_hrugrid, swe_mm_hrustatn)
 
 kable(niwot_swe) %>%
   kable_styling(full_width = F) %>% 
   scroll_box(width = "100%", height = "500px")
 
-# niwot_swe <- niwot_swe %>% 
-#   pivot_longer(!date, names_to = 'source', values_to = 'swe_mm')
+# cumulative swe
+niwot_swe2 <- niwot_swe %>%
+  mutate(year = year(date)) %>%
+  pivot_longer(!c(date,year), names_to = 'source', values_to = 'swe_mm') %>%
+  group_by(year, source) %>%
+  mutate(swe_cumsum_mm = cumsum(swe_mm))
+
+cum_swe_niwot <- ggplot(niwot_swe2, aes(date, swe_cumsum_mm, color = source)) +
+  geom_line() +
+  scale_x_date(labels = date_format("%b")) +
+  facet_wrap(~year, scales = 'free')
+
+ggplotly(cum_swe_niwot)
+
+#look at precip
+niwot_p <- niwot %>%
+  dplyr::select(date, precip_mm_snotel, precip_mm_hrugrid, precip_mm_hrustatn)
+
+kable(niwot_p) %>%
+  kable_styling(full_width = F) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+# cumulative precip
+niwot_p2 <- niwot_p %>%
+  mutate(year = year(date)) %>%
+  pivot_longer(!c(date,year), names_to = 'source', values_to = 'precip_mm') %>%
+  group_by(year, source) %>%
+  mutate(p_cumsum_mm = cumsum(precip_mm))
+
+cum_precip_niwot <- ggplot(niwot_p2, aes(date, p_cumsum_mm, color = source)) +
+  geom_line() +
+  scale_x_date(labels = date_format("%b")) +
+  facet_wrap(~year, scales = 'free')
+
+ggplotly(cum_precip_niwot)
+
 
 
 ```
 
-### ET
+## ET
 
 ```{r ET, echo = F}
 
@@ -1114,7 +1259,6 @@ niwot_et_compare <- niwot_et %>%
   pivot_longer(!c(date, year), names_to= 'source', values_to = 'et_mm') %>%
   mutate(year = as.factor(year))
 
-
 #plot ET by year
 plot_ET <- function(calyear) {
   {niwot_et_compare %>%
@@ -1137,8 +1281,39 @@ htmltools::tagList(ET_plots)
 
 ET_plots
 
+# 1:1 scatter plots for Niwot vs grid and Niwot vs station
+niwot_et_scatter <- niwot_et_compare %>%
+  filter(et_mm > 0)
 
+# Niwot vs grid
+et_grid_obs <- niwot_et_scatter %>%
+  filter(source == c('et_niwot','et_hru7grid')) %>%
+  pivot_wider(names_from = 'source', values_from = 'et_mm')
+
+#scatter of grid vs niwot
+et_scatter_grid_obs <- ggplot(et_grid_obs, aes(x = et_niwot, y = et_hru7grid)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1, color='red') + 
+  ggtitle('Niwot ET vs. HRU7 grid ET')
+
+et_scatter_grid_obs
+
+# Niwot vs statn inputs
+et_statn_obs <- niwot_et_scatter %>%
+  filter(source == c('et_niwot','et_hru7statn')) %>%
+  pivot_wider(names_from = 'source', values_from = 'et_mm')
+
+#scatter of grid vs niwot
+et_scatter_statn_obs <- ggplot(et_statn_obs, aes(x = et_niwot, y = et_hru7statn)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, size=1, color='red') + 
+  ggtitle('Niwot ET vs. HRU7 station ET')
+
+et_scatter_statn_obs
+                              
 ```
+
+
 
 
 ```{r reach hydrographs, echo = F}
