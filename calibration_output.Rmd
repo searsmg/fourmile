@@ -129,22 +129,6 @@ lapply(name, plotdens_params)
 
 # Outlet results
 
-```{r map, echo = F}
-
-locations <- read_csv(here('data/GIS', 'fourmile_sensors.csv'))
-
-hrus <- st_read(here('data/GIS', 'hrus_final.shp'))
-
-locations <- locations %>%
-  st_as_sf(., coords=c('y','x'), crs = 4326)
-
-mapviewOptions(basemaps = c("Esri.WorldShadedRelief", "OpenStreetMap.DE"),
-               layers.control.pos = "topright")
-
-mapview(locations, zcol = 'type') + mapview(hrus)
-
-```
-
 ## Hydrograph
 
 ```{r hydrographs, echo = F}
@@ -1152,6 +1136,98 @@ tmean
 
 ```
 
+## RD and RG
+
+```{r rd and rg, echo = F}
+
+gw_grid <- grid %>%
+  dplyr::select(time, genRD1, genRD2, genRG1, genRG2) %>%
+  mutate(source = 'grid')
+
+gw_statn <- statn %>%
+  dplyr::select(time, genRD1, genRD2, genRG1, genRG2) %>%
+  mutate(source = 'statn')
+
+gw <- bind_rows(gw_grid, gw_statn) %>%
+  mutate(year = year(time)) %>%
+  rename(date = time)
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=genRD1)) +
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('genRD1')
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=genRD2)) +
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('genRD2')
+  
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=genRG1)) +
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('genRG1')
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=genRG2)) +
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('genRG2')
+
+gw <- gw %>%
+  group_by(year, source) %>%
+  mutate(RD1cumsum = cumsum(genRD1),
+         RD2cumsum = cumsum(genRD2),
+         RG1cumsum = cumsum(genRG1),
+         RG2cumsum = cumsum(genRG2))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RD1cumsum)) +
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative genRD1')
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RD2cumsum)) +
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative genRD2')
+  
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RG1cumsum)) +
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative genRG1')
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RG2cumsum)) +
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative genRG2')
+
+```
+
+
+# HRU Map
+
+```{r map, echo = F}
+
+locations <- read_csv(here('data/GIS', 'fourmile_sensors.csv'))
+
+hrus <- st_read(here('data/GIS', 'hrus_final.shp'))
+
+locations <- locations %>%
+  st_as_sf(., coords=c('y','x'), crs = 4326)
+
+mapviewOptions(basemaps = c("Esri.WorldShadedRelief", "OpenStreetMap.DE"),
+               layers.control.pos = "topright")
+
+mapview(locations, zcol = 'type') + mapview(hrus)
+
+```
+
 # Niwot and HRU7
 
 ## SWE and precip
@@ -1227,8 +1303,6 @@ cum_precip_niwot <- ggplot(niwot_p2, aes(date, p_cumsum_mm, color = source)) +
   facet_wrap(~year, scales = 'free')
 
 cum_precip_niwot
-
-
 
 ```
 
@@ -1313,6 +1387,73 @@ et_scatter_statn_obs
                               
 ```
 
+# Tmean for HRUs 7, 9, 22, 36
+
+```{r hru7 temp, echo = F}
+
+tmean7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
+  dplyr::select(date, tmean) %>%
+  rename(t7_grid = tmean)
+
+tmean7_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_statn.csv') %>%
+  dplyr::select(date, tmean) %>%
+  rename(t7_statn = tmean)
+
+tmean9_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_9_grid.csv') %>%
+  dplyr::select(date, tmean) %>%
+  rename(t9_grid = tmean)
+
+tmean9_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_9_statn.csv') %>%
+  dplyr::select(date, tmean) %>%
+  rename(t9_statn = tmean)
+
+tmean22_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_22_grid.csv') %>%
+  dplyr::select(date, tmean) %>%
+  rename(t22_grid = tmean)
+
+tmean22_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_22_statn.csv') %>%
+  dplyr::select(date, tmean) %>%
+  rename(t22_statn = tmean)
+
+tmean36_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_36_grid.csv') %>%
+  dplyr::select(date, tmean) %>%
+  rename(t36_grid = tmean)
+
+tmean36_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_36_statn.csv') %>%
+  dplyr::select(date, tmean) %>%
+  rename(t36_statn = tmean)
+
+tmean_hrus <- list(tmean7_grid, tmean7_statn, tmean9_grid, 
+     tmean9_statn, tmean22_grid, tmean22_statn,
+     tmean36_grid, tmean36_statn)
+
+t_hrus <- tmean_hrus %>% reduce(left_join, by='date')
+
+t_hrus <- t_hrus %>%
+  mutate(year = year(date)) %>%
+  mutate(t7_diff = t7_statn - t7_grid,
+         t9_diff = t9_statn - t9_grid,
+         t22_diff = t22_statn - t22_grid,
+         t36_diff = t36_statn - t36_grid) %>%
+  group_by(year) %>%
+  mutate(t7_cumdiff = cumsum(t7_diff),
+         t9_cumdiff = cumsum(t9_diff),
+         t22_cumdiff = cumsum(t22_diff),
+         t36_cumdiff = cumsum(t36_diff))
+
+tmean_cumdiff_plot <- ggplot(t_hrus, aes(x = date)) +
+  geom_line(aes(y = t7_cumdiff, color = 'HRU7'), size =1) + 
+  geom_line(aes(y = t9_cumdiff, color = 'HRU9'), size =1) + 
+  geom_line(aes(y = t22_cumdiff, color = 'HRU22'), size =1) + 
+  geom_line(aes(y = t36_cumdiff, color = 'HRU36'), size =1) + 
+  facet_wrap(~year, scales = 'free') +
+  scale_x_date(labels = date_format("%b")) +
+  labs(y = 'Tmean cumulative difference (deg C)') +
+  ggtitle('Tmean station and grid cumulative difference (Station - Grid)')
+
+tmean_cumdiff_plot
+
+```
 
 
 
