@@ -1138,7 +1138,7 @@ tmean
 
 ## RD and RG
 
-```{r rd and rg, echo = F}
+```{r rd and rg, fig.height=20, fig.width=22, echo = F}
 
 gw_grid <- grid %>%
   dplyr::select(time, genRD1, genRD2, genRG1, genRG2) %>%
@@ -1232,7 +1232,7 @@ mapview(locations, zcol = 'type') + mapview(hrus)
 
 ## SWE and precip
 
-```{r niwot, echo = F}
+```{r niwot, fig.height=20, fig.width=22, echo = F}
 library(snotelr)
 
 niwot_snotel <- snotel_download(site_id = 663, internal = T)
@@ -1389,7 +1389,7 @@ et_scatter_statn_obs
 
 # Tmean for HRUs 7, 9, 22, 36
 
-```{r hru7 temp, echo = F}
+```{r hru7 temp, fig.height=20, fig.width=22, echo = F}
 
 tmean7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
   dplyr::select(date, tmean) %>%
