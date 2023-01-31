@@ -389,10 +389,10 @@ bouldcr <- readNWISdv(siteNumbers = "06730200",
                           parameterCd = "00060", 
                           startDate = "2011-01-01", 
                           endDate = "2020-12-31")  %>%
-  select(date = Date,
+  dplyr::select(date = Date,
          q_cfs = X_00060_00003) %>%
   mutate(bouldcr = q_cfs/35.3146662) %>%
-  select(-q_cfs) %>%
+  dplyr::select(-q_cfs) %>%
   mutate(year = year(date))
 
 ```
@@ -423,7 +423,7 @@ ensem <- flow %>%
                                statn_2017, statn_2018,
                                statn_2019, statn_2020,
                                grid_all, statn_all))) %>%
-  select(date, grid_ensemble, statn_ensemble, 
+  dplyr::select(date, grid_ensemble, statn_ensemble, 
          all_ensemble, grid_all, 
          statn_all, obs) 
 
@@ -922,7 +922,7 @@ ggplotly(pbias_plot_mo)
 ensem_cumq <- ensem %>%
   mutate(month = month(date)) %>%
   filter(month %in% c(4:9)) %>%
-  select(-month) %>% 
+  dplyr::select(-month) %>% 
   pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
   group_by(cal_run, year(date)) %>%
   mutate(cumsum = cumsum(replace_na(q_m3s, 0))) %>%
@@ -1028,7 +1028,7 @@ perc_plots
 
 ## Max Q prior to April 1
 
-```{r}
+```{r early max q, echo = F}
 
 ensem_bould <- left_join(ensem, bouldcr, by = 'date') %>%
   pivot_longer(!c(date, year), names_to = 'source', values_to = 'q_m3s') %>%
@@ -1039,7 +1039,7 @@ ensem_bould <- left_join(ensem, bouldcr, by = 'date') %>%
 
 early_peakq <- ensem_bould %>%
   mutate(doy = yday(date)) %>%
-  select(c(doy, source, q_m3s, year)) %>%
+  dplyr::select(c(doy, source, q_m3s, year)) %>%
   pivot_wider(names_from = 'source', values_from = c('q_m3s', 'doy'))
 
 ggplot(early_peakq, aes(doy_bouldcr, doy_all_ensemble)) +
@@ -1162,7 +1162,7 @@ library(snotelr)
 niwot_snotel <- snotel_download(site_id = 663, internal = T)
 
 niwot_snotel <- niwot_snotel %>%
-  select(date, snow_water_equivalent, precipitation) %>%
+  dplyr::select(date, snow_water_equivalent, precipitation) %>%
   mutate(date = as.Date(date)) %>%
   rename(swe_mm_snotel = snow_water_equivalent,
          precip_mm_snotel = precipitation) %>%
@@ -1171,12 +1171,12 @@ niwot_snotel <- niwot_snotel %>%
   filter(date > '2010-12-31' & date < '2020-10-01')
   
 hru7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
-  select(date, precip_mm, swe_mm) %>%
+  dplyr::select(date, precip_mm, swe_mm) %>%
   rename(precip_mm_hrugrid = precip_mm,
          swe_mm_hrugrid = swe_mm)
 
 hru7_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_statn.csv') %>%
-  select(date, precip_mm, swe_mm) %>%
+  dplyr::select(date, precip_mm, swe_mm) %>%
   rename(precip_mm_hrustatn = precip_mm,
          swe_mm_hrustatn = swe_mm)
 
@@ -1204,7 +1204,7 @@ cum_swe_niwot <- ggplot(niwot_swe2, aes(date, swe_cumsum_mm, color = source)) +
   scale_x_date(labels = date_format("%b")) +
   facet_wrap(~year, scales = 'free')
 
-ggplotly(cum_swe_niwot)
+cum_swe_niwot
 
 #look at precip
 niwot_p <- niwot %>%
@@ -1226,7 +1226,7 @@ cum_precip_niwot <- ggplot(niwot_p2, aes(date, p_cumsum_mm, color = source)) +
   scale_x_date(labels = date_format("%b")) +
   facet_wrap(~year, scales = 'free')
 
-ggplotly(cum_precip_niwot)
+cum_precip_niwot
 
 
 
@@ -1239,16 +1239,16 @@ ggplotly(cum_precip_niwot)
 niwot_et <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/Niwot_daily_et.csv') %>%
   filter(year > 2010) %>%
   mutate(date = make_date(year = year, month = month, day = day)) %>%
-  select(date, et) %>%
+  dplyr::select(date, et) %>%
   rename(et_niwot = et)
   
 
 hru7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
-  select(date, AET_mm) %>%
+  dplyr::select(date, AET_mm) %>%
   rename(et_hru7grid = AET_mm)
 
 hru7_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_statn.csv') %>%
-  select(date, AET_mm) %>%
+  dplyr::select(date, AET_mm) %>%
   rename(et_hru7statn = AET_mm)
 
 niwot_et_compare <- niwot_et %>%
