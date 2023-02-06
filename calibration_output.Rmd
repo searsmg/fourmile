@@ -12,7 +12,8 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  echo = F)
 
 library(tidyverse)
 library(plotly)
@@ -380,7 +381,6 @@ bouldcr <- readNWISdv(siteNumbers = "06730200",
   mutate(year = year(date))
 
 ```
-
 
 ```{r ensemble hydrographs, echo = F}
 
@@ -797,7 +797,7 @@ ggplotly(nse_plot_mo)
 
 ## Percent bias
 
-Positive values indicate model overestimation and negative values model underestimation. 
+Positive values indicate model overestimation and negative values model underestimation.
 
 ### Ensemble pbias for entire period
 
@@ -1017,7 +1017,7 @@ perc_plots
 ensem_bould <- left_join(ensem, bouldcr, by = 'date') %>%
   pivot_longer(!c(date, year), names_to = 'source', values_to = 'q_m3s') %>%
   mutate(month = month(date)) %>%
-  filter(month %in% 1:3) %>%
+  filter(month %in% 3) %>%
   group_by(source, year) %>%
   slice_max(q_m3s, n=1)
 
@@ -1026,38 +1026,52 @@ early_peakq <- ensem_bould %>%
   dplyr::select(c(doy, source, q_m3s, year)) %>%
   pivot_wider(names_from = 'source', values_from = c('q_m3s', 'doy'))
 
-ggplot(early_peakq, aes(doy_bouldcr, doy_all_ensemble)) +
-  geom_point(size=2.5) +
+
+
+marpeakq <- ggplot(early_peakq, aes(x = doy_bouldcr)) +
+  geom_point(aes(y = doy_all_ensemble, shape = "all_ensemble"), size=2.5) +
+  geom_point(aes(y = doy_grid_all, shape = 'grid_all'), size=2.5) +
+  geom_point(aes(y = doy_grid_ensemble, shape = 'grid_ensemble'), size=2.5) +
+  geom_point(aes(y = doy_statn_all, shape = 'statn_all'), size=2.5) +
+  geom_point(aes(y = doy_statn_ensemble, shape = 'statn_ensemble'), size=2.5) +
   geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+  labs(x = "Boulder Creek DOY for March Peak Q", y = 'DOY for March Peak Q') +
   theme_bw() +
-  ggtitle('DOY of peak Q prior to April 1st - All Ensemble')
+  scale_shape_manual(name="source", values=c("all_ensemble"=15, 
+                                            "grid_all"=16, 
+                                            "grid_ensemble"=17,
+                                            "statn_all"=18, 
+                                            "statn_ensemble" = 8))+
+  ggtitle('DOY of peak Q in March')
 
-ggplot(early_peakq, aes(doy_bouldcr, doy_grid_all)) +
-  geom_point(size=2.5) +
-  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
-  theme_bw() +
-  ggtitle('DOY of peak Q prior to April 1st - Grid All')
+ggplotly(marpeakq)
 
-
-ggplot(early_peakq, aes(doy_bouldcr, doy_grid_ensemble)) +
-  geom_point(size=2.5) +
-  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
-  theme_bw() +
-  ggtitle('DOY of peak Q prior to April 1st - Grid Ensemble')
-
-
-ggplot(early_peakq, aes(doy_bouldcr, doy_statn_all)) +
-  geom_point(size=2.5) +
-  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
-  theme_bw() +
-  ggtitle('DOY of peak Q prior to April 1st - Station All')
-
-
-ggplot(early_peakq, aes(doy_bouldcr, doy_statn_ensemble)) +
-  geom_point(size=2.5) +
-  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
-  theme_bw() +
-  ggtitle('DOY of peak Q prior to April 1st - Station Ensemble')
+# ggplot(early_peakq, aes(doy_bouldcr, doy_grid_all)) +
+#   geom_point(size=2.5) +
+#   geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+#   theme_bw() +
+#   ggtitle('DOY of peak Q prior to April 1st - Grid All')
+# 
+# 
+# ggplot(early_peakq, aes(doy_bouldcr, doy_grid_ensemble)) +
+#   geom_point(size=2.5) +
+#   geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+#   theme_bw() +
+#   ggtitle('DOY of peak Q prior to April 1st - Grid Ensemble')
+# 
+# 
+# ggplot(early_peakq, aes(doy_bouldcr, doy_statn_all)) +
+#   geom_point(size=2.5) +
+#   geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+#   theme_bw() +
+#   ggtitle('DOY of peak Q prior to April 1st - Station All')
+# 
+# 
+# ggplot(early_peakq, aes(doy_bouldcr, doy_statn_ensemble)) +
+#   geom_point(size=2.5) +
+#   geom_abline(intercept = 0, slope = 1, size=1, color='red') +
+#   theme_bw() +
+#   ggtitle('DOY of peak Q prior to April 1st - Station Ensemble')
 
 early_peakq_table <- ensem_bould %>%
   mutate(doy = yday(date)) %>%
@@ -1138,7 +1152,7 @@ tmean
 
 ## RD and RG
 
-```{r rd and rg, fig.height=20, fig.width=22, echo = F}
+```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
 
 gw_grid <- grid %>%
   dplyr::select(time, genRD1, genRD2, genRG1, genRG2) %>%
@@ -1153,28 +1167,32 @@ gw <- bind_rows(gw_grid, gw_statn) %>%
   rename(date = time)
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=genRD1)) +
-  facet_wrap(~year, scales = 'free') +
+  geom_line(aes(y=genRD1), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('genRD1')
+  ggtitle('genRD1') +
+  theme(text = element_text(size = 20))   
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=genRD2)) +
-  facet_wrap(~year, scales = 'free') +
+  geom_line(aes(y=genRD2), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('genRD2')
+  ggtitle('genRD2') +
+  theme(text = element_text(size = 20))   
   
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=genRG1)) +
-  facet_wrap(~year, scales = 'free') +
+  geom_line(aes(y=genRG1), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('genRG1')
+  ggtitle('genRG1') +
+  theme(text = element_text(size = 20))   
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=genRG2)) +
-  facet_wrap(~year, scales = 'free') +
+  geom_line(aes(y=genRG2), size =1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('genRG2')
+  ggtitle('genRG2') +
+  theme(text = element_text(size = 20))   
 
 gw <- gw %>%
   group_by(year, source) %>%
@@ -1184,33 +1202,38 @@ gw <- gw %>%
          RG2cumsum = cumsum(genRG2))
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RD1cumsum)) +
-  facet_wrap(~year, scales = 'free') +
+  geom_line(aes(y=RD1cumsum), size =1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative genRD1')
+  ggtitle('Cumulative genRD1') +
+  theme(text = element_text(size = 20))   
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RD2cumsum)) +
-  facet_wrap(~year, scales = 'free') +
+  geom_line(aes(y=RD2cumsum), size = 1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative genRD2')
+  ggtitle('Cumulative genRD2') +
+  theme(text = element_text(size = 20))   
   
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RG1cumsum)) +
-  facet_wrap(~year, scales = 'free') +
+  geom_line(aes(y=RG1cumsum), size  = 1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative genRG1')
+  ggtitle('Cumulative genRG1') +
+  theme(text = element_text(size = 20))   
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RG2cumsum)) +
-  facet_wrap(~year, scales = 'free') +
+  geom_line(aes(y=RG2cumsum), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative genRG2')
+  ggtitle('Cumulative genRG2') +
+  theme(text = element_text(size = 20))   
 
 ```
 
+# HRU results
 
-# HRU Map
+## HRU Map
 
 ```{r map, echo = F}
 
@@ -1228,11 +1251,11 @@ mapview(locations, zcol = 'type') + mapview(hrus)
 
 ```
 
-# Niwot and HRU7
+## Niwot and HRU7
 
-## SWE and precip
+### SWE and precip
 
-```{r niwot, fig.height=20, fig.width=22, echo = F}
+```{r niwot, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
 library(snotelr)
 
 niwot_snotel <- snotel_download(site_id = 663, internal = T)
@@ -1276,9 +1299,10 @@ niwot_swe2 <- niwot_swe %>%
   mutate(swe_cumsum_mm = cumsum(swe_mm))
 
 cum_swe_niwot <- ggplot(niwot_swe2, aes(date, swe_cumsum_mm, color = source)) +
-  geom_line() +
+  geom_line(size =1) +
   scale_x_date(labels = date_format("%b")) +
-  facet_wrap(~year, scales = 'free')
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  theme(text = element_text(size = 20))  
 
 cum_swe_niwot
 
@@ -1298,15 +1322,16 @@ niwot_p2 <- niwot_p %>%
   mutate(p_cumsum_mm = cumsum(precip_mm))
 
 cum_precip_niwot <- ggplot(niwot_p2, aes(date, p_cumsum_mm, color = source)) +
-  geom_line() +
+  geom_line(size=1) +
   scale_x_date(labels = date_format("%b")) +
-  facet_wrap(~year, scales = 'free')
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  theme(text = element_text(size = 20))  
 
 cum_precip_niwot
 
 ```
 
-## ET
+### ET
 
 ```{r ET, echo = F}
 
@@ -1387,9 +1412,9 @@ et_scatter_statn_obs
                               
 ```
 
-# Tmean for HRUs 7, 9, 22, 36
+## Tmean for HRUs 7, 9, 22, 36
 
-```{r hru7 temp, fig.height=20, fig.width=22, echo = F}
+```{r hru7 temp, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
 
 tmean7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
   dplyr::select(date, tmean) %>%
@@ -1446,16 +1471,15 @@ tmean_cumdiff_plot <- ggplot(t_hrus, aes(x = date)) +
   geom_line(aes(y = t9_cumdiff, color = 'HRU9'), size =1) + 
   geom_line(aes(y = t22_cumdiff, color = 'HRU22'), size =1) + 
   geom_line(aes(y = t36_cumdiff, color = 'HRU36'), size =1) + 
-  facet_wrap(~year, scales = 'free') +
+  facet_wrap(~year, scales = 'free',ncol=2) +
   scale_x_date(labels = date_format("%b")) +
   labs(y = 'Tmean cumulative difference (deg C)') +
-  ggtitle('Tmean station and grid cumulative difference (Station - Grid)')
+  ggtitle('Tmean station and grid cumulative difference (Station - Grid)') +
+  theme(text = element_text(size = 20))  
 
 tmean_cumdiff_plot
 
 ```
-
-
 
 ```{r reach hydrographs, echo = F}
 
