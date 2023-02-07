@@ -1031,19 +1031,30 @@ early_peakq <- ensem_bould %>%
 
 
 marpeakq <- ggplot(early_peakq, aes(x = doy_bouldcr)) +
-  geom_point(aes(y = doy_all_ensemble, shape = "all_ensemble"), size=2.5) +
-  geom_point(aes(y = doy_grid_all, shape = 'grid_all'), size=2.5) +
-  geom_point(aes(y = doy_grid_ensemble, shape = 'grid_ensemble'), size=2.5) +
-  geom_point(aes(y = doy_statn_all, shape = 'statn_all'), size=2.5) +
-  geom_point(aes(y = doy_statn_ensemble, shape = 'statn_ensemble'), size=2.5) +
-  geom_abline(intercept = 0, slope = 1, size=1, color='red') +
-  labs(x = "Boulder Creek DOY for March Peak Q", y = 'DOY for March Peak Q') +
+  geom_point(aes(y = doy_all_ensemble, shape = "all_ensemble", 
+                 color = 'all_ensemble'), size=2.5) +
+  geom_point(aes(y = doy_grid_all, shape = 'grid_all', 
+                 color = 'grid_all'), size=2.5) +
+  geom_point(aes(y = doy_grid_ensemble, shape = 'grid_ensemble', 
+                 color = 'grid_ensemble'), size=2.5) +
+  geom_point(aes(y = doy_statn_all, shape = 'statn_all', 
+                 color = 'statn_all'), size=2.5) +
+  geom_point(aes(y = doy_statn_ensemble, shape = 'statn_ensemble', 
+                 color = 'statn_ensemble'), size=2.5) +
+  geom_abline(intercept = 0, slope = 1, size=1, color='black') +
+  labs(x = "Boulder Creek DOY for March Peak Q", 
+       y = 'DOY for March Peak Q') +
   theme_bw() +
   scale_shape_manual(name="source", values=c("all_ensemble"=15, 
                                             "grid_all"=16, 
                                             "grid_ensemble"=17,
                                             "statn_all"=18, 
-                                            "statn_ensemble" = 8))+
+                                            "statn_ensemble" = 8)) +
+    scale_color_manual(name="source", values=c("all_ensemble"='orange', 
+                                            "grid_all"='purple1', 
+                                            "grid_ensemble"='maroon',
+                                            "statn_all"='springgreen4', 
+                                            "statn_ensemble" = 'darkturquoise')) +
   ggtitle('DOY of peak Q in March')
 
 ggplotly(marpeakq)
