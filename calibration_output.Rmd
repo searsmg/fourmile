@@ -13,7 +13,8 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = F)
+  echo = F,
+  message = F)
 
 library(tidyverse)
 library(plotly)
@@ -29,6 +30,7 @@ library(mapview)
 library(here)
 library(scales)
 library(dataRetrieval)
+library(tmap)
 
 ```
 
@@ -1153,13 +1155,14 @@ tmean
 ## RD and RG
 
 ```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
+setwd("C:/Users/sears/Documents/Repos/fourmile/catchment_output")
 
-gw_grid <- grid %>%
-  dplyr::select(time, genRD1, genRD2, genRG1, genRG2) %>%
+gw_grid <- read_csv('gridall_outlet.csv') %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
   mutate(source = 'grid')
 
-gw_statn <- statn %>%
-  dplyr::select(time, genRD1, genRD2, genRG1, genRG2) %>%
+gw_statn <- read_csv('statnall_outlet.csv') %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
   mutate(source = 'statn')
 
 gw <- bind_rows(gw_grid, gw_statn) %>%
@@ -1167,66 +1170,66 @@ gw <- bind_rows(gw_grid, gw_statn) %>%
   rename(date = time)
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=genRD1), size =1) +
+  geom_line(aes(y=catchmentRD1_w), size =1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('genRD1') +
+  ggtitle('RD1') +
   theme(text = element_text(size = 20))   
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=genRD2), size =1) +
+  geom_line(aes(y=catchmentRD2_w), size =1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('genRD2') +
+  ggtitle('RD2') +
   theme(text = element_text(size = 20))   
   
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=genRG1), size =1) +
+  geom_line(aes(y=catchmentRG1_w), size =1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('genRG1') +
+  ggtitle('RG1') +
   theme(text = element_text(size = 20))   
 
 ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=genRG2), size =1) +
+  geom_line(aes(y=catchmentRG2_w), size =1) +
   facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('genRG2') +
+  ggtitle('RG2') +
   theme(text = element_text(size = 20))   
 
 gw <- gw %>%
   group_by(year, source) %>%
-  mutate(RD1cumsum = cumsum(genRD1),
-         RD2cumsum = cumsum(genRD2),
-         RG1cumsum = cumsum(genRG1),
-         RG2cumsum = cumsum(genRG2))
+  mutate(RD1cumsum = cumsum(catchmentRD1_w),
+         RD2cumsum = cumsum(catchmentRD2_w),
+         RG1cumsum = cumsum(catchmentRG1_w),
+         RG2cumsum = cumsum(catchmentRG2_w))
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RD1cumsum), size =1) +
   facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative genRD1') +
+  ggtitle('Cumulative RD1') +
   theme(text = element_text(size = 20))   
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RD2cumsum), size = 1) +
   facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative genRD2') +
+  ggtitle('Cumulative RD2') +
   theme(text = element_text(size = 20))   
   
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RG1cumsum), size  = 1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative genRG1') +
+  ggtitle('Cumulative RG1') +
   theme(text = element_text(size = 20))   
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RG2cumsum), size =1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative genRG2') +
+  ggtitle('Cumulative RG2') +
   theme(text = element_text(size = 20))   
 
 ```
@@ -1480,6 +1483,131 @@ tmean_cumdiff_plot <- ggplot(t_hrus, aes(x = date)) +
 tmean_cumdiff_plot
 
 ```
+
+## Cumulative Tmean difference
+
+2011-2020 average of daily station-grid Tmean for DOY 365 (or 366)
+
+```{r cumulative tmean for HRUs, echo = F}
+#grid first
+setwd("C:/Users/sears/Documents/Repos/fourmile/HRU_output/grid")
+
+read_ages_grid <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'grid')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_grid) 
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_grids <- dataframes %>%
+  bind_rows() 
+
+#statn next
+setwd("C:/Users/sears/Documents/Repos/fourmile/HRU_output/statn")
+
+read_ages_statn <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'statn')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_statn) 
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_statn <- dataframes %>%
+  bind_rows() 
+
+#get rid of a bunch of data
+hru_grid_tmean <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)
+
+hru_statn_tmean <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean)
+
+tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('time', 'ID')) %>%
+  mutate(diff = tmean_statn - tmean_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>% 
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(tmean_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value')
+
+tmap_mode('view')
+
+tm_shape(hrus_map_tmean) +
+  tm_polygons('tmean_avg_cumdiff') +
+tm_shape(locations) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Cumulative Precip difference
+
+2011-2020 average of daily station-grid precip for DOY 365 (or 366)
+
+```{r cum precip, echo = F}
+#get rid of a bunch of data
+hru_grid_precip <- hru_grids %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_grid = precip)
+
+hru_statn_precip <- hru_statn %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_statn = precip)
+
+precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>% 
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value')
+
+tmap_mode('view')
+
+tm_shape(hrus_map_precip) +
+  tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu') +
+tm_shape(locations) +
+  tm_symbols(col='blue', size=4)
+
+```
+
 
 ```{r reach hydrographs, echo = F}
 
