@@ -1608,6 +1608,42 @@ tm_shape(locations) +
 
 ```
 
+## Cumulative solar radiation difference
+
+2011-2020 average of daily station-grid solar rad for DOY 365 (or 366)
+
+```{r cum sol rad, echo = F}
+
+#get rid of a bunch of data
+hru_grid_solrad <- hru_grids %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_grid = solRad)
+
+hru_statn_solrad <- hru_statn %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_statn = solRad)
+
+solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('time', 'ID')) %>%
+  mutate(diff = solrad_statn - solrad_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>% 
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(solrad_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value')
+
+tmap_mode('view')
+
+tm_shape(hrus_map_solrad) +
+  tm_polygons('solrad_avg_cumdiff', midpoint = NA, palette = 'YlOrRd') +
+tm_shape(locations) +
+  tm_symbols(col='blue', size=4)
+
+```
+
 
 ```{r reach hydrographs, echo = F}
 
