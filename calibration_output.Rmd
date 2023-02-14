@@ -3,15 +3,12 @@ title: "Fourmile Calibrations"
 author: "Megan Sears"
 date: "`r Sys.Date()`"
 output:
-  word_document:
-    toc: yes
   html_document:
     toc: yes
     toc_float: yes
     theme: journal
 editor_options:
   chunk_output_type: console
-  always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -1032,7 +1029,6 @@ early_peakq <- ensem_bould %>%
   pivot_wider(names_from = 'source', values_from = c('q_m3s', 'doy'))
 
 
-
 marpeakq <- ggplot(early_peakq, aes(x = doy_bouldcr)) +
   geom_point(aes(y = doy_all_ensemble, shape = "all_ensemble", 
                  color = 'all_ensemble'), size=2.5) +
@@ -1096,6 +1092,69 @@ early_peakq_table <- ensem_bould %>%
 kable(early_peakq_table) %>%
   kable_styling(full_width = F) %>% 
   scroll_box(width = "100%", height = "500px")
+
+bouldcr3 <- bouldcr %>%
+  mutate(month = month(date)) %>%
+  filter(month == 3, year == 2011)
+
+test1 <- ensem_pivot %>%
+  mutate(month = month(date)) %>%
+  filter(year == 2011,
+         month == 3) %>% 
+  ggplot(aes(date, q_m3s, color = cal_run)) +
+  geom_line() +
+  scale_color_manual(name="cal_run", values=c('obs'='black',
+                                            "grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) +
+  geom_line(data = bouldcr3, aes(date, bouldcr/10), color = 'darkgrey') +
+  scale_y_continuous(name = 'Q_m3s',
+                    sec.axis = sec_axis(~.*10, name='BoulderCr_cms')) +
+  theme_bw() +
+  ggtitle('March 2011')
+
+ggplotly(test1) %>%
+  add_lines(data=bouldcr, x=~date, y=~bouldcr, colors=NULL, yaxis="y2", 
+              inherit=FALSE, showlegend = FALSE) %>%
+  layout(yaxis2 = list(overlaying = "y", side = "right",
+                       color = 'darkgray',
+                       title = "BoulderCr_cms"),
+         legend = list(x = 1.1, y = 0.95))
+
+################################################
+
+bouldcr3_2 <- bouldcr %>%
+  mutate(month = month(date)) %>%
+  filter(month == 3, year == 2019)
+
+test2 <- ensem_pivot %>%
+  mutate(month = month(date)) %>%
+  filter(year == 2019,
+         month == 3) %>% 
+  ggplot(aes(date, q_m3s, color = cal_run)) +
+  geom_line() +
+  scale_color_manual(name="cal_run", values=c('obs'='black',
+                                            "grid_ensemble"="maroon", 
+                                            "statn_ensemble"="darkturquoise", 
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4', 
+                                            "all_ensemble" = "orange")) +
+  geom_line(data = bouldcr3_2, aes(date, bouldcr/10), color = 'darkgrey') +
+  scale_y_continuous(name = 'Q_m3s',
+                    sec.axis = sec_axis(~.*10, name='BoulderCr_cms')) +
+  theme_bw() +
+  ggtitle('March 2019')
+
+
+ggplotly(test2) %>%
+  add_lines(data=bouldcr, x=~date, y=~bouldcr, colors=NULL, yaxis="y2", 
+              inherit=FALSE, showlegend = FALSE) %>%
+  layout(yaxis2 = list(overlaying = "y", side = "right",
+                       color = 'darkgray',
+                       title = "BoulderCr_cms"),
+         legend = list(x = 1.1, y = 0.95))
 
 ```
 
@@ -1245,6 +1304,25 @@ ggplot(gw, aes(x=date, color = source)) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('Cumulative RG2') +
   theme(text = element_text(size = 20))   
+
+```
+
+
+```{r rd and rg sums, echo = F, fig.width = 22, fig.asp = 1.5, out.width = "100%"}
+
+##################
+# all 4 with facets
+
+ggplot(gw, aes(x=date)) +
+  geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) +
+  geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) +
+  geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) +
+  geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) +
+  scale_x_date(labels = date_format("%b")) +
+  facet_wrap(~year + source, scales = 'free_x', ncol=2) +
+  ggtitle('Cumulative RD and RG') +
+  theme(text = element_text(size = 24))   
+
 
 ```
 
@@ -1580,9 +1658,14 @@ hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value')
 
 tmap_mode('view')
 
+locations_t <- locations %>% 
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel',
+                        'University Camp SNTL'))
+
 tm_shape(hrus_map_tmean) +
-  tm_polygons('tmean_avg_cumdiff') +
-tm_shape(locations) +
+  tm_polygons('tmean_avg_cumdiff', id = 'value') +
+tm_shape(locations_t) +
   tm_symbols(col='blue', size=4)
 
 ```
@@ -1615,9 +1698,12 @@ hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value')
 
 tmap_mode('view')
 
+locations_p <- locations %>%
+  filter(type == 'precip')
+
 tm_shape(hrus_map_precip) +
-  tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu') +
-tm_shape(locations) +
+  tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
+tm_shape(locations_p) +
   tm_symbols(col='blue', size=4)
 
 ```
@@ -1651,13 +1737,92 @@ hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value')
 
 tmap_mode('view')
 
+locations_solrad <- locations %>% 
+  dplyr::filter(name %in% c('Gordon_South',
+                        'Betasso', 'Niwot_Snotel'))
+
 tm_shape(hrus_map_solrad) +
-  tm_polygons('solrad_avg_cumdiff', midpoint = NA, palette = 'YlOrRd') +
-tm_shape(locations) +
+  tm_polygons('solrad_avg_cumdiff', midpoint = NA, palette = 'YlOrRd', id = 'value') +
+tm_shape(locations_solrad) +
   tm_symbols(col='blue', size=4)
 
 ```
 
+## Cumulative RH difference
+
+```{r rh, echo = F}
+
+#get rid of a bunch of data
+hru_grid_rh <- hru_grids %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_grid = rhum)
+
+hru_statn_rh <- hru_statn %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_statn = rhum)
+
+rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('time', 'ID')) %>%
+  mutate(diff = rh_statn - rh_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>% 
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(rh_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_rh <- locations %>% 
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel'))
+
+tm_shape(hrus_map_rh) +
+  tm_polygons('rh_avg_cumdiff', midpoint = NA, id = 'value') +
+tm_shape(locations_rh) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Cumulative wind difference
+
+```{r wind, echo = F}
+
+#get rid of a bunch of data
+hru_grid_wind <- hru_grids %>%
+  dplyr::select(c(time, ID, wind)) %>%
+  rename(wind_grid = wind)
+
+hru_statn_wind <- hru_statn %>%
+  dplyr::select(c(time, ID, wind)) %>%
+  rename(wind_statn = wind)
+
+wind_hrus <- left_join(hru_grid_wind, hru_statn_wind, by = c('time', 'ID')) %>%
+  mutate(diff = wind_statn - wind_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>% 
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(wind_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_wind <- left_join(hrus, wind_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_w <- locations %>% 
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel'))
+
+tm_shape(hrus_map_wind) +
+  tm_polygons('wind_avg_cumdiff', midpoint = NA, id = 'value') +
+tm_shape(locations_w) +
+  tm_symbols(col='blue', size=4)
+
+```
 
 ```{r reach hydrographs, echo = F}
 
