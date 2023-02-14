@@ -1670,6 +1670,33 @@ tm_shape(locations_t) +
 
 ```
 
+Relative Tmean difference
+
+```{r relative tmean, echo = F}
+
+reg_tmean <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tmean.csv',
+                      skip = 13) %>%
+  dplyr::select(-starts_with('@')) %>%
+  mutate(time = dmy(time)) %>%
+  summarize(across(`3`:`19`, ~ mean(.))) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value', 
+               values_to = 'tmean_avg') %>%
+  mutate(value = as.numeric(value))
+
+
+hrus_map_tmean <- left_join(hrus_map_tmean, reg_tmean, by = 'value') 
+
+hrus_map_tmean <- hrus_map_tmean%>%
+  mutate(relative_avgcum_diff = tmean_avg_cumdiff / tmean_avg)
+
+tm_shape(hrus_map_tmean) +
+  tm_polygons('relative_avgcum_diff', id = 'value') +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size=4)
+
+```
+
 ## Cumulative Precip difference
 
 2011-2020 average of daily station-grid precip for DOY 365 (or 366)
@@ -1703,6 +1730,33 @@ locations_p <- locations %>%
 
 tm_shape(hrus_map_precip) +
   tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
+tm_shape(locations_p) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+Relative Precip difference
+
+```{r relative p, echo = F}
+
+reg_p <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_precipAll.csv',
+                      skip = 21) %>%
+  dplyr::select(-starts_with('@')) %>%
+  mutate(time = dmy(time)) %>%
+  summarize(across(`3`:`19`, ~ mean(.))) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value', 
+               values_to = 'precip_avg') %>%
+  mutate(value = as.numeric(value))
+
+
+hrus_map_precip <- left_join(hrus_map_precip, reg_p, by = 'value') 
+
+hrus_map_precip <- hrus_map_precip %>%
+  mutate(relative_avgcum_diff = precip_avg_cumdiff / precip_avg)
+
+tm_shape(hrus_map_precip) +
+  tm_polygons('relative_avgcum_diff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
 tm_shape(locations_p) +
   tm_symbols(col='blue', size=4)
 
@@ -1748,6 +1802,33 @@ tm_shape(locations_solrad) +
 
 ```
 
+Relative solar rad difference
+
+```{r relative solrad, echo = F}
+
+reg_solrad <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_solradAll.csv',
+                      skip = 14) %>%
+  dplyr::select(-starts_with('@')) %>%
+  mutate(time = dmy(time)) %>%
+  summarize(across(`3`:`19`, ~ mean(.))) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value', 
+               values_to = 'solrad_avg') %>%
+  mutate(value = as.numeric(value))
+
+
+hrus_map_solrad <- left_join(hrus_map_solrad, reg_solrad, by = 'value') 
+
+hrus_map_solrad <- hrus_map_solrad %>%
+  mutate(relative_avgcum_diff = solrad_avg_cumdiff / solrad_avg)
+
+tm_shape(hrus_map_solrad) +
+  tm_polygons('relative_avgcum_diff', midpoint = NA, palette = 'YlOrRd', id = 'value') +
+tm_shape(locations_solrad) +
+  tm_symbols(col='blue', size=4)
+
+```
+
 ## Cumulative RH difference
 
 ```{r rh, echo = F}
@@ -1783,6 +1864,97 @@ tm_shape(hrus_map_rh) +
   tm_polygons('rh_avg_cumdiff', midpoint = NA, id = 'value') +
 tm_shape(locations_rh) +
   tm_symbols(col='blue', size=4)
+
+```
+
+Relative RH difference
+
+```{r relative rh, echo = F}
+
+reg_rh <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_rhumAll.csv',
+                      skip = 14) %>%
+  dplyr::select(-starts_with('@')) %>%
+  mutate(time = dmy(time)) %>%
+  summarize(across(`3`:`19`, ~ mean(.))) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value', 
+               values_to = 'rh_avg') %>%
+  mutate(value = as.numeric(value))
+
+
+hrus_map_rh <- left_join(hrus_map_rh, reg_rh, by = 'value') 
+
+hrus_map_rh <- hrus_map_rh %>%
+  mutate(relative_avgcum_diff = rh_avg_cumdiff / rh_avg)
+
+tm_shape(hrus_map_rh) +
+  tm_polygons('relative_avgcum_diff', midpoint = NA, id = 'value') +
+tm_shape(locations_rh) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Cumulative soil sat difference
+
+```{r soilsat, echo = F}
+
+#get rid of a bunch of data
+hru_grid_soilSat <- hru_grids %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilSat_grid = soilSat)
+
+hru_statn_soilSat <- hru_statn %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilSat_statn = soilSat)
+
+soilSat_hrus <- left_join(hru_grid_soilSat, hru_statn_soilSat, by = c('time', 'ID')) %>%
+  mutate(diff = soilSat_statn - soilSat_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>% 
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(soilSat_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_soilSat <- left_join(hrus, soilSat_hrus, by = 'value')
+
+tmap_mode('view')
+
+tm_shape(hrus_map_soilSat) +
+  tm_polygons('soilSat_avg_cumdiff', midpoint = NA, id = 'value') 
+
+```
+
+## Cumulative ET
+
+```{r et, echo = F}
+
+#get rid of a bunch of data
+hru_grid_ET <- hru_grids %>%
+  dplyr::select(c(time, ID, actET)) %>%
+  rename(ET_grid = actET)
+
+hru_statn_ET <- hru_statn %>%
+  dplyr::select(c(time, ID, actET)) %>%
+  rename(ET_statn = actET)
+
+ET_hrus <- left_join(hru_grid_ET, hru_statn_ET, by = c('time', 'ID')) %>%
+  mutate(diff = ET_statn - ET_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>% 
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(ET_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_ET <- left_join(hrus, ET_hrus, by = 'value')
+
+tmap_mode('view')
+
+tm_shape(hrus_map_ET) +
+  tm_polygons('ET_avg_cumdiff', midpoint = NA, id = 'value') 
 
 ```
 
