@@ -1947,8 +1947,6 @@ tmap_arrange(mar_tmin, apr_tmin, may_tmin, jun_tmin)
 
 ```
 
-
-```{r tmax month, echo = F}
 ## Cumulative Precip difference
 
 2011-2020 average of daily station-grid precip for DOY 365 (or 366)
