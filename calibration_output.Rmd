@@ -1323,6 +1323,10 @@ ggplot(gw, aes(x=date)) +
   ggtitle('Cumulative RD and RG') +
   theme(text = element_text(size = 24))   
 
+```
+
+
+```{r gw boxplot, echo = F}
 
 gw_maxcumsum <- gw %>%
   group_by(source, year) %>%
@@ -1342,6 +1346,8 @@ ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
   facet_wrap(~flow_type, scales = 'free') +
   ggtitle('Max annual cumulative sums')
+
+
 
 ```
 
