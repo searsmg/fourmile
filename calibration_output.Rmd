@@ -14,7 +14,8 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = F,
-  message = F)
+  message = F, 
+  warning  = F)
 
 library(tidyverse)
 library(plotly)
@@ -1341,16 +1342,62 @@ gw_maxcumsum <- gw %>%
 
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) + 
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
   ggtitle('Max annual cumulative sums')
 
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
   facet_wrap(~flow_type, scales = 'free') +
   ggtitle('Max annual cumulative sums')
 
+```
 
+### RD and RG by season
+
+```{r flow season, echo = F, fig.width = 12, fig.asp = 0.75, out.width = "100%"}
+
+#group by season and get max sums by season
+flow_season <- gw %>%
+  dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>%
+  mutate(month = month(date)) %>%
+  mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt',
+                            month %in% c(7,8,9,10) ~ 'monsoon',
+                            month %in% c(11,12,1,2) ~ 'baseflow')) %>%
+  group_by(source, year, season) %>%
+  summarize(yr_season_RD1 = max(RD1cumsum),
+            yr_season_RD2 = max(RD2cumsum),
+            yr_season_RG1 = max(RG1cumsum),
+            yr_season_RG2 = max(RG2cumsum)) %>%
+            pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'flow_cms')
+  
+
+flow_season %>%
+  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~season, scales = 'free') +
+  ggtitle('Max annual season cumulative sums') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(text = element_text(size = 20)) 
+  
+  
+flow_season %>%
+  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~season + flow_type, scales = 'free') +
+  ggtitle('Max annual season cumulative sums') +
+  theme_bw() +
+  theme(text = element_text(size = 20))
+  
 
 ```
+
 
 # HRU results
 
@@ -1688,7 +1735,8 @@ locations_t <- locations %>%
                         'University Camp SNTL'))
 
 tm_shape(hrus_map_tmean) +
-  tm_polygons('diff', id = 'value') +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
 tm_shape(locations_t) +
   tm_symbols(col='blue', size=4)
 
@@ -1723,7 +1771,8 @@ hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value')
 tmap_mode('view')
 
 tm_shape(hrus_map_tmax) +
-  tm_polygons('diff', id = 'value') +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
 tm_shape(locations_t) +
   tm_symbols(col='blue', size=4)
 
@@ -1768,7 +1817,7 @@ hrus_map_tmax_mar <- left_join(hrus, tmax_hrus_mar, by = 'value')
 mar_tmax <- tm_shape(hrus_map_tmax_mar) +
   #tm_polygons('mo_tmax_diff', id = 'value') +
   tm_fill('mo_tmax_diff', id = 'value',
-          breaks = c(-6,-3,0,3,6)) +
+          breaks = c(-6,-4,-2,0,2,4,6)) +
   tm_borders() +
   tm_shape(locations_t) +
   tm_symbols(col='blue', size = 0.25) +
@@ -1784,7 +1833,7 @@ hrus_map_tmax_apr <- left_join(hrus, tmax_hrus_apr, by = 'value')
 
 apr_tmax <- tm_shape(hrus_map_tmax_apr) +
   tm_fill('mo_tmax_diff', id = 'value',
-          breaks = c(-6,-3,0,3,6)) +
+          breaks = c(-6,-4,-2,0,2,4,6)) +
   tm_borders() +
   tm_shape(locations_t) +
   tm_symbols(col='blue', size = 0.25) +
@@ -1799,7 +1848,7 @@ hrus_map_tmax_may <- left_join(hrus, tmax_hrus_may, by = 'value')
 
 may_tmax <- tm_shape(hrus_map_tmax_may) +
   tm_fill('mo_tmax_diff', id = 'value',
-         breaks = c(-6,-3,0,3,6)) +
+         breaks = c(-6,-4,-2,0,2,4,6)) +
   tm_borders() +
 tm_shape(locations_t) +
   tm_symbols(col='blue', size = 0.25) +
@@ -1814,7 +1863,7 @@ hrus_map_tmax_jun <- left_join(hrus, tmax_hrus_jun, by = 'value')
 
 jun_tmax <- tm_shape(hrus_map_tmax_jun) +
   tm_fill('mo_tmax_diff', id = 'value',
-          breaks = c(-6,-3,0,3,6)) +
+         breaks = c(-6,-4,-2,0,2,4,6)) +
   tm_borders() +
 tm_shape(locations_t) +
   tm_symbols(col='blue', size = 0.25) +
@@ -1854,7 +1903,8 @@ hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value')
 tmap_mode('view')
 
 tm_shape(hrus_map_tmin) +
-  tm_polygons('diff', id = 'value') +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
 tm_shape(locations_t) +
   tm_symbols(col='blue', size=4)
 
@@ -1992,30 +2042,29 @@ tm_shape(locations_p) +
 
 ```
 
-Relative Precip difference
 
 ```{r relative p, echo = F}
 
-reg_p <- read_csv(here('HRU_output/reg_precipAll.csv'),
-                      skip = 21) %>%
-  dplyr::select(-starts_with('@')) %>%
-  mutate(time = dmy(time)) %>%
-  summarize(across(`3`:`19`, ~ mean(.))) %>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value', 
-               values_to = 'precip_avg') %>%
-  mutate(value = as.numeric(value))
-
-
-hrus_map_precip <- left_join(hrus_map_precip, reg_p, by = 'value') 
-
-hrus_map_precip <- hrus_map_precip %>%
-  mutate(relative_avgcum_diff = precip_avg_cumdiff / precip_avg)
-
-tm_shape(hrus_map_precip) +
-  tm_polygons('relative_avgcum_diff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
-tm_shape(locations_p) +
-  tm_symbols(col='blue', size=4)
+# reg_p <- read_csv(here('HRU_output/reg_precipAll.csv'),
+#                       skip = 21) %>%
+#   dplyr::select(-starts_with('@')) %>%
+#   mutate(time = dmy(time)) %>%
+#   summarize(across(`3`:`19`, ~ mean(.))) %>%
+#   pivot_longer(cols = `3`:`19`,
+#                names_to = 'value', 
+#                values_to = 'precip_avg') %>%
+#   mutate(value = as.numeric(value))
+# 
+# 
+# hrus_map_precip <- left_join(hrus_map_precip, reg_p, by = 'value') 
+# 
+# hrus_map_precip <- hrus_map_precip %>%
+#   mutate(relative_avgcum_diff = precip_avg_cumdiff / precip_avg)
+# 
+# tm_shape(hrus_map_precip) +
+#   tm_polygons('relative_avgcum_diff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
+# tm_shape(locations_p) +
+#   tm_symbols(col='blue', size=4)
 
 ```
 
@@ -2093,7 +2142,7 @@ tm_shape(locations_rh) +
 
 ```
 
-## Average soil sat difference comparison
+## Average soil sat comparison
 
 ```{r soilsat, echo = F}
 
@@ -2118,12 +2167,14 @@ hrus_map_soilsat <- left_join(hrus, soilsat_hrus, by = 'value')
 tmap_mode('plot')
 
 soilavg_grid <- tm_shape(hrus_map_soilsat) +
-  tm_polygons('soilsat_all_grid', midpoint = NA, id = 'value') +
+  tm_polygons('soilsat_all_grid', midpoint = NA, id = 'value',
+              breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) +
   tm_legend(legend.outside = T) +
   tm_layout(main.title = 'Average soil sat')
 
 soilavg_statn <- tm_shape(hrus_map_soilsat) +
-  tm_polygons('soilsat_all_statn', midpoint = NA, id = 'value') +
+  tm_polygons('soilsat_all_statn', midpoint = NA, id = 'value',
+              breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) +
   tm_legend(legend.outside = T)
 
 tmap_arrange(soilavg_grid, soilavg_statn) 
@@ -2159,13 +2210,15 @@ hrus_map_soilsat_max <- left_join(hrus, soilsat_hrus_max, by = 'value')
 tmap_mode('plot')
 
 soilavg_grid_max <- tm_shape(hrus_map_soilsat_max) +
-  tm_polygons('avg_max_grid', midpoint = NA, id = 'value') +
+  tm_polygons('avg_max_grid', midpoint = NA, id = 'value',
+              breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) +
   tm_legend(legend.outside = T) +
   tm_layout(main.title = 'Average max soil sat',
             title.position = c('left', 'top'))
 
 soilavg_statn_max <- tm_shape(hrus_map_soilsat_max) +
-  tm_polygons('avg_max_statn', midpoint = NA, id = 'value') +
+  tm_polygons('avg_max_statn', midpoint = NA, id = 'value',
+              breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) +
   tm_legend(legend.outside = T)
 
 tmap_arrange(soilavg_grid_max, soilavg_statn_max) 
@@ -2196,15 +2249,35 @@ hrus_map_ET <- left_join(hrus, ET_hrus, by = 'value')
 tmap_mode('plot')
 
 ETavg_grid <- tm_shape(hrus_map_ET) +
-  tm_polygons('ET_all_grid', midpoint = NA, id = 'value') +
+  tm_polygons('ET_all_grid', midpoint = NA, id = 'value',
+              breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) +
   tm_legend(legend.outside = T) +
   tm_layout(main.title = 'Average ET')
 
 ETavg_statn <- tm_shape(hrus_map_ET) +
-  tm_polygons('ET_all_statn', midpoint = NA, id = 'value') +
+  tm_polygons('ET_all_statn', midpoint = NA, id = 'value',
+             breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) +
   tm_legend(legend.outside = T)
 
 tmap_arrange(ETavg_grid, ETavg_statn)
+
+```
+
+## Average ET difference
+
+```{r et diff, echo = F}
+
+ET_hrus <- ET_hrus %>%
+  mutate(diff = ET_all_statn - ET_all_grid)
+
+hrus_map_et_diff <- left_join(hrus, ET_hrus, by = 'value')
+
+tmap_mode('plot')
+
+tm_shape(hrus_map_et_diff) +
+  tm_polygons('diff', midpoint = NA, id = 'value')  +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average ET difference')
 
 ```
 
@@ -2230,7 +2303,7 @@ LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>%
 
 hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value')
 
-tmap_mode('plot')
+tmap_mode('view')
 
 LAIavg_grid <- tm_shape(hrus_map_LAI) +
   tm_polygons('LAI_all_grid', midpoint = NA, id = 'value',
@@ -2246,6 +2319,51 @@ LAIavg_statn <- tm_shape(hrus_map_LAI) +
 tmap_arrange(LAIavg_grid, LAIavg_statn)
 
 ```
+
+## LAI over time 
+
+```{r lai over time, echo = F}
+
+# plot time series of LAI over for HRU 1 and HRU 12
+hru_grid_select <- hru_grids %>%
+  filter(ID == 1 | ID == 12) %>%
+  dplyr::select(time, ID, LAI_grid = LAI)
+
+hru_statn_select <- hru_statn %>%
+  filter(ID == 1 | ID == 12) %>%
+  dplyr::select(time, ID, LAI_statn = LAI)
+
+hru_select <- left_join(hru_grid_select, hru_statn_select, by = c('time', 'ID')) %>%
+  rename(value = ID)
+
+
+# plot time series of LAI over for HRU 1
+hru_select %>%
+  mutate(year = year(time)) %>% 
+  filter(value == 1) %>% 
+ggplot(aes(x = time)) +
+  geom_line(aes(y = LAI_grid, color = "HRU1_burn_grid"), size = 1) +
+  geom_line(aes(y = LAI_statn, color = 'HRU1_burn_statn'), size = 1) +
+  ggtitle('LAI over time for HRU 1 (burned)') +
+  scale_color_manual(name = 'HRU' , values=c("HRU1_burn_grid"='orange', 
+                                            "HRU1_burn_statn"='springgreen4')) +
+  theme_bw()
+
+# plot time series of LAI over for HRU 12
+hru_select %>%
+  mutate(year = year(time)) %>% 
+  filter(value == 12) %>% 
+ggplot(aes(x = time)) +
+  geom_line(aes(y = LAI_grid, color = "HRU12_unburn_grid"), size = 1) +
+  geom_line(aes(y = LAI_statn, color = 'HRU12_unburn_statn'), size = 1) +
+  ggtitle('LAI over time for HRU 12 (unburned)') +
+  scale_color_manual(name = 'HRU' , values=c("HRU12_unburn_grid"='orange', 
+                                            "HRU12_unburn_statn"='springgreen4')) +
+  theme_bw()
+
+  
+```
+
 
 
 ```{r reach hydrographs, echo = F}
