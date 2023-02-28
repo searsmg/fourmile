@@ -1026,6 +1026,7 @@ ensem_bould <- left_join(ensem, bouldcr, by = 'date') %>%
 early_peakq <- ensem_bould %>%
   mutate(doy = yday(date)) %>%
   dplyr::select(c(doy, source, q_m3s, year)) %>%
+  drop_na() %>% 
   pivot_wider(names_from = 'source', values_from = c('q_m3s', 'doy'))
 
 
@@ -1057,6 +1058,7 @@ marpeakq <- ggplot(early_peakq, aes(x = doy_bouldcr)) +
   ggtitle('DOY of peak Q in March')
 
 ggplotly(marpeakq)
+
 
 # ggplot(early_peakq, aes(doy_bouldcr, doy_grid_all)) +
 #   geom_point(size=2.5) +
@@ -1163,7 +1165,7 @@ ggplotly(test2) %>%
 ## Precip
 
 ```{r catch precip, echo = F}
-setwd("C:/Users/sears/Documents/Repos/fourmile/catchment_output")
+setwd("./catchment_output")
 
 statn <- read_csv('statnall.csv')
 grid <- read_csv('gridall.csv')
@@ -1228,13 +1230,12 @@ tmean
 ## RD and RG
 
 ```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
-setwd("C:/Users/sears/Documents/Repos/fourmile/catchment_output")
 
-gw_grid <- read_csv('gridall_outlet.csv') %>%
+gw_grid <- read_csv(here('catchment_output/gridall_outlet.csv')) %>%
   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
   mutate(source = 'grid')
 
-gw_statn <- read_csv('statnall_outlet.csv') %>%
+gw_statn <- read_csv(here('catchment_output/statnall_outlet.csv')) %>%
   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
   mutate(source = 'statn')
 
@@ -1389,12 +1390,12 @@ niwot_snotel <- niwot_snotel %>%
          #precip_mm_snotel = precip_mm_snotel*25.4) %>%
   filter(date > '2010-12-31' & date < '2020-10-01')
   
-hru7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
+hru7_grid <- read_csv(here('HRU_output/HRU_7_grid.csv')) %>%
   dplyr::select(date, precip_mm, swe_mm) %>%
   rename(precip_mm_hrugrid = precip_mm,
          swe_mm_hrugrid = swe_mm)
 
-hru7_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_statn.csv') %>%
+hru7_statn <- read_csv(here('HRU_output/HRU_7_statn.csv')) %>%
   dplyr::select(date, precip_mm, swe_mm) %>%
   rename(precip_mm_hrustatn = precip_mm,
          swe_mm_hrustatn = swe_mm)
@@ -1455,18 +1456,18 @@ cum_precip_niwot
 
 ```{r ET, echo = F}
 
-niwot_et <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/Niwot_daily_et.csv') %>%
+niwot_et <- read_csv(here('HRU_output/Niwot_daily_et.csv')) %>%
   filter(year > 2010) %>%
   mutate(date = make_date(year = year, month = month, day = day)) %>%
   dplyr::select(date, et) %>%
   rename(et_niwot = et)
   
 
-hru7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
+hru7_grid <- read_csv(here('HRU_output/HRU_7_grid.csv')) %>%
   dplyr::select(date, AET_mm) %>%
   rename(et_hru7grid = AET_mm)
 
-hru7_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_statn.csv') %>%
+hru7_statn <- read_csv(here('HRU_output/HRU_7_statn.csv')) %>%
   dplyr::select(date, AET_mm) %>%
   rename(et_hru7statn = AET_mm)
 
@@ -1536,35 +1537,35 @@ et_scatter_statn_obs
 
 ```{r hru7 temp, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
 
-tmean7_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_grid.csv') %>%
+tmean7_grid <- read_csv(here('HRU_output/HRU_7_grid.csv')) %>%
   dplyr::select(date, tmean) %>%
   rename(t7_grid = tmean)
 
-tmean7_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_7_statn.csv') %>%
+tmean7_statn <- read_csv(here('HRU_output/HRU_7_statn.csv')) %>%
   dplyr::select(date, tmean) %>%
   rename(t7_statn = tmean)
 
-tmean9_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_9_grid.csv') %>%
+tmean9_grid <- read_csv(here('HRU_output/HRU_9_grid.csv')) %>%
   dplyr::select(date, tmean) %>%
   rename(t9_grid = tmean)
 
-tmean9_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_9_statn.csv') %>%
+tmean9_statn <- read_csv(here('HRU_output/HRU_9_statn.csv')) %>%
   dplyr::select(date, tmean) %>%
   rename(t9_statn = tmean)
 
-tmean22_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_22_grid.csv') %>%
+tmean22_grid <- read_csv(here('HRU_output/HRU_22_grid.csv')) %>%
   dplyr::select(date, tmean) %>%
   rename(t22_grid = tmean)
 
-tmean22_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_22_statn.csv') %>%
+tmean22_statn <- read_csv(here('HRU_output/HRU_22_statn.csv')) %>%
   dplyr::select(date, tmean) %>%
   rename(t22_statn = tmean)
 
-tmean36_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_36_grid.csv') %>%
+tmean36_grid <- read_csv(here('HRU_output/HRU_36_grid.csv')) %>%
   dplyr::select(date, tmean) %>%
   rename(t36_grid = tmean)
 
-tmean36_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/HRU_36_statn.csv') %>%
+tmean36_statn <- read_csv(here('HRU_output/HRU_36_statn.csv')) %>%
   dplyr::select(date, tmean) %>%
   rename(t36_statn = tmean)
 
@@ -1607,7 +1608,7 @@ tmean_cumdiff_plot
 
 ```{r cumulative tmean for HRUs, echo = F}
 #grid first
-setwd("C:/Users/sears/Documents/Repos/fourmile/HRU_output/grid")
+setwd(here("HRU_output/grid"))
 
 read_ages_grid <- function(dataframe){
   read_csv(dataframe, skip = 3) %>%
@@ -1634,7 +1635,7 @@ hru_grids <- dataframes %>%
   bind_rows() 
 
 #statn next
-setwd("C:/Users/sears/Documents/Repos/fourmile/HRU_output/statn")
+setwd(here("HRU_output/statn"))
 
 read_ages_statn <- function(dataframe){
   read_csv(dataframe, skip = 3) %>%
@@ -1697,7 +1698,7 @@ tm_shape(locations_t) +
 
 ```{r tmax, echo = F}
 
-tmax_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tmaxAll_prism.csv') %>% 
+tmax_grid <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv'))%>% 
   pivot_longer(cols = `3`:`19`,
                names_to = 'value', 
                values_to = 'tmax_grid') %>%
@@ -1705,7 +1706,7 @@ tmax_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tm
   group_by(value) %>%
   summarize(Tmax_mean_grid = mean(tmax_grid))
 
-tmax_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tmaxAll.csv') %>% 
+tmax_statn <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>% 
   pivot_longer(cols = `3`:`19`,
                names_to = 'value', 
                values_to = 'tmax_statn') %>%
@@ -1732,7 +1733,7 @@ tm_shape(locations_t) +
 
 ```{r tmax month, echo = F}
 
-tmax_grid_mo <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tmaxAll_prism.csv') %>% 
+tmax_grid_mo <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv')) %>% 
   pivot_longer(cols = `3`:`19`,
                names_to = 'value', 
                values_to = 'tmax_grid') %>%
@@ -1742,7 +1743,7 @@ tmax_grid_mo <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg
   group_by(value, month) %>%
   summarize(avg_tmax_grid = mean(tmax_grid))
 
-tmax_statn_mo <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tmaxAll.csv') %>% 
+tmax_statn_mo <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>% 
   pivot_longer(cols = `3`:`19`,
                names_to = 'value', 
                values_to = 'tmax_statn') %>%
@@ -1828,7 +1829,7 @@ tmap_arrange(mar_tmax, apr_tmax, may_tmax, jun_tmax)
 
 ```{r tmin, echo = F}
 
-tmin_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tminAll_prism.csv') %>% 
+tmin_grid <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>% 
   pivot_longer(cols = `3`:`19`,
                names_to = 'value', 
                values_to = 'tmin_grid') %>%
@@ -1836,7 +1837,7 @@ tmin_grid <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tm
   group_by(value) %>%
   summarize(Tmin_mean_grid = mean(tmin_grid))
 
-tmin_statn <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tminAll.csv') %>% 
+tmin_statn <- read_csv(here('HRU_output/reg_tminAll.csv')) %>% 
   pivot_longer(cols = `3`:`19`,
                names_to = 'value', 
                values_to = 'tmin_statn') %>%
@@ -1862,7 +1863,7 @@ tm_shape(locations_t) +
 ## Tmin monthly average
 
 ```{r tmin month, echo = F}
-tmin_grid_mo <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tminAll_prism.csv') %>% 
+tmin_grid_mo <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>% 
   pivot_longer(cols = `3`:`19`,
                names_to = 'value', 
                values_to = 'tmin_grid') %>%
@@ -1872,7 +1873,7 @@ tmin_grid_mo <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg
   group_by(value, month) %>%
   summarize(avg_tmin_grid = mean(tmin_grid))
 
-tmin_statn_mo <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_tminAll.csv') %>% 
+tmin_statn_mo <- read_csv(here('HRU_output/reg_tminAll.csv')) %>% 
   pivot_longer(cols = `3`:`19`,
                names_to = 'value', 
                values_to = 'tmin_statn') %>%
@@ -1995,7 +1996,7 @@ Relative Precip difference
 
 ```{r relative p, echo = F}
 
-reg_p <- read_csv('C:/Users/sears/Documents/Repos/fourmile/HRU_output/reg_precipAll.csv',
+reg_p <- read_csv(here('HRU_output/reg_precipAll.csv'),
                       skip = 21) %>%
   dplyr::select(-starts_with('@')) %>%
   mutate(time = dmy(time)) %>%
@@ -2204,6 +2205,45 @@ ETavg_statn <- tm_shape(hrus_map_ET) +
   tm_legend(legend.outside = T)
 
 tmap_arrange(ETavg_grid, ETavg_statn)
+
+```
+
+## Average LAI comparison
+
+```{r lai, echo = F}
+
+#get rid of a bunch of data
+hru_grid_LAI <- hru_grids %>%
+  dplyr::select(c(time, ID, LAI)) %>%
+  rename(LAI_grid = LAI)  %>%
+  group_by(ID) %>%
+  summarize(LAI_all_grid = mean(LAI_grid))
+
+hru_statn_LAI <- hru_statn %>%
+  dplyr::select(c(time, ID, LAI)) %>%
+  rename(LAI_statn = LAI) %>%
+  group_by(ID) %>%
+  summarize(LAI_all_statn = mean(LAI_statn))
+
+LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value')
+
+tmap_mode('plot')
+
+LAIavg_grid <- tm_shape(hrus_map_LAI) +
+  tm_polygons('LAI_all_grid', midpoint = NA, id = 'value',
+              breaks = c(1,2,3,4,5)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average LAI')
+
+LAIavg_statn <- tm_shape(hrus_map_LAI) +
+  tm_polygons('LAI_all_statn', midpoint = NA, id = 'value',
+              breaks = c(1,2,3,4,5)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(LAIavg_grid, LAIavg_statn)
 
 ```
 
