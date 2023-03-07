@@ -32,6 +32,8 @@ library(here)
 library(scales)
 library(dataRetrieval)
 library(tmap)
+library(ggpubr)
+library(gridExtra)
 
 ```
 
@@ -128,6 +130,7 @@ plotdens_params <- function(param_name) {
 name <- levels(params$param)
 
 lapply(name, plotdens_params)
+
 
 ```
 
@@ -2350,7 +2353,7 @@ ggplot(aes(x = time)) +
   theme_bw()
 
 # plot time series of LAI over for HRU 12
-hru_select %>%
+{hru_select %>%
   mutate(year = year(time)) %>% 
   filter(value == 12) %>% 
 ggplot(aes(x = time)) +
@@ -2359,95 +2362,193 @@ ggplot(aes(x = time)) +
   ggtitle('LAI over time for HRU 12 (unburned)') +
   scale_color_manual(name = 'HRU' , values=c("HRU12_unburn_grid"='orange', 
                                             "HRU12_unburn_statn"='springgreen4')) +
-  theme_bw()
+  theme_bw()} %>%
+  ggplotly()
 
   
 ```
 
+## HRU 29 LAI and biomass
+
+```{r hru29 lai and biomass}
+
+# plot time series of LAI 29
+hru_grid29 <- hru_grids %>%
+  filter(ID == 29) %>%
+  dplyr::select(time, ID, LAI_grid = LAI)
+
+hru_statn29 <- hru_statn %>%
+  filter(ID == 29) %>%
+  dplyr::select(time, ID, LAI_statn = LAI)
+
+hru_29 <- left_join(hru_grid29, hru_statn29, by = c('time', 'ID')) 
+
+# plot time series of LAI over for HRU 29
+{hru_29 %>%
+  ggplot(aes(x = time)) +
+  geom_line(aes(y = LAI_grid, color = "HRU29_grid"), size = 1) +
+  geom_line(aes(y = LAI_statn, color = 'HRU29_statn'), size = 1) +
+  ggtitle('LAI - HRU 29') +
+  scale_color_manual(name = 'HRU' , values=c("HRU29_grid"='orange', 
+                                            "HRU29_statn"='springgreen4')) +
+  theme_bw()} %>%
+  ggplotly()
 
 
-```{r reach hydrographs, echo = F}
+hru29grid_bio <- read_csv('/Users/megansears/Documents/Repos/fourmile/HRU_output/HRU_29_grid.csv') %>%
+  mutate(time = mdy(time)) %>%
+  dplyr::select(time, BioAct_grid = BioAct_kgha)
 
-# reach <- read_csv('reach_all.csv') %>%
-#   mutate(reach = as.factor(reach)) %>%
-#   pivot_longer(!c(date, reach, WY), names_to = 'cal', values_to = 'q_cms')
-# 
-#   
-# plotq_reach <- function(reach_name) {
-#   {reach %>%
-#     filter(reach == reach_name) %>%
-#     ggplot(aes(x = date,
-#                y = q_cms,
-#                color = cal)) + 
-#     geom_line() + 
-#     ggtitle(reach_name) +
-#     theme_bw()} %>%
-#     ggplotly()
-#   
-# }
-# 
-# name <- levels(reach$reach)
-# 
-# try2 <- lapply(name, plotq_reach)
-# 
-# htmltools::tagList(try2)
-# 
-# ```
-# 
-# ### Overall KGE by reach
-# 
-# ```{r reach kge, echo = F}
-# 
-# reach_pivot <- reach %>%
-#   pivot_wider(names_from = 'cal', values_from = 'q_cms') %>%
-#   mutate(WY = as.factor(calcWaterYear(date)))
-# 
-# reach_kge_all <- reach_pivot %>%
-#   group_by(reach) %>%
-#   summarize(grid2011 = KGE(grid_2011, obs),
-#             grid2012 = KGE(grid_2012, obs),
-#             grid2013 = KGE(grid_2013, obs),
-#             grid2014 = KGE(grid_2014, obs),
-#             grid2015 = KGE(grid_2015, obs),
-#             grid2016 = KGE(grid_2016, obs),
-#             grid2017 = KGE(grid_2017, obs),
-#             grid2018 = KGE(grid_2018, obs),
-#             grid2019 = KGE(grid_2019, obs),
-#             grid2020 = KGE(grid_2020, obs),
-#             gridall = KGE(grid_all, obs),
-#             statn2011 = KGE(statn_2011, obs),
-#             statn2012 = KGE(statn_2012, obs),
-#             statn2013 = KGE(statn_2013, obs),
-#             statn2014 = KGE(statn_2014, obs),
-#             statn2015 = KGE(statn_2015, obs),
-#             statn2016 = KGE(statn_2016, obs),
-#             statn2017 = KGE(statn_2017, obs),
-#             statn2018 = KGE(statn_2018, obs),
-#             statn2019 = KGE(statn_2019, obs),
-#             statn2020 = KGE(statn_2020, obs),
-#             statnall = KGE(statn_all, obs)) %>%
-#     mutate_if(is.numeric,
-#             round,
-#             digits = 2)
-# 
-# 
-# reach_kge_all <- reach_kge_all %>%
-#   pivot_longer(!reach, names_to = 'cal_runs', values_to = 'KGE') %>%
-#   pivot_wider(names_from = 'reach', values_from = 'KGE')
-# 
-# 
-# kable(reach_kge_all) %>%
-#   kable_styling(full_width = F)
-# 
-# 
-# obs_count <- reach_pivot %>%
-#   select(obs, reach) %>%
-#   drop_na() %>%
-#   group_by(reach) %>%
-#   summarize(count_obs = n())
-# 
-# kable(obs_count, caption = 'Streamflow observation count') %>%
-#   kable_styling(full_width = F)
+hru29statn_bio <- read_csv('/Users/megansears/Documents/Repos/fourmile/HRU_output/HRU_29_statn.csv') %>%
+  mutate(time = mdy(time)) %>%
+  dplyr::select(time, BioAct_statn= BioAct_kgha)
+
+hru_29_bio <- left_join(hru29grid_bio, hru29statn_bio, by = c('time')) 
+
+#plot time series of biomass over time for HRU 29
+{hru_29_bio %>%
+  ggplot(aes(x = time)) +
+  geom_line(aes(y = BioAct_grid, color = "HRU29_grid"), size = 1) +
+  geom_line(aes(y = BioAct_statn, color = 'HRU29_statn'), size = 1) +
+  ggtitle('Biomass') +
+  scale_color_manual(name = 'HRU' , values=c("HRU29_grid"='orange', 
+                                            "HRU29_statn"='springgreen4')) +
+  theme_bw()} %>%
+  ggplotly()
 
 
 ```
+
+# Mauscript figs
+
+## Figure 1
+
+```{r fig1}
+
+library(usmap)
+
+dem <- raster('/Users/megansears/Documents/Repos/fourmile/data/GIS/cutDEM.tif')
+
+hru_bnds <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp')
+
+tmap_mode('plot')
+
+tm_shape(dem) +
+  tm_raster(palette = terrain.colors(5)) +
+  tm_shape(hru_bnds) +
+  tm_polygons(alpha =0, col = 'black') +
+  tm_compass() +
+  tm_scale_bar() +
+  tm_layout(legend.outside = T,
+            main.title = 'A')
+
+
+dem2 <- as.data.frame(dem, xy = TRUE)
+
+# ggplot() +
+#  geom_polygon(data = hru_bnds, aes(x = x, y = y, fill = value)) +
+#   geom_raster(data = dem2, aes(x = x, y = y,
+#                                       fill = cutDEM)) +
+#   theme_bw() +
+#   coord_quickmap()
+
+###################################################
+
+catchment_mo_mean <- catchment %>%
+  mutate(month = month(time)) %>%
+  group_by(site, month) %>%
+  summarise(across(precip:solRad, ~ mean(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month,
+                precip_mean = precip, tmean_mean = tmean, 
+                solrad_mean = solRad, rh_mean = rhum)
+
+catchment_mo_max <- catchment %>%
+  mutate(month = month(time)) %>%
+  group_by(site, month) %>%
+  summarise(across(precip:solRad, ~ max(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month,
+                precip_max = precip, tmax_max = tmean, 
+                solrad_max = solRad, rh_max = rhum)
+
+catchment_mo_min <- catchment %>%
+  mutate(month = month(time)) %>%
+  group_by(site, month) %>%
+  summarise(across(precip:solRad, ~ min(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month,
+                precip_min = precip, tmin_min = tmean, 
+                solrad_min = solRad, rh_min = rhum)
+
+
+catchment_mo <- left_join(catchment_mo_mean, catchment_mo_max, 
+                          by = c('month', 'site'))
+
+catchment_mo2 <- left_join(catchment_mo, catchment_mo_min, 
+                          by = c('month', 'site')) %>%
+  mutate(month_name = month.abb[month]) %>%
+  mutate(month_name = factor(month_name, 
+                             levels = c('Jan', 'Feb', 'Mar',
+                                        'Apr', 'May', 'Jun',
+                                        'Jul', 'Aug', 'Sep',
+                                        'Oct', 'Nov', 'Dec')))
+
+
+p_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = precip_mean, 
+                                      color = site, group = site)) +
+  geom_ribbon(aes(ymin = precip_min, ymax = precip_max, fill = site), alpha = 0.2) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  labs(y = 'Precipitation (mm)') +
+  ggtitle('B')
+
+p_moplot
+
+t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean, 
+                                      color = site, group = site)) +
+  geom_ribbon(aes(ymin = tmin_min, ymax = tmax_max, fill = site), alpha = 0.2) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  labs(y = expression("Mean temperature " ( degree~C)))+
+  ggtitle('C')
+
+t_moplot
+
+sol_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = solrad_mean, 
+                                      color = site, group = site)) +
+  geom_ribbon(aes(ymin = solrad_min, ymax = solrad_max, fill = site), alpha = 0.2) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  labs(y = 'Solar Radiation (unit)') +
+  ggtitle('D')
+
+sol_moplot
+
+rh_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = rh_mean, 
+                                      color = site, group = site)) +
+  geom_ribbon(aes(ymin = rh_min, ymax = rh_max, fill = site), alpha = 0.2) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  labs(y = 'RH (%)', x= 'Month') +
+  ggtitle('E')
+
+rh_moplot
+
+ggarrange(p_moplot+ rremove("x.text") +
+               rremove("x.title") +
+               rremove('x.ticks'),
+             t_moplot+ rremove("x.text") +
+               rremove("x.title")+
+               rremove('x.ticks'), 
+             sol_moplot + rremove("x.text") +
+               rremove("x.title")+
+               rremove('x.ticks'),
+             rh_moplot,
+          common.legend = T,
+          legend = 'bottom',
+             nrow = 4)
+
+```
+
