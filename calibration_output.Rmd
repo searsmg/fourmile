@@ -1169,7 +1169,7 @@ ggplotly(test2) %>%
 ## Precip
 
 ```{r catch precip, echo = F}
-setwd("./catchment_output")
+setwd("/Users/megansears/Documents/Repos/fourmile/catchment_output")
 
 statn <- read_csv('statnall.csv')
 grid <- read_csv('gridall.csv')
@@ -2462,28 +2462,19 @@ catchment_mo_mean <- catchment %>%
                 precip_mean = precip, tmean_mean = tmean, 
                 solrad_mean = solRad, rh_mean = rhum)
 
-catchment_mo_max <- catchment %>%
+catchment_mo_sd <- catchment %>%
   mutate(month = month(time)) %>%
   group_by(site, month) %>%
-  summarise(across(precip:solRad, ~ max(.x, na.rm = TRUE))) %>%
+  summarise(across(precip:solRad, ~ sd(.x, na.rm = TRUE))) %>%
   dplyr::select(site, month,
-                precip_max = precip, tmax_max = tmean, 
-                solrad_max = solRad, rh_max = rhum)
-
-catchment_mo_min <- catchment %>%
-  mutate(month = month(time)) %>%
-  group_by(site, month) %>%
-  summarise(across(precip:solRad, ~ min(.x, na.rm = TRUE))) %>%
-  dplyr::select(site, month,
-                precip_min = precip, tmin_min = tmean, 
-                solrad_min = solRad, rh_min = rhum)
+                precip_sd = precip, tmean_sd = tmean, 
+                solrad_sd = solRad, rh_sd = rhum)
 
 
-catchment_mo <- left_join(catchment_mo_mean, catchment_mo_max, 
+catchment_mo <- left_join(catchment_mo_mean, catchment_mo_sd, 
                           by = c('month', 'site'))
 
-catchment_mo2 <- left_join(catchment_mo, catchment_mo_min, 
-                          by = c('month', 'site')) %>%
+catchment_mo2 <- catchment_mo %>%
   mutate(month_name = month.abb[month]) %>%
   mutate(month_name = factor(month_name, 
                              levels = c('Jan', 'Feb', 'Mar',
@@ -2492,63 +2483,62 @@ catchment_mo2 <- left_join(catchment_mo, catchment_mo_min,
                                         'Oct', 'Nov', 'Dec')))
 
 
-p_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = precip_mean, 
-                                      color = site, group = site)) +
-  geom_ribbon(aes(ymin = precip_min, ymax = precip_max, fill = site), alpha = 0.2) +
-  geom_line() +
-  geom_point() +
-  theme_bw() +
-  labs(y = 'Precipitation (mm)') +
-  ggtitle('B')
+p_cols <- ggplot(catchment_mo2, aes(x = month_name, y = precip_mean,
+                          color = site, fill = site)) +
+  geom_col(position='dodge') +
+  geom_errorbar(aes(ymin = 0, ymax = precip_mean + precip_sd), 
+                position = position_dodge(width = 0.6), width = 0.2) +
+  theme_bw(base_size = 14) +
+  labs(y = 'Precipitation (mm)',
+       x = element_blank()) 
 
-p_moplot
+ggsave("P.png", plot = p_cols, width = 8, height = 6, dpi = 300)
+
 
 t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean, 
                                       color = site, group = site)) +
-  geom_ribbon(aes(ymin = tmin_min, ymax = tmax_max, fill = site), alpha = 0.2) +
+  geom_ribbon(aes(ymin = tmean_mean - tmean_sd, ymax = tmean_mean + tmean_sd, fill = site), alpha = 0.2) +
   geom_line() +
   geom_point() +
-  theme_bw() +
-  labs(y = expression("Mean temperature " ( degree~C)))+
-  ggtitle('C')
+  theme_bw(base_size=14) +
+  labs(y = expression("Mean temperature " ( degree~C)),
+       x = element_blank())
 
 t_moplot
 
 sol_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = solrad_mean, 
                                       color = site, group = site)) +
-  geom_ribbon(aes(ymin = solrad_min, ymax = solrad_max, fill = site), alpha = 0.2) +
+  geom_ribbon(aes(ymin = solrad_mean - solrad_sd, ymax = solrad_mean + solrad_sd, fill = site), alpha = 0.2) +
   geom_line() +
   geom_point() +
-  theme_bw() +
-  labs(y = 'Solar Radiation (unit)') +
-  ggtitle('D')
+  theme_bw(base_size = 14) +
+  labs(y = expression("Solar radiation (MJ/m"^"2" * ")"),
+       x = element_blank()) 
 
 sol_moplot
 
+
 rh_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = rh_mean, 
                                       color = site, group = site)) +
-  geom_ribbon(aes(ymin = rh_min, ymax = rh_max, fill = site), alpha = 0.2) +
+  geom_ribbon(aes(ymin = rh_mean - rh_sd, ymax = rh_mean + rh_sd, fill = site), alpha = 0.2) +
   geom_line() +
   geom_point() +
-  theme_bw() +
-  labs(y = 'RH (%)', x= 'Month') +
-  ggtitle('E')
-
+  theme_bw(base_size = 14) +
+  labs(y = 'RH (%)', x= element_blank()) 
 rh_moplot
 
-ggarrange(p_moplot+ rremove("x.text") +
-               rremove("x.title") +
-               rremove('x.ticks'),
-             t_moplot+ rremove("x.text") +
-               rremove("x.title")+
-               rremove('x.ticks'), 
-             sol_moplot + rremove("x.text") +
-               rremove("x.title")+
-               rremove('x.ticks'),
-             rh_moplot,
+quad <- ggarrange(p_cols, 
+          t_moplot,
+          sol_moplot,
+          rh_moplot,
           common.legend = T,
           legend = 'bottom',
-             nrow = 4)
+             nrow = 2,
+          ncol= 2)
+
+
+ggsave("quad.png", plot = quad, width = 8, height = 6, dpi = 300)
+
 
 ```
 
