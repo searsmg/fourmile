@@ -1,0 +1,2824 @@
+************************************************
+*          Luca Calibration Summary            *
+************************************************
+
+# Rounds = 4
+# Steps = 5
+
+Input Information
+	Model Executable: ages.AgES
+	Parameter File Name = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/global.csv
+	Parameter File Name = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/soils_hor.csv
+	Parameter File Name = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/hru_override.csv
+	Parameter File Name = null
+	params = rawparam
+	hruFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/hrus.csv
+	landuseFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/landuse.csv
+	hydroGeologyFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/hgeo.csv
+	reachFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/reach.csv
+	hruAdditionalFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/hrus_additional.csv
+	fertilizerFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/fert.csv
+	tillageFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/till.csv
+	cropFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/crop.csv
+	managementFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/management.csv
+	soilFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/soils_hor.csv
+	routingFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/routing.csv
+	rotationFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/croprotation.csv
+	hruRotationFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/hrus_rot.csv
+	dataFilePrecip = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/precipAll_prismshift.csv
+	dataFileTmin = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/tminAll_prism.csv
+	dataFileTmax = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/tmaxAll_prism.csv
+	dataFileHum = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/rhumAll_prism.csv
+	dataFileSol = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/solradAll_daymet.csv
+	dataFileWind = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/wind.csv
+	dataFileCO2 = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/co2.csv
+	dataFileReg = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/regionalization.csv
+	humidity = rel
+	solar = srad
+	temporalAdditionalFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/Inlet.csv
+	hruOverrideFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/hru_override.csv
+	saveStateFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/state_forest.bin
+	loadStateFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/data/state_forest.bin
+	Parameter File Name = null
+	programsFilePath = D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-grid2017/programs/programs.xml
+	Parameter File Name = null
+	flagParallel = tango
+	flagRegionalization = false
+	flagHRURouting = true
+	flagReachRouting = true
+	flagSort = true
+	flagSplit = true
+	flagInfiltration = eagleson
+	flagTillage = false
+	flagTileDrain = false
+	flagUPGM = false
+	flagSaveState = false
+	flagLoadState = true
+	parallelismThreads = 6
+	Parameter File Name = null
+	idset_hru = 
+	idSet_reach = -22;-23;-25;-27;
+	outFile_outlet = Outlet.csv
+	attrSet_outlet = catchmentSimRunoff;
+	outFile_hru = -
+	outFile_hru_crop = -
+	outFile_hru_layer = -
+	outFile_hru_n_mb = -
+	outFile_hru_n_pool = -
+	outFile_hru_sediment = -
+	outFile_hru_crop_upgm = -
+	outFile_catch = -
+	outFile_catch_crop = -
+	outFile_catch_n_mb = -
+	outFile_catch_n_pool = -
+	outFile_catch_sediment = -
+	outFile_catch_crop_upgm = -
+	outFile_reach = Reach.csv
+	attrSet_reach = ID;simRunoff_qm_sec;
+	Parameter File Name = null
+	startTime = 2011-01-01
+	endTime = 2019-12-31
+	dataStartTime = 2011-01-01
+	dataEndTime = 2019-12-31
+	startReduction = 2012-07-01
+	endReduction = 2019-12-31
+
+Model Run Period  : 	January 01,2011 - December 31,2019
+Calibration Period: 	January 01,2011 - December 31,2019
+
+
+Output Information
+	Output Folder: D:\MSears_Fourmile\ages_1_0_4M\output\4milecreek38HRUs-grid2017_LUCA_full1_#1\out
+
+-------------------------------
+Initial Setup for Step 1
+-------------------------------
+
+>>> Parameter Name: ACAdaptation
+
+  individual was used for calibration.
+  Lower Bound = 0.9		 Actual Lower Bound 0.9
+  Upper Bound = 1.2		 Actual Upper Bound 1.2
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.000000		true
+	Mean	1.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: FCAdaptation
+
+  individual was used for calibration.
+  Lower Bound = 0.8		 Actual Lower Bound 0.8
+  Upper Bound = 1.3		 Actual Upper Bound 1.3
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.800000		true
+	Mean	0.8
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: DCAdaptation
+
+  individual was used for calibration.
+  Lower Bound = 0.8		 Actual Lower Bound 0.8
+  Upper Bound = 1.2		 Actual Upper Bound 1.2
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.000000		true
+	Mean	1.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: BetaW
+
+  individual was used for calibration.
+  Lower Bound = 0.1		 Actual Lower Bound 0.1
+  Upper Bound = 15.0		 Actual Upper Bound 15.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	2.616133		true
+	Mean	2.6161325272863873
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: soilPolRed
+
+  individual was used for calibration.
+  Lower Bound = 0.1		 Actual Lower Bound 0.1
+  Upper Bound = 50.0		 Actual Upper Bound 50.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	30.352204		true
+	Mean	30.352204179330094
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: a_rain
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 10.0		 Actual Upper Bound 10.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.821713		true
+	Mean	1.8217130312926073
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: a_snow
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 10.0		 Actual Upper Bound 10.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	6.977488		true
+	Mean	6.977487733840651
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: luca_a_rain
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 5.0		 Actual Upper Bound 5.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.000000		true
+	1	1.000000		true
+	Mean	1.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: luca_a_snow
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 5.0		 Actual Upper Bound 5.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.000000		true
+	1	1.000000		true
+	Mean	1.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> SCE Control Parameter Information
+	Number of complexes in the initial population: 2
+	Number of points in each complex: 89
+	Number of points in a sub-complex: 45
+	Number of evolution steps before shuffling: 89
+	Mininum number of complexes required: 1
+	Maximum number of model executions: 400
+	Shuffling loops in which the objective function value must change by given % before optimization is terminated: 5
+	Percentage for the objective function value: 0.1%
+
+>>> Objective Function (OF) Information
+	The number of objective functions: 4
+	-- OF #1 with weight = 1.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: catchmentSimRunoff
+		Observed Variable: orun[2]
+
+
+	-- OF #2 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[4]
+
+
+	-- OF #3 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[6]
+
+
+	-- OF #4 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[5]
+
+
+
+-------------------------------
+Initial Setup for Step 2
+-------------------------------
+
+>>> Parameter Name: baseTemp
+
+  individual was used for calibration.
+  Lower Bound = -5.0		 Actual Lower Bound -5.0
+  Upper Bound = 5.0		 Actual Upper Bound 5.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	-1.147194		true
+	Mean	-1.1471939133394051
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: t_factor
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 5.0		 Actual Upper Bound 5.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.277702		true
+	Mean	0.2777020776206026
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: r_factor
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 5.0		 Actual Upper Bound 5.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.331989		true
+	Mean	0.33198925179158895
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: g_factor
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 5.0		 Actual Upper Bound 5.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	4.809955		true
+	Mean	4.809954571179135
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: snowCritDens
+
+  individual was used for calibration.
+  Lower Bound = 0.2		 Actual Lower Bound 0.2
+  Upper Bound = 0.8		 Actual Upper Bound 0.8
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.557293		true
+	Mean	0.5572926756069034
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: snow_trans
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 2.5		 Actual Upper Bound 2.5
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	2.206548		true
+	Mean	2.206547702785198
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: snow_trs
+
+  individual was used for calibration.
+  Lower Bound = -5.0		 Actual Lower Bound -5.0
+  Upper Bound = 5.0		 Actual Upper Bound 5.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	4.904790		true
+	Mean	4.904789727408527
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: ccf_factor
+
+  individual was used for calibration.
+  Lower Bound = 1.0E-4		 Actual Lower Bound 1.0E-4
+  Upper Bound = 0.1		 Actual Upper Bound 0.1
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.029080		true
+	Mean	0.029080492968141698
+	Initial Parameter OF	-0.5834937974659187
+
+>>> SCE Control Parameter Information
+	Number of complexes in the initial population: 2
+	Number of points in each complex: 65
+	Number of points in a sub-complex: 33
+	Number of evolution steps before shuffling: 65
+	Mininum number of complexes required: 1
+	Maximum number of model executions: 400
+	Shuffling loops in which the objective function value must change by given % before optimization is terminated: 5
+	Percentage for the objective function value: 0.1%
+
+>>> Objective Function (OF) Information
+	The number of objective functions: 4
+	-- OF #1 with weight = 1.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: catchmentSimRunoff
+		Observed Variable: orun[2]
+
+
+	-- OF #2 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[4]
+
+
+	-- OF #3 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[6]
+
+
+	-- OF #4 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[5]
+
+
+
+-------------------------------
+Initial Setup for Step 3
+-------------------------------
+
+>>> Parameter Name: soilOutLPS
+
+  individual was used for calibration.
+  Lower Bound = 0.01		 Actual Lower Bound 0.01
+  Upper Bound = 10.0		 Actual Upper Bound 10.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	5.703064		true
+	Mean	5.703064184398814
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: soilLatVertLPS
+
+  individual was used for calibration.
+  Lower Bound = 0.001		 Actual Lower Bound 0.001
+  Upper Bound = 10.0		 Actual Upper Bound 10.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	4.817233		true
+	Mean	4.8172331541395685
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: kdiff_layer
+
+  individual was used for calibration.
+  Lower Bound = 1.0		 Actual Lower Bound 1.0
+  Upper Bound = 50.0		 Actual Upper Bound 50.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.644952		true
+	Mean	1.6449520138836684
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: soilDiffMPSLPS
+
+  individual was used for calibration.
+  Lower Bound = 0.1		 Actual Lower Bound 0.1
+  Upper Bound = 10.0		 Actual Upper Bound 10.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	5.342121		true
+	Mean	5.3421210355980335
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: kf_fact
+
+  individual was used for calibration.
+  Lower Bound = 0.01		 Actual Lower Bound 0.01
+  Upper Bound = 2.0		 Actual Upper Bound 2.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.000000		true
+	Mean	1.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: gwCapRise
+
+  individual was used for calibration.
+  Lower Bound = 0.1		 Actual Lower Bound 0.1
+  Upper Bound = 0.6		 Actual Upper Bound 0.6
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.449833		true
+	Mean	0.4498331945867194
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: gwRG1Fact
+
+  individual was used for calibration.
+  Lower Bound = 1.0		 Actual Lower Bound 1.0
+  Upper Bound = 20.0		 Actual Upper Bound 20.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	3.104597		true
+	Mean	3.1045969272382976
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: gwRG2Fact
+
+  individual was used for calibration.
+  Lower Bound = 1.0		 Actual Lower Bound 1.0
+  Upper Bound = 80.0		 Actual Upper Bound 80.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	47.748314		true
+	Mean	47.74831413024443
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: gwRG1RG2dist
+
+  individual was used for calibration.
+  Lower Bound = 0.1		 Actual Lower Bound 0.1
+  Upper Bound = 0.9		 Actual Upper Bound 0.9
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.525486		true
+	Mean	0.5254860789535468
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: geoMaxPerc
+
+  individual was used for calibration.
+  Lower Bound = 0.01		 Actual Lower Bound 0.01
+  Upper Bound = 1.0		 Actual Upper Bound 1.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.351565		true
+	Mean	0.3515653394655553
+	Initial Parameter OF	-0.5834937974659187
+
+>>> SCE Control Parameter Information
+	Number of complexes in the initial population: 2
+	Number of points in each complex: 81
+	Number of points in a sub-complex: 41
+	Number of evolution steps before shuffling: 81
+	Mininum number of complexes required: 1
+	Maximum number of model executions: 400
+	Shuffling loops in which the objective function value must change by given % before optimization is terminated: 5
+	Percentage for the objective function value: 0.1%
+
+>>> Objective Function (OF) Information
+	The number of objective functions: 4
+	-- OF #1 with weight = 1.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: catchmentSimRunoff
+		Observed Variable: orun[2]
+
+
+	-- OF #2 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[4]
+
+
+	-- OF #3 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[6]
+
+
+	-- OF #4 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[5]
+
+
+
+-------------------------------
+Initial Setup for Step 4
+-------------------------------
+
+>>> Parameter Name: soilMaxInfSummer
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 150.0		 Actual Upper Bound 150.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	73.309767		true
+	Mean	73.30976735256088
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: soilMaxInfWinter
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 100.0		 Actual Upper Bound 100.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	63.351083		true
+	Mean	63.35108273770476
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: soilMaxInfSnow
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 100.0		 Actual Upper Bound 100.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	58.013094		true
+	Mean	58.01309428561962
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: soilDistMPSLPS
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 7.0		 Actual Upper Bound 7.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	3.241707		true
+	Mean	3.241706744842691
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: soilMaxDPS
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 7.0		 Actual Upper Bound 7.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	6.696801		true
+	Mean	6.69680081172075
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: kf
+
+  individual was used for calibration.
+  Lower Bound = 0.1		 Actual Lower Bound 0.1
+  Upper Bound = 250.0		 Actual Upper Bound 250.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	244.000000		true
+	1	793.000000		false
+	2	244.000000		true
+	3	244.000000		false
+	4	201.000000		true
+	5	201.000000		false
+	6	79.000000		true
+	7	79.000000		false
+	8	244.000000		false
+	9	244.000000		false
+	10	244.000000		true
+	11	244.000000		false
+	12	244.000000		true
+	13	244.000000		false
+	14	244.000000		false
+	15	244.000000		true
+	16	244.000000		false
+	17	244.000000		false
+	18	244.000000		false
+	19	244.000000		true
+	20	244.000000		false
+	21	79.000000		false
+	22	79.000000		true
+	23	79.000000		false
+	24	244.000000		false
+	25	244.000000		false
+	26	244.000000		true
+	27	244.000000		false
+	28	244.000000		false
+	29	244.000000		true
+	30	244.000000		false
+	31	79.000000		false
+	32	24.000000		false
+	33	244.000000		true
+	34	244.000000		false
+	35	244.000000		false
+	36	244.000000		false
+	37	79.000000		false
+	38	244.000000		false
+	39	244.000000		true
+	40	793.000000		false
+	41	201.000000		true
+	42	201.000000		false
+	Mean	214.28571428571428
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: luca_soilMaxDPS
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 10.0		 Actual Upper Bound 10.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.000000		true
+	1	1.000000		true
+	Mean	1.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: luca_soilMaxInfSummer
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 100.0		 Actual Upper Bound 100.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	10.000000		true
+	1	10.000000		true
+	Mean	10.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: luca_soilDistMPSLPS
+
+  individual was used for calibration.
+  Lower Bound = 0.0		 Actual Lower Bound 0.0
+  Upper Bound = 7.0		 Actual Upper Bound 7.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.000000		true
+	1	1.000000		true
+	Mean	1.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> SCE Control Parameter Information
+	Number of complexes in the initial population: 2
+	Number of points in each complex: 201
+	Number of points in a sub-complex: 101
+	Number of evolution steps before shuffling: 201
+	Mininum number of complexes required: 1
+	Maximum number of model executions: 400
+	Shuffling loops in which the objective function value must change by given % before optimization is terminated: 5
+	Percentage for the objective function value: 0.1%
+
+>>> Objective Function (OF) Information
+	The number of objective functions: 4
+	-- OF #1 with weight = 1.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: catchmentSimRunoff
+		Observed Variable: orun[2]
+
+
+	-- OF #2 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[4]
+
+
+	-- OF #3 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[6]
+
+
+	-- OF #4 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[5]
+
+
+
+-------------------------------
+Initial Setup for Step 5
+-------------------------------
+
+>>> Parameter Name: flowRouteTA
+
+  individual was used for calibration.
+  Lower Bound = 0.1		 Actual Lower Bound 0.1
+  Upper Bound = 10.0		 Actual Upper Bound 10.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	0.164468		true
+	Mean	0.16446783273701057
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: lagSurfaceRunoff
+
+  individual was used for calibration.
+  Lower Bound = 1.0		 Actual Lower Bound 1.0
+  Upper Bound = 1.5		 Actual Upper Bound 1.5
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.465134		true
+	Mean	1.465133900459633
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: lagInterflow
+
+  individual was used for calibration.
+  Lower Bound = 1.0		 Actual Lower Bound 1.0
+  Upper Bound = 2.0		 Actual Upper Bound 2.0
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.998221		true
+	Mean	1.998221347079303
+	Initial Parameter OF	-0.5834937974659187
+
+>>> Parameter Name: luca_lagSurfaceRunoff
+
+  individual was used for calibration.
+  Lower Bound = 1.0		 Actual Lower Bound 1.0
+  Upper Bound = 1.5		 Actual Upper Bound 1.5
+
+  Parameter Values:
+	#	init value		calibrated?
+	0	1.000000		true
+	1	1.000000		true
+	Mean	1.0
+	Initial Parameter OF	-0.5834937974659187
+
+>>> SCE Control Parameter Information
+	Number of complexes in the initial population: 2
+	Number of points in each complex: 41
+	Number of points in a sub-complex: 21
+	Number of evolution steps before shuffling: 41
+	Mininum number of complexes required: 1
+	Maximum number of model executions: 400
+	Shuffling loops in which the objective function value must change by given % before optimization is terminated: 5
+	Percentage for the objective function value: 0.1%
+
+>>> Objective Function (OF) Information
+	The number of objective functions: 4
+	-- OF #1 with weight = 1.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: catchmentSimRunoff
+		Observed Variable: orun[2]
+
+
+	-- OF #2 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[4]
+
+
+	-- OF #3 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[6]
+
+
+	-- OF #4 with weight = 0.0
+		The objective function is: MAXIMIZED
+		Objective Function Type: kge 
+		Time Step: daily
+		Period: Jan to Dec
+		Simulated Variable: simRunoff_qm_sec
+		Observed Variable: orun[5]
+
+
+
+********************************************
+ Calibrated Parameter Values
+********************************************
+
+
+-------------------------------
+Round 1 Step 1
+-------------------------------
+
+Objective Function Values for round 1 = -0.07255138775652581
+>>> Parameter Name: ACAdaptation
+
+Lower Bound = 0.9
+Upper Bound = 1.2
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		1.197675
+	Mean			1.1976749127534403
+>>> Parameter Name: FCAdaptation
+
+Lower Bound = 0.8
+Upper Bound = 1.3
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		1.291444
+	Mean			1.2914441242293544
+>>> Parameter Name: DCAdaptation
+
+Lower Bound = 0.8
+Upper Bound = 1.2
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.855314
+	Mean			0.8553136886988381
+>>> Parameter Name: BetaW
+
+Lower Bound = 0.1
+Upper Bound = 15.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		5.984565
+	Mean			5.9845649464701935
+>>> Parameter Name: soilPolRed
+
+Lower Bound = 0.1
+Upper Bound = 50.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		35.360446
+	Mean			35.36044569254099
+>>> Parameter Name: a_rain
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		9.905052
+	Mean			9.905051703677296
+>>> Parameter Name: a_snow
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		2.619985
+	Mean			2.619985193036921
+>>> Parameter Name: luca_a_rain
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		3.382689
+	1		3.667453
+	Mean			3.525070884749452
+>>> Parameter Name: luca_a_snow
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		4.566287
+	1		1.919689
+	Mean			3.2429882083223385
+
+
+-------------------------------
+Round 1 Step 2
+-------------------------------
+
+Objective Function Values for round 1 = -0.01856720275960755
+>>> Parameter Name: baseTemp
+
+Lower Bound = -5.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		3.939852
+	Mean			3.939851809819225
+>>> Parameter Name: t_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.364261
+	Mean			0.3642607914214051
+>>> Parameter Name: r_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		2.442281
+	Mean			2.442280832568851
+>>> Parameter Name: g_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		2.288204
+	Mean			2.288204144585085
+>>> Parameter Name: snowCritDens
+
+Lower Bound = 0.2
+Upper Bound = 0.8
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.214847
+	Mean			0.21484687647853606
+>>> Parameter Name: snow_trans
+
+Lower Bound = 0.0
+Upper Bound = 2.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		2.367955
+	Mean			2.367955204892148
+>>> Parameter Name: snow_trs
+
+Lower Bound = -5.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		4.582606
+	Mean			4.582605727967724
+>>> Parameter Name: ccf_factor
+
+Lower Bound = 1.0E-4
+Upper Bound = 0.1
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.028290
+	Mean			0.028289501770354417
+
+
+-------------------------------
+Round 1 Step 3
+-------------------------------
+
+Objective Function Values for round 1 = 0.40870063888530594
+>>> Parameter Name: soilOutLPS
+
+Lower Bound = 0.01
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.389019
+	Mean			0.38901898924806944
+>>> Parameter Name: soilLatVertLPS
+
+Lower Bound = 0.001
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.488007
+	Mean			0.48800731676263903
+>>> Parameter Name: kdiff_layer
+
+Lower Bound = 1.0
+Upper Bound = 50.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		31.736968
+	Mean			31.736968296298087
+>>> Parameter Name: soilDiffMPSLPS
+
+Lower Bound = 0.1
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		4.207267
+	Mean			4.207267421433002
+>>> Parameter Name: kf_fact
+
+Lower Bound = 0.01
+Upper Bound = 2.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		1.023089
+	Mean			1.0230892608333635
+>>> Parameter Name: gwCapRise
+
+Lower Bound = 0.1
+Upper Bound = 0.6
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.523408
+	Mean			0.5234075000166178
+>>> Parameter Name: gwRG1Fact
+
+Lower Bound = 1.0
+Upper Bound = 20.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		1.264152
+	Mean			1.264151572049983
+>>> Parameter Name: gwRG2Fact
+
+Lower Bound = 1.0
+Upper Bound = 80.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		33.853343
+	Mean			33.85334324728034
+>>> Parameter Name: gwRG1RG2dist
+
+Lower Bound = 0.1
+Upper Bound = 0.9
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.414467
+	Mean			0.4144669718509886
+>>> Parameter Name: geoMaxPerc
+
+Lower Bound = 0.01
+Upper Bound = 1.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.356795
+	Mean			0.35679544741704694
+
+
+-------------------------------
+Round 1 Step 4
+-------------------------------
+
+Objective Function Values for round 1 = 0.4111444577680736
+>>> Parameter Name: soilMaxInfSummer
+
+Lower Bound = 0.0
+Upper Bound = 150.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		62.508531
+	Mean			62.508531422662955
+>>> Parameter Name: soilMaxInfWinter
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		66.681979
+	Mean			66.68197903514702
+>>> Parameter Name: soilMaxInfSnow
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		81.482972
+	Mean			81.48297157033957
+>>> Parameter Name: soilDistMPSLPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		1.052173
+	Mean			1.0521727969668992
+>>> Parameter Name: soilMaxDPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		6.927034
+	Mean			6.9270336593737305
+>>> Parameter Name: kf
+
+Lower Bound = 0.1
+Upper Bound = 250.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		187.012300
+	1		793.000000
+	2		19.953178
+	3		244.000000
+	4		146.072918
+	5		201.000000
+	6		50.979121
+	7		79.000000
+	8		244.000000
+	9		244.000000
+	10		236.851596
+	11		244.000000
+	12		125.895411
+	13		244.000000
+	14		244.000000
+	15		190.837107
+	16		244.000000
+	17		244.000000
+	18		244.000000
+	19		225.103621
+	20		244.000000
+	21		79.000000
+	22		31.949274
+	23		79.000000
+	24		244.000000
+	25		244.000000
+	26		248.174219
+	27		244.000000
+	28		244.000000
+	29		75.830514
+	30		244.000000
+	31		79.000000
+	32		24.000000
+	33		26.912234
+	34		244.000000
+	35		244.000000
+	36		244.000000
+	37		79.000000
+	38		244.000000
+	39		208.880360
+	40		793.000000
+	41		139.715916
+	42		201.000000
+	Mean			136.7262691379946
+>>> Parameter Name: luca_soilMaxDPS
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		8.376591
+	1		2.954043
+	Mean			5.665317153609736
+>>> Parameter Name: luca_soilMaxInfSummer
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		96.379523
+	1		33.333182
+	Mean			64.85635260961622
+>>> Parameter Name: luca_soilDistMPSLPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		3.460482
+	1		1.734594
+	Mean			2.5975376878029266
+
+
+-------------------------------
+Round 1 Step 5
+-------------------------------
+
+Objective Function Values for round 1 = 0.5613472049859423
+>>> Parameter Name: flowRouteTA
+
+Lower Bound = 0.1
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		0.102784
+	Mean			0.10278402171950665
+>>> Parameter Name: lagSurfaceRunoff
+
+Lower Bound = 1.0
+Upper Bound = 1.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		1.468000
+	Mean			1.4680004881254936
+>>> Parameter Name: lagInterflow
+
+Lower Bound = 1.0
+Upper Bound = 2.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		1.719008
+	Mean			1.7190081134435937
+>>> Parameter Name: luca_lagSurfaceRunoff
+
+Lower Bound = 1.0
+Upper Bound = 1.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 0 data
+	0		1.093577
+	1		1.023860
+	Mean			1.0587187119917576
+
+
+-------------------------------
+Round 2 Step 1
+-------------------------------
+
+Objective Function Values for round 2 = 0.6035839992612273
+>>> Parameter Name: ACAdaptation
+
+Lower Bound = 0.9
+Upper Bound = 1.2
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.134571
+	Mean			1.1345712825599805
+>>> Parameter Name: FCAdaptation
+
+Lower Bound = 0.8
+Upper Bound = 1.3
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.896662
+	Mean			0.8966620885088797
+>>> Parameter Name: DCAdaptation
+
+Lower Bound = 0.8
+Upper Bound = 1.2
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.185960
+	Mean			1.1859598645207206
+>>> Parameter Name: BetaW
+
+Lower Bound = 0.1
+Upper Bound = 15.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		6.701527
+	Mean			6.701527272168901
+>>> Parameter Name: soilPolRed
+
+Lower Bound = 0.1
+Upper Bound = 50.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		36.168057
+	Mean			36.16805677772624
+>>> Parameter Name: a_rain
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		9.970222
+	Mean			9.970221921267678
+>>> Parameter Name: a_snow
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		2.227671
+	Mean			2.2276714426869346
+>>> Parameter Name: luca_a_rain
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.961751
+	1		4.980114
+	Mean			3.470932394770619
+>>> Parameter Name: luca_a_snow
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		3.428255
+	1		3.545619
+	Mean			3.4869366671932553
+
+
+-------------------------------
+Round 2 Step 2
+-------------------------------
+
+Objective Function Values for round 2 = 0.6811769921534206
+>>> Parameter Name: baseTemp
+
+Lower Bound = -5.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		4.447498
+	Mean			4.4474975890844926
+>>> Parameter Name: t_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		4.025628
+	Mean			4.025628257785349
+>>> Parameter Name: r_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		4.220841
+	Mean			4.22084132257724
+>>> Parameter Name: g_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		4.163211
+	Mean			4.163211122740461
+>>> Parameter Name: snowCritDens
+
+Lower Bound = 0.2
+Upper Bound = 0.8
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.357036
+	Mean			0.35703554756188616
+>>> Parameter Name: snow_trans
+
+Lower Bound = 0.0
+Upper Bound = 2.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		2.221751
+	Mean			2.2217508674644995
+>>> Parameter Name: snow_trs
+
+Lower Bound = -5.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		2.944918
+	Mean			2.944917976510224
+>>> Parameter Name: ccf_factor
+
+Lower Bound = 1.0E-4
+Upper Bound = 0.1
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.018550
+	Mean			0.01855015243860528
+
+
+-------------------------------
+Round 2 Step 3
+-------------------------------
+
+Objective Function Values for round 2 = 0.6811769921534206
+>>> Parameter Name: soilOutLPS
+
+Lower Bound = 0.01
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.389019
+	Mean			0.38901898924806944
+>>> Parameter Name: soilLatVertLPS
+
+Lower Bound = 0.001
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.488007
+	Mean			0.48800731676263903
+>>> Parameter Name: kdiff_layer
+
+Lower Bound = 1.0
+Upper Bound = 50.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		31.736968
+	Mean			31.736968296298087
+>>> Parameter Name: soilDiffMPSLPS
+
+Lower Bound = 0.1
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		4.207267
+	Mean			4.207267421433002
+>>> Parameter Name: kf_fact
+
+Lower Bound = 0.01
+Upper Bound = 2.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.023089
+	Mean			1.0230892608333635
+>>> Parameter Name: gwCapRise
+
+Lower Bound = 0.1
+Upper Bound = 0.6
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.523408
+	Mean			0.5234075000166178
+>>> Parameter Name: gwRG1Fact
+
+Lower Bound = 1.0
+Upper Bound = 20.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.264152
+	Mean			1.264151572049983
+>>> Parameter Name: gwRG2Fact
+
+Lower Bound = 1.0
+Upper Bound = 80.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		33.853343
+	Mean			33.85334324728034
+>>> Parameter Name: gwRG1RG2dist
+
+Lower Bound = 0.1
+Upper Bound = 0.9
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.414467
+	Mean			0.4144669718509886
+>>> Parameter Name: geoMaxPerc
+
+Lower Bound = 0.01
+Upper Bound = 1.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.356795
+	Mean			0.35679544741704694
+
+
+-------------------------------
+Round 2 Step 4
+-------------------------------
+
+Objective Function Values for round 2 = 0.6816759791928573
+>>> Parameter Name: soilMaxInfSummer
+
+Lower Bound = 0.0
+Upper Bound = 150.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		115.461616
+	Mean			115.4616164134412
+>>> Parameter Name: soilMaxInfWinter
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		85.517531
+	Mean			85.51753098173688
+>>> Parameter Name: soilMaxInfSnow
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		6.586179
+	Mean			6.5861787469903454
+>>> Parameter Name: soilDistMPSLPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		3.567040
+	Mean			3.5670402590404056
+>>> Parameter Name: soilMaxDPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		6.999165
+	Mean			6.999164529507358
+>>> Parameter Name: kf
+
+Lower Bound = 0.1
+Upper Bound = 250.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		79.806873
+	1		793.000000
+	2		38.467818
+	3		244.000000
+	4		38.225047
+	5		201.000000
+	6		53.907968
+	7		79.000000
+	8		244.000000
+	9		244.000000
+	10		221.090050
+	11		244.000000
+	12		149.983966
+	13		244.000000
+	14		244.000000
+	15		128.464729
+	16		244.000000
+	17		244.000000
+	18		244.000000
+	19		185.785708
+	20		244.000000
+	21		79.000000
+	22		76.084549
+	23		79.000000
+	24		244.000000
+	25		244.000000
+	26		190.357973
+	27		244.000000
+	28		244.000000
+	29		94.530602
+	30		244.000000
+	31		79.000000
+	32		24.000000
+	33		140.731490
+	34		244.000000
+	35		244.000000
+	36		244.000000
+	37		79.000000
+	38		244.000000
+	39		0.289728
+	40		793.000000
+	41		185.778047
+	42		201.000000
+	Mean			113.10746758891842
+>>> Parameter Name: luca_soilMaxDPS
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		4.704732
+	1		3.577091
+	Mean			4.140911151114475
+>>> Parameter Name: luca_soilMaxInfSummer
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		47.517938
+	1		33.415579
+	Mean			40.46675813440922
+>>> Parameter Name: luca_soilDistMPSLPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.484787
+	1		1.445299
+	Mean			1.4650432831686682
+
+
+-------------------------------
+Round 2 Step 5
+-------------------------------
+
+Objective Function Values for round 2 = 0.7042608247124691
+>>> Parameter Name: flowRouteTA
+
+Lower Bound = 0.1
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		0.100071
+	Mean			0.10007120939063785
+>>> Parameter Name: lagSurfaceRunoff
+
+Lower Bound = 1.0
+Upper Bound = 1.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.494752
+	Mean			1.494752019444231
+>>> Parameter Name: lagInterflow
+
+Lower Bound = 1.0
+Upper Bound = 2.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.847096
+	Mean			1.8470963734424881
+>>> Parameter Name: luca_lagSurfaceRunoff
+
+Lower Bound = 1.0
+Upper Bound = 1.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 1 data
+	0		1.157444
+	1		1.131814
+	Mean			1.1446287345243853
+
+
+-------------------------------
+Round 3 Step 1
+-------------------------------
+
+Objective Function Values for round 3 = 0.7093561821209423
+>>> Parameter Name: ACAdaptation
+
+Lower Bound = 0.9
+Upper Bound = 1.2
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.154242
+	Mean			1.1542421873357807
+>>> Parameter Name: FCAdaptation
+
+Lower Bound = 0.8
+Upper Bound = 1.3
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.091528
+	Mean			1.0915283967651879
+>>> Parameter Name: DCAdaptation
+
+Lower Bound = 0.8
+Upper Bound = 1.2
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.972439
+	Mean			0.9724394336836155
+>>> Parameter Name: BetaW
+
+Lower Bound = 0.1
+Upper Bound = 15.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		5.653264
+	Mean			5.653263921182683
+>>> Parameter Name: soilPolRed
+
+Lower Bound = 0.1
+Upper Bound = 50.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		33.413062
+	Mean			33.413061641253606
+>>> Parameter Name: a_rain
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		9.508326
+	Mean			9.5083261917648
+>>> Parameter Name: a_snow
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.792358
+	Mean			0.7923583188242048
+>>> Parameter Name: luca_a_rain
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.410450
+	1		3.283250
+	Mean			2.346850103534176
+>>> Parameter Name: luca_a_snow
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.599432
+	1		3.034663
+	Mean			2.31704767870861
+
+
+-------------------------------
+Round 3 Step 2
+-------------------------------
+
+Objective Function Values for round 3 = 0.71392986466143
+>>> Parameter Name: baseTemp
+
+Lower Bound = -5.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		2.189723
+	Mean			2.1897229871300756
+>>> Parameter Name: t_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		4.211339
+	Mean			4.211339479406008
+>>> Parameter Name: r_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.733813
+	Mean			0.7338127414241976
+>>> Parameter Name: g_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		4.424652
+	Mean			4.424651609342864
+>>> Parameter Name: snowCritDens
+
+Lower Bound = 0.2
+Upper Bound = 0.8
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.775743
+	Mean			0.7757425232756189
+>>> Parameter Name: snow_trans
+
+Lower Bound = 0.0
+Upper Bound = 2.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.638792
+	Mean			0.6387915734353574
+>>> Parameter Name: snow_trs
+
+Lower Bound = -5.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		2.906095
+	Mean			2.9060954710638764
+>>> Parameter Name: ccf_factor
+
+Lower Bound = 1.0E-4
+Upper Bound = 0.1
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.046022
+	Mean			0.04602152612829104
+
+
+-------------------------------
+Round 3 Step 3
+-------------------------------
+
+Objective Function Values for round 3 = 0.71392986466143
+>>> Parameter Name: soilOutLPS
+
+Lower Bound = 0.01
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.389019
+	Mean			0.38901898924806944
+>>> Parameter Name: soilLatVertLPS
+
+Lower Bound = 0.001
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.488007
+	Mean			0.48800731676263903
+>>> Parameter Name: kdiff_layer
+
+Lower Bound = 1.0
+Upper Bound = 50.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		31.736968
+	Mean			31.736968296298087
+>>> Parameter Name: soilDiffMPSLPS
+
+Lower Bound = 0.1
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		4.207267
+	Mean			4.207267421433002
+>>> Parameter Name: kf_fact
+
+Lower Bound = 0.01
+Upper Bound = 2.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.023089
+	Mean			1.0230892608333635
+>>> Parameter Name: gwCapRise
+
+Lower Bound = 0.1
+Upper Bound = 0.6
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.523408
+	Mean			0.5234075000166178
+>>> Parameter Name: gwRG1Fact
+
+Lower Bound = 1.0
+Upper Bound = 20.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.264152
+	Mean			1.264151572049983
+>>> Parameter Name: gwRG2Fact
+
+Lower Bound = 1.0
+Upper Bound = 80.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		33.853343
+	Mean			33.85334324728034
+>>> Parameter Name: gwRG1RG2dist
+
+Lower Bound = 0.1
+Upper Bound = 0.9
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.414467
+	Mean			0.4144669718509886
+>>> Parameter Name: geoMaxPerc
+
+Lower Bound = 0.01
+Upper Bound = 1.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.356795
+	Mean			0.35679544741704694
+
+
+-------------------------------
+Round 3 Step 4
+-------------------------------
+
+Objective Function Values for round 3 = 0.71392986466143
+>>> Parameter Name: soilMaxInfSummer
+
+Lower Bound = 0.0
+Upper Bound = 150.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		115.461616
+	Mean			115.4616164134412
+>>> Parameter Name: soilMaxInfWinter
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		85.517531
+	Mean			85.51753098173688
+>>> Parameter Name: soilMaxInfSnow
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		6.586179
+	Mean			6.5861787469903454
+>>> Parameter Name: soilDistMPSLPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		3.567040
+	Mean			3.5670402590404056
+>>> Parameter Name: soilMaxDPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		6.999165
+	Mean			6.999164529507358
+>>> Parameter Name: kf
+
+Lower Bound = 0.1
+Upper Bound = 250.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		79.806873
+	1		793.000000
+	2		38.467818
+	3		244.000000
+	4		38.225047
+	5		201.000000
+	6		53.907968
+	7		79.000000
+	8		244.000000
+	9		244.000000
+	10		221.090050
+	11		244.000000
+	12		149.983966
+	13		244.000000
+	14		244.000000
+	15		128.464729
+	16		244.000000
+	17		244.000000
+	18		244.000000
+	19		185.785708
+	20		244.000000
+	21		79.000000
+	22		76.084549
+	23		79.000000
+	24		244.000000
+	25		244.000000
+	26		190.357973
+	27		244.000000
+	28		244.000000
+	29		94.530602
+	30		244.000000
+	31		79.000000
+	32		24.000000
+	33		140.731490
+	34		244.000000
+	35		244.000000
+	36		244.000000
+	37		79.000000
+	38		244.000000
+	39		0.289728
+	40		793.000000
+	41		185.778047
+	42		201.000000
+	Mean			113.10746758891842
+>>> Parameter Name: luca_soilMaxDPS
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		4.704732
+	1		3.577091
+	Mean			4.140911151114475
+>>> Parameter Name: luca_soilMaxInfSummer
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		47.517938
+	1		33.415579
+	Mean			40.46675813440922
+>>> Parameter Name: luca_soilDistMPSLPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.484787
+	1		1.445299
+	Mean			1.4650432831686682
+
+
+-------------------------------
+Round 3 Step 5
+-------------------------------
+
+Objective Function Values for round 3 = 0.71392986466143
+>>> Parameter Name: flowRouteTA
+
+Lower Bound = 0.1
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		0.100071
+	Mean			0.10007120939063785
+>>> Parameter Name: lagSurfaceRunoff
+
+Lower Bound = 1.0
+Upper Bound = 1.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.494752
+	Mean			1.494752019444231
+>>> Parameter Name: lagInterflow
+
+Lower Bound = 1.0
+Upper Bound = 2.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.847096
+	Mean			1.8470963734424881
+>>> Parameter Name: luca_lagSurfaceRunoff
+
+Lower Bound = 1.0
+Upper Bound = 1.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 2 data
+	0		1.157444
+	1		1.131814
+	Mean			1.1446287345243853
+
+
+-------------------------------
+Round 4 Step 1
+-------------------------------
+
+Objective Function Values for round 4 = 0.71392986466143
+>>> Parameter Name: ACAdaptation
+
+Lower Bound = 0.9
+Upper Bound = 1.2
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.154242
+	Mean			1.1542421873357807
+>>> Parameter Name: FCAdaptation
+
+Lower Bound = 0.8
+Upper Bound = 1.3
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.091528
+	Mean			1.0915283967651879
+>>> Parameter Name: DCAdaptation
+
+Lower Bound = 0.8
+Upper Bound = 1.2
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.972439
+	Mean			0.9724394336836155
+>>> Parameter Name: BetaW
+
+Lower Bound = 0.1
+Upper Bound = 15.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		5.653264
+	Mean			5.653263921182683
+>>> Parameter Name: soilPolRed
+
+Lower Bound = 0.1
+Upper Bound = 50.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		33.413062
+	Mean			33.413061641253606
+>>> Parameter Name: a_rain
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		9.508326
+	Mean			9.5083261917648
+>>> Parameter Name: a_snow
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.792358
+	Mean			0.7923583188242048
+>>> Parameter Name: luca_a_rain
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.410450
+	1		3.283250
+	Mean			2.346850103534176
+>>> Parameter Name: luca_a_snow
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.599432
+	1		3.034663
+	Mean			2.31704767870861
+
+
+-------------------------------
+Round 4 Step 2
+-------------------------------
+
+Objective Function Values for round 4 = 0.7151638661031878
+>>> Parameter Name: baseTemp
+
+Lower Bound = -5.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.675487
+	Mean			1.675486969022173
+>>> Parameter Name: t_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		3.343750
+	Mean			3.343750041658134
+>>> Parameter Name: r_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.100021
+	Mean			0.10002097453132142
+>>> Parameter Name: g_factor
+
+Lower Bound = 0.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		2.905134
+	Mean			2.905133739751231
+>>> Parameter Name: snowCritDens
+
+Lower Bound = 0.2
+Upper Bound = 0.8
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.577809
+	Mean			0.5778090264204518
+>>> Parameter Name: snow_trans
+
+Lower Bound = 0.0
+Upper Bound = 2.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.766257
+	Mean			0.7662566804418582
+>>> Parameter Name: snow_trs
+
+Lower Bound = -5.0
+Upper Bound = 5.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		3.039505
+	Mean			3.039505381281604
+>>> Parameter Name: ccf_factor
+
+Lower Bound = 1.0E-4
+Upper Bound = 0.1
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.038482
+	Mean			0.03848190432045411
+
+
+-------------------------------
+Round 4 Step 3
+-------------------------------
+
+Objective Function Values for round 4 = 0.7151638661031878
+>>> Parameter Name: soilOutLPS
+
+Lower Bound = 0.01
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.389019
+	Mean			0.38901898924806944
+>>> Parameter Name: soilLatVertLPS
+
+Lower Bound = 0.001
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.488007
+	Mean			0.48800731676263903
+>>> Parameter Name: kdiff_layer
+
+Lower Bound = 1.0
+Upper Bound = 50.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		31.736968
+	Mean			31.736968296298087
+>>> Parameter Name: soilDiffMPSLPS
+
+Lower Bound = 0.1
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		4.207267
+	Mean			4.207267421433002
+>>> Parameter Name: kf_fact
+
+Lower Bound = 0.01
+Upper Bound = 2.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.023089
+	Mean			1.0230892608333635
+>>> Parameter Name: gwCapRise
+
+Lower Bound = 0.1
+Upper Bound = 0.6
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.523408
+	Mean			0.5234075000166178
+>>> Parameter Name: gwRG1Fact
+
+Lower Bound = 1.0
+Upper Bound = 20.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.264152
+	Mean			1.264151572049983
+>>> Parameter Name: gwRG2Fact
+
+Lower Bound = 1.0
+Upper Bound = 80.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		33.853343
+	Mean			33.85334324728034
+>>> Parameter Name: gwRG1RG2dist
+
+Lower Bound = 0.1
+Upper Bound = 0.9
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.414467
+	Mean			0.4144669718509886
+>>> Parameter Name: geoMaxPerc
+
+Lower Bound = 0.01
+Upper Bound = 1.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.356795
+	Mean			0.35679544741704694
+
+
+-------------------------------
+Round 4 Step 4
+-------------------------------
+
+Objective Function Values for round 4 = 0.7151638661031878
+>>> Parameter Name: soilMaxInfSummer
+
+Lower Bound = 0.0
+Upper Bound = 150.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		115.461616
+	Mean			115.4616164134412
+>>> Parameter Name: soilMaxInfWinter
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		85.517531
+	Mean			85.51753098173688
+>>> Parameter Name: soilMaxInfSnow
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		6.586179
+	Mean			6.5861787469903454
+>>> Parameter Name: soilDistMPSLPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		3.567040
+	Mean			3.5670402590404056
+>>> Parameter Name: soilMaxDPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		6.999165
+	Mean			6.999164529507358
+>>> Parameter Name: kf
+
+Lower Bound = 0.1
+Upper Bound = 250.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		79.806873
+	1		793.000000
+	2		38.467818
+	3		244.000000
+	4		38.225047
+	5		201.000000
+	6		53.907968
+	7		79.000000
+	8		244.000000
+	9		244.000000
+	10		221.090050
+	11		244.000000
+	12		149.983966
+	13		244.000000
+	14		244.000000
+	15		128.464729
+	16		244.000000
+	17		244.000000
+	18		244.000000
+	19		185.785708
+	20		244.000000
+	21		79.000000
+	22		76.084549
+	23		79.000000
+	24		244.000000
+	25		244.000000
+	26		190.357973
+	27		244.000000
+	28		244.000000
+	29		94.530602
+	30		244.000000
+	31		79.000000
+	32		24.000000
+	33		140.731490
+	34		244.000000
+	35		244.000000
+	36		244.000000
+	37		79.000000
+	38		244.000000
+	39		0.289728
+	40		793.000000
+	41		185.778047
+	42		201.000000
+	Mean			113.10746758891842
+>>> Parameter Name: luca_soilMaxDPS
+
+Lower Bound = 0.0
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		4.704732
+	1		3.577091
+	Mean			4.140911151114475
+>>> Parameter Name: luca_soilMaxInfSummer
+
+Lower Bound = 0.0
+Upper Bound = 100.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		47.517938
+	1		33.415579
+	Mean			40.46675813440922
+>>> Parameter Name: luca_soilDistMPSLPS
+
+Lower Bound = 0.0
+Upper Bound = 7.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.484787
+	1		1.445299
+	Mean			1.4650432831686682
+
+
+-------------------------------
+Round 4 Step 5
+-------------------------------
+
+Objective Function Values for round 4 = 0.7151638661031878
+>>> Parameter Name: flowRouteTA
+
+Lower Bound = 0.1
+Upper Bound = 10.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		0.100071
+	Mean			0.10007120939063785
+>>> Parameter Name: lagSurfaceRunoff
+
+Lower Bound = 1.0
+Upper Bound = 1.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.494752
+	Mean			1.494752019444231
+>>> Parameter Name: lagInterflow
+
+Lower Bound = 1.0
+Upper Bound = 2.0
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.847096
+	Mean			1.8470963734424881
+>>> Parameter Name: luca_lagSurfaceRunoff
+
+Lower Bound = 1.0
+Upper Bound = 1.5
+
+Number of iterations in Step = 400
+Parameter Values:
+	#		Round 3 data
+	0		1.157444
+	1		1.131814
+	Mean			1.1446287345243853
+************************************************
+*  DONE.
+************************************************
+
