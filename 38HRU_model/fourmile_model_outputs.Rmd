@@ -212,6 +212,27 @@ lapply(name, plotdens_params)
 
 ```
 
+## Burn params
+
+```{r}
+#pull in all filenames with composite
+filenames <- list.files('.', pattern=".csv", full.names=F)
+
+#read all the csvs
+dataframes <- lapply(filenames, read_csv)
+
+#name all the csv
+names(dataframes) <- substr(filenames, 1, 9)
+
+#extract csvs from list to global env
+lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
+rm(dataframes) #remove dataframes list
+
+
+
+```
+
+
 <!-- # Outlet results -->
 
 <!-- ## Hydrograph -->
