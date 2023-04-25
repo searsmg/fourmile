@@ -39,6 +39,8 @@ library(gridExtra)
 
 ```{r load in files, include = F}
 
+setwd('/Users/megansears/Documents/Repos/fourmile/38HRU_model')
+
 kge <- read_csv('calruns_KGE.csv')
 
 ```
