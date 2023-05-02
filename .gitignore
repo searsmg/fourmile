@@ -7,5 +7,5 @@ data - Shortcut.lnk
 catchments
 HRU_output
 calibration_output_files
-38HRU_model/cals
-38HRU_model/output
+./38HRU_model/cals
+./38HRU_model/output
