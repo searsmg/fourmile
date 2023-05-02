@@ -3,9 +3,9 @@
  step,0
  step_params,
  calibration_start,Sat Jan 01 00:00:00 MST 2011
- luca_name,4milecreek38HRUs-statnall_LUCA_full1_#1
+ luca_name,4milecreek38HRUs-gridall_LUCA_full1_#1
  model_class,ages.AgES
- param_files,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/global.csv D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/soils_hor.csv D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hru_override.csv
+ param_files,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/global.csv D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/soils_hor.csv D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hru_override.csv
 
 @P,initMPS,0.1
  type,double
@@ -231,61 +231,61 @@
 
 @P,params,rawparam
 
-@P,hruFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hrus.csv
+@P,hruFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hrus.csv
 
-@P,landuseFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/landuse.csv
+@P,landuseFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/landuse.csv
 
-@P,hydroGeologyFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hgeo.csv
+@P,hydroGeologyFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hgeo.csv
 
-@P,reachFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/reach.csv
+@P,reachFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/reach.csv
 
-@P,hruAdditionalFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hrus_additional.csv
+@P,hruAdditionalFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hrus_additional.csv
 
-@P,fertilizerFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/fert.csv
+@P,fertilizerFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/fert.csv
 
-@P,tillageFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/till.csv
+@P,tillageFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/till.csv
 
-@P,cropFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/crop.csv
+@P,cropFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/crop.csv
 
-@P,managementFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/management.csv
+@P,managementFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/management.csv
 
-@P,soilFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/soils_hor.csv
+@P,soilFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/soils_hor.csv
 
-@P,routingFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/routing.csv
+@P,routingFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/routing.csv
 
-@P,rotationFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/croprotation.csv
+@P,rotationFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/croprotation.csv
 
-@P,hruRotationFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hrus_rot.csv
+@P,hruRotationFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hrus_rot.csv
 
-@P,dataFilePrecip,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/precipAll.csv
+@P,dataFilePrecip,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/precipAll_prismshift.csv
 
-@P,dataFileTmin,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/tminAll.csv
+@P,dataFileTmin,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/tminAll_prism.csv
 
-@P,dataFileTmax,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/tmaxAll.csv
+@P,dataFileTmax,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/tmaxAll_prism.csv
 
-@P,dataFileHum,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/rhumAll.csv
+@P,dataFileHum,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/rhumAll_prism.csv
 
-@P,dataFileSol,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/solradAll.csv
+@P,dataFileSol,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/solradAll_daymet.csv
 
-@P,dataFileWind,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/wind.csv
+@P,dataFileWind,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/wind.csv
 
-@P,dataFileCO2,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/co2.csv
+@P,dataFileCO2,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/co2.csv
 
-@P,dataFileReg,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/regionalization.csv
+@P,dataFileReg,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/regionalization.csv
 
 @P,humidity,rel
 
 @P,solar,srad
 
-@P,temporalAdditionalFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/Inlet.csv
+@P,temporalAdditionalFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/Inlet.csv
 
-@P,hruOverrideFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hru_override.csv
+@P,hruOverrideFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hru_override.csv
 
-@P,saveStateFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/state_forest.bin
+@P,saveStateFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/state_forest.bin
 
-@P,loadStateFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/state_forest.bin
+@P,loadStateFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/state_forest.bin
 
-@P,programsFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/programs/programs.xml
+@P,programsFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/programs/programs.xml
 
 @P,flagParallel,tango
 

@@ -13,40 +13,40 @@
 @P,initLPS,0.05
  type,double
 
-@P,FCAdaptation,1.25567063427582
+@P,FCAdaptation,1.2520614749279209
  type,double
 
-@P,ACAdaptation,1.106496017183125
+@P,ACAdaptation,1.155934733300711
  type,double
 
-@P,DCAdaptation,0.8343825436154864
+@P,DCAdaptation,1.03886875512458
  type,double
 
 @P,kf_fact,1.0
  type,double
 
-@P,baseTemp,4.892389501985276
+@P,baseTemp,1.8908317471922573
  type,double
 
-@P,t_factor,0.19003781158844124
+@P,t_factor,0.22530106669141545
  type,double
 
-@P,r_factor,3.249585866460466
+@P,r_factor,3.9427360181370066
  type,double
 
-@P,g_factor,3.74781733033968
+@P,g_factor,0.6364571170564002
  type,double
 
-@P,snowCritDens,0.2251997581207289
+@P,snowCritDens,0.5813957976017726
  type,double
 
-@P,ccf_factor,0.002093778355247603
+@P,ccf_factor,0.003619205933089844
  type,double
 
-@P,snow_trans,1.0965904403540043
+@P,snow_trans,0.9561158499676394
  type,double
 
-@P,snow_trs,4.51571804498222
+@P,snow_trs,4.806280149778692
  type,double
 
 @P,piadin,0
@@ -94,16 +94,16 @@
 @P,angstrom_b,0.5
  type,double
 
-@P,a_rain,9.894077823076223
+@P,a_rain,9.734462347966907
  type,double
 
-@P,a_snow,8.529546641822122
+@P,a_snow,6.491375240856542
  type,double
 
 @P,soilMaxDPS,6.69680081172075
  type,double
 
-@P,soilPolRed,47.41109828988692
+@P,soilPolRed,40.04482783064417
  type,double
 
 @P,soilLinRed,0
@@ -145,7 +145,7 @@
 @P,kdiff_layer,1.6449520138836684
  type,double
 
-@P,BetaW,2.6584410303795645
+@P,BetaW,1.354905405705237
  type,double
 
 @P,lagSurfaceRunoff,1.465133900459633
@@ -419,7 +419,7 @@ max,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,1,1,100,500
 description,Parameter bound by 'hru_override'
 len,2
 @H,soilID,luca_a_rain,luca_a_snow,luca_soilMaxInfSummer,luca_soilMaxDPS,luca_lagSurfaceRunoff,luca_soilDistMPSLPS
-,22,4.4286745057085195,2.397619804329813,10.0,1.0,1.0,1.0
-,23,0.6028967508559568,3.018987766836744,10.0,1.0,1.0,1.0
+,22,4.7335078733823766,2.6844276444325734,10.0,1.0,1.0,1.0
+,23,0.5004138870349122,0.20453951080773258,10.0,1.0,1.0,1.0
 
 

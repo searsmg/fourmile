@@ -3,9 +3,9 @@
  step,5
  step_params,flowRouteTA lagSurfaceRunoff lagInterflow luca_lagSurfaceRunoff
  calibration_start,Sat Jan 01 00:00:00 MST 2011
- luca_name,4milecreek38HRUs-statnall_LUCA_full1_#1
+ luca_name,4milecreek38HRUs-gridall_LUCA_full1_#1
  model_class,ages.AgES
- param_files,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/global.csv D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/soils_hor.csv D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hru_override.csv
+ param_files,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/global.csv D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/soils_hor.csv D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hru_override.csv
 
 @P,initMPS,0.1
  type,double
@@ -13,40 +13,40 @@
 @P,initLPS,0.05
  type,double
 
-@P,FCAdaptation,1.0417077335364064
+@P,FCAdaptation,1.1047277694868884
  type,double
 
-@P,ACAdaptation,0.9225048751412521
+@P,ACAdaptation,1.1941929509568103
  type,double
 
-@P,DCAdaptation,0.9263883333120345
+@P,DCAdaptation,0.8479338806647271
  type,double
 
-@P,kf_fact,0.2923555331605312
+@P,kf_fact,0.302763923957989
  type,double
 
-@P,baseTemp,-2.5873914417869868
+@P,baseTemp,2.5668275465045465
  type,double
 
-@P,t_factor,0.16369050112248654
+@P,t_factor,0.40632483426218613
  type,double
 
-@P,r_factor,3.5141237831517866
+@P,r_factor,3.427177114020349
  type,double
 
-@P,g_factor,2.2334387760602983
+@P,g_factor,2.919333281363363
  type,double
 
-@P,snowCritDens,0.7384426927029552
+@P,snowCritDens,0.3655724420707115
  type,double
 
-@P,ccf_factor,0.020261055861000684
+@P,ccf_factor,0.045059014875552666
  type,double
 
-@P,snow_trans,2.2078240041545785
+@P,snow_trans,1.0922690248003109
  type,double
 
-@P,snow_trs,4.950625890439714
+@P,snow_trs,4.821687468616553
  type,double
 
 @P,piadin,0
@@ -94,28 +94,28 @@
 @P,angstrom_b,0.5
  type,double
 
-@P,a_rain,9.835572490217878
+@P,a_rain,9.92013231968506
  type,double
 
-@P,a_snow,9.601093695595717
+@P,a_snow,6.232862822854751
  type,double
 
-@P,soilMaxDPS,1.6283566841356176
+@P,soilMaxDPS,6.341428079894388
  type,double
 
-@P,soilPolRed,39.18087798528795
+@P,soilPolRed,36.22943899730276
  type,double
 
 @P,soilLinRed,0
  type,double
 
-@P,soilMaxInfSummer,144.91321185893926
+@P,soilMaxInfSummer,149.9327584597037
  type,double
 
-@P,soilMaxInfWinter,32.597034806204874
+@P,soilMaxInfWinter,8.569049331684564
  type,double
 
-@P,soilMaxInfSnow,92.77168342647968
+@P,soilMaxInfSnow,21.37399596946802
  type,double
 
 @P,soilImpGT80,0.25
@@ -124,34 +124,34 @@
 @P,soilImpLT80,0.6
  type,double
 
-@P,soilDistMPSLPS,0.003905057684730817
+@P,soilDistMPSLPS,1.1670033366830725
  type,double
 
-@P,soilDiffMPSLPS,9.039148458464735
+@P,soilDiffMPSLPS,2.5297366595009487
  type,double
 
-@P,soilOutLPS,0.2340185143935627
+@P,soilOutLPS,0.36058565777442286
  type,double
 
-@P,soilLatVertLPS,1.1845212686288087
+@P,soilLatVertLPS,0.20995817954966434
  type,double
 
 @P,soilMaxPerc,1
  type,double
 
-@P,geoMaxPerc,0.016301341268730396
+@P,geoMaxPerc,0.38271848146673904
  type,double
 
-@P,kdiff_layer,8.924351975155826
+@P,kdiff_layer,44.699681810827855
  type,double
 
-@P,BetaW,5.127404395073595
+@P,BetaW,0.3277707806304342
  type,double
 
-@P,lagSurfaceRunoff,1.182790019544363
+@P,lagSurfaceRunoff,1.4693492998479656
  type,double
 
-@P,lagInterflow,1.6601762661929702
+@P,lagInterflow,1.7192555622865835
  type,double
 
 @P,initRG1,0.04
@@ -160,16 +160,16 @@
 @P,initRG2,0.01
  type,double
 
-@P,gwRG1RG2dist,0.6078328550893917
+@P,gwRG1RG2dist,0.325866328139257
  type,double
 
-@P,gwRG1Fact,2.0915248281699332
+@P,gwRG1Fact,1.2778163299981515
  type,double
 
-@P,gwRG2Fact,38.00242978936978
+@P,gwRG2Fact,16.633231657215127
  type,double
 
-@P,gwCapRise,0.5478858518461408
+@P,gwCapRise,0.23270039562189848
  type,double
 
 @P,N_delay_RG1,5
@@ -184,7 +184,7 @@
 @P,N_concRG2,10
  type,double
 
-@P,flowRouteTA,0.14141433640734918
+@P,flowRouteTA,0.10157593752136479
  type,double
 
 @P,Ksink,0
@@ -231,61 +231,61 @@
 
 @P,params,rawparam
 
-@P,hruFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hrus.csv
+@P,hruFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hrus.csv
 
-@P,landuseFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/landuse.csv
+@P,landuseFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/landuse.csv
 
-@P,hydroGeologyFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hgeo.csv
+@P,hydroGeologyFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hgeo.csv
 
-@P,reachFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/reach.csv
+@P,reachFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/reach.csv
 
-@P,hruAdditionalFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hrus_additional.csv
+@P,hruAdditionalFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hrus_additional.csv
 
-@P,fertilizerFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/fert.csv
+@P,fertilizerFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/fert.csv
 
-@P,tillageFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/till.csv
+@P,tillageFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/till.csv
 
-@P,cropFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/crop.csv
+@P,cropFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/crop.csv
 
-@P,managementFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/management.csv
+@P,managementFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/management.csv
 
-@P,soilFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/soils_hor.csv
+@P,soilFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/soils_hor.csv
 
-@P,routingFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/routing.csv
+@P,routingFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/routing.csv
 
-@P,rotationFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/croprotation.csv
+@P,rotationFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/croprotation.csv
 
-@P,hruRotationFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hrus_rot.csv
+@P,hruRotationFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hrus_rot.csv
 
-@P,dataFilePrecip,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/precipAll.csv
+@P,dataFilePrecip,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/precipAll_prismshift.csv
 
-@P,dataFileTmin,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/tminAll.csv
+@P,dataFileTmin,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/tminAll_prism.csv
 
-@P,dataFileTmax,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/tmaxAll.csv
+@P,dataFileTmax,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/tmaxAll_prism.csv
 
-@P,dataFileHum,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/rhumAll.csv
+@P,dataFileHum,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/rhumAll_prism.csv
 
-@P,dataFileSol,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/solradAll.csv
+@P,dataFileSol,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/solradAll_daymet.csv
 
-@P,dataFileWind,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/wind.csv
+@P,dataFileWind,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/wind.csv
 
-@P,dataFileCO2,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/co2.csv
+@P,dataFileCO2,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/co2.csv
 
-@P,dataFileReg,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/regionalization.csv
+@P,dataFileReg,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/regionalization.csv
 
 @P,humidity,rel
 
 @P,solar,srad
 
-@P,temporalAdditionalFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/Inlet.csv
+@P,temporalAdditionalFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/Inlet.csv
 
-@P,hruOverrideFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/hru_override.csv
+@P,hruOverrideFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/hru_override.csv
 
-@P,saveStateFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/state_forest.bin
+@P,saveStateFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/state_forest.bin
 
-@P,loadStateFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/data/state_forest.bin
+@P,loadStateFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/data/state_forest.bin
 
-@P,programsFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-statnall/programs/programs.xml
+@P,programsFilePath,D:\MSears_Fourmile\ages_1_0_4M/projects/4milecreek38HRUs-gridall/programs/programs.xml
 
 @P,flagParallel,tango
 
@@ -370,48 +370,48 @@ len,43
 unit,n/a,cm,Vol.%,Vol.%,Vol.%,cm/d,g/cm,%,n/a,n/a,%,mg/100g_soil
 min,1,0,0,0,0,0,0,0,0,0,0,0
 max,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,1,1,100,500
-,1001,15,0.16,0.107,0.057,226.47244467423093,1.43,3,1,0.15,5,1
+,1001,15,0.16,0.107,0.057,28.6997266479728,1.43,3,1,0.15,5,1
 ,1002,13,0.16,0.060,0.017,793.0,1.53,0.75,1,0.28,5,1
-,1101,10,0.24,0.108,0.050,58.779777817047965,1.52,1,1,0.2,0,1
+,1101,10,0.24,0.108,0.050,197.85186165105753,1.52,1,1,0.2,0,1
 ,1102,15,0.24,0.103,0.045,244.0,1.52,0.5,1,0.28,0,1
-,1201,15,0.19,0.114,0.057,24.283765949348773,1.43,0.75,1,0.15,43,1
+,1201,15,0.19,0.114,0.057,138.8830747580809,1.43,0.75,1,0.15,43,1
 ,1202,36,0.19,0.114,0.057,201.0,1.43,0.75,1,0.15,43,1
-,1301,5,0.37,0.208,0.085,200.70121125974816,1.32,1,1,0.49,27,1
+,1301,5,0.37,0.208,0.085,75.96239874780396,1.32,1,1,0.49,27,1
 ,1302,18,0.22,0.121,0.049,79.0,1.32,1,1,0.49,31,1
 ,1303,48,0.21,0.069,0.023,244.0,1.48,0.5,1,0.24,31,1
 ,1304,43,0.1,0.060,0.007,244.0,1.72,0.5,0,0.1,38,1
-,1401,10,0.24,0.108,0.050,173.66770318844462,1.52,1,1,0.2,0,1
+,1401,10,0.24,0.108,0.050,193.90417423340745,1.52,1,1,0.2,0,1
 ,1402,15,0.24,0.103,0.045,244.0,1.52,0.5,1,0.28,0,1
-,1501,18,0.27,0.108,0.050,94.73949742478545,1.35,2,1,0.17,21,1
+,1501,18,0.27,0.108,0.050,222.59979522946267,1.35,2,1,0.17,21,1
 ,1502,12,0.23,0.097,0.043,244.0,1.48,1,1,0.2,38,1
 ,1503,44,0.19,0.073,0.029,244.0,1.48,0,1,0.28,49,1
-,1601,20,0.25,0.116,0.057,33.171990254347655,1.46,2,1,0.2,40,1
+,1601,20,0.25,0.116,0.057,68.25057729078749,1.46,2,1,0.2,40,1
 ,1602,13,0.25,0.116,0.057,244.0,1.48,1,1,0.32,33,1
 ,1603,36,0.21,0.098,0.050,244.0,1.48,0.5,1,0.24,38,1
 ,1604,38,0.26,0.095,0.037,244.0,1.46,0,0,0.24,26,1
-,1701,4,0.41,0.174,0.081,168.82996446117963,1.4,2,1,0.2,0,1
+,1701,4,0.41,0.174,0.081,135.6887624500058,1.4,2,1,0.2,0,1
 ,1702,20,0.31,0.143,0.076,244.0,1.4,1,1,0.32,15,1
 ,1703,49,0.18,0.102,0.061,79.0,1.53,0.5,1,0.2,30,1
-,1801,5,0.37,0.208,0.085,64.41883992255325,1.32,1,1,0.49,27,1
+,1801,5,0.37,0.208,0.085,205.27250207603367,1.32,1,1,0.49,27,1
 ,1802,18,0.22,0.121,0.049,79.0,1.32,1,1,0.49,31,1
 ,1803,48,0.21,0.069,0.023,244.0,1.48,0.5,1,0.24,31,1
 ,1804,43,0.1,0.060,0.007,244.0,1.72,0.5,0,0.1,38,1
-,1901,5,0.27,0.115,0.051,191.58305533522542,1.5,1,1,0.2,20,1
+,1901,5,0.27,0.115,0.051,179.8786544912887,1.5,1,1,0.2,20,1
 ,1902,20,0.25,0.082,0.027,244.0,1.48,0.5,1,0.32,20,1
 ,1903,23,0.19,0.070,0.026,244.0,1.5,0.5,1,0.28,30,1
-,2001,25,0.38,0.217,0.089,192.49785605390693,1.32,2,1,0.28,0,1
+,2001,25,0.38,0.217,0.089,190.61232969168896,1.32,2,1,0.28,0,1
 ,2002,28,0.37,0.214,0.088,244.0,1.32,2,1,0.24,0,1
 ,2003,26,0.33,0.189,0.100,79.0,1.49,1,1,0.15,0,1
 ,2004,28,0.3,0.197,0.100,24.0,1.5,1,1,0.15,0,1
-,2101,20,0.25,0.082,0.027,38.41701797587918,1.48,0.5,1,0.32,20,1
+,2101,20,0.25,0.082,0.027,63.52964082050864,1.48,0.5,1,0.32,20,1
 ,2102,23,0.19,0.070,0.026,244.0,1.5,0.5,1,0.28,30,1
 ,2103,11,0.15,0.060,0.021,244.0,1.5,0.5,1,0.28,40,1
 ,2104,20,0.11,0.060,0.021,244.0,1.48,0.5,1,0.28,61,1
 ,2105,20,0.1,0.061,0.038,79.0,1.53,0.5,1,0.28,60,1
 ,2106,23,0.1,0.060,0.024,244.0,1.51,0,0,0.32,55,1
-,2201,15,0.16,0.107,0.057,242.90189771608368,1.43,3,1,0.15,5,1
+,2201,15,0.16,0.107,0.057,146.64239892824443,1.43,3,1,0.15,5,1
 ,2202,13,0.16,0.060,0.017,793.0,1.53,0.75,1,0.28,5,1
-,2301,15,0.19,0.114,0.057,120.19546329220054,1.43,0.75,1,0.15,43,1
+,2301,15,0.19,0.114,0.057,114.81314376449143,1.43,0.75,1,0.15,43,1
 ,2302,36,0.19,0.114,0.057,201.0,1.43,0.75,1,0.15,43,1
 
 
@@ -419,7 +419,7 @@ max,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,1,1,100,500
 description,Parameter bound by 'hru_override'
 len,2
 @H,soilID,luca_a_rain,luca_a_snow,luca_soilMaxInfSummer,luca_soilMaxDPS,luca_lagSurfaceRunoff,luca_soilDistMPSLPS
-,22,3.9457832307184524,3.4463419184102726,34.70861604909984,9.697837326931163,1.2333650622136323,5.315853453668446
-,23,2.7377482505974124,4.774355920589339,11.315532802618854,1.0488316635300399,1.3119992163939078,3.921733766960634
+,22,4.580068296419536,1.041739391878772,25.377170741998857,9.780269730118542,1.10318211083665,5.5120590923907145
+,23,1.254189252322478,2.011393893522487,62.46696525406531,6.052698754465372,1.166085925408701,2.3456216450709992
 
 
