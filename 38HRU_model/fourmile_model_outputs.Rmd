@@ -214,10 +214,16 @@ lapply(name, plotdens_params)
 
 ## Burn parameters
 
-```{echo = FALSE, message = FALSE, warning = FALSE, include = F}
+```{r echo = FALSE, message = FALSE, warning = FALSE, include = F}
+
+rm(statn_2011, statn_2012, statn_2013, statn_2014, statn_2015,
+                  statn_2016, statn_2017, statn_2018, statn_2019, statn_2020,
+                  statn_all., statn_all)
+
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_model/cals")
 
 #pull in all filenames with composite
-filenames <- list.files('.', pattern=".csv", full.names=TRUE)
+filenames <- list.files('.', pattern=".csv", full.names=F)
 
 #read all the csvs
 dataframes <- lapply(filenames, read_csv)
@@ -228,6 +234,10 @@ names(dataframes) <- substr(filenames, 1, 10)
 #extract csvs from list to global env
 lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
 rm(dataframes) #remove dataframes list
+
+```
+
+```{r}
 
 # read in all the grid burn params
 read_cals_burn <- function(df, name){
@@ -334,9 +344,9 @@ plot_burnparams <- function(param_name) {
     theme_bw()
 }
 
-name <- levels(burn_params$params)
+name2 <- levels(burn_params$params)
 
-lapply(name, plot_burnparams)
+lapply(name2, plot_burnparams)
 
 
 ```
@@ -377,8 +387,12 @@ lapply(name, plot_params)
 ## Hydrograph
 
 ```{r hydrographs, echo = F}
+setwd('/Users/megansears/Documents/Repos/fourmile/38HRU_model')
+
 flow <- read_csv('discharge_all.csv') %>%
-  replace(.==-9999, NA)
+  replace(.==-9999, NA) %>%
+  rename(date = time) %>%
+  mutate(date = mdy(date))
 
 
 flow_pivot <- flow %>%
@@ -603,19 +617,10 @@ q_ensemble <- ggplot(ensem_pivot, aes(date, q_m3s, color = cal_run)) +
                                             "grid_all"="purple1",
                                             "statn_all"='springgreen4',
                                             "all_ensemble" = "orange")) +
-  geom_line(data = bouldcr, aes(date, bouldcr/10), color = 'darkgrey') +
-  scale_y_continuous(name = 'Q_m3s',
-                    sec.axis = sec_axis(~.*10, name='BoulderCr_cms')) +
+  scale_y_continuous(name = 'Q_m3s') +
   theme_bw()
 
-
-ggplotly(q_ensemble) %>%
-  add_lines(data=bouldcr, x=~date, y=~bouldcr, colors=NULL, yaxis="y2",
-              inherit=FALSE, showlegend = FALSE) %>%
-  layout(yaxis2 = list(overlaying = "y", side = "right",
-                       color = 'darkgray',
-                       title = "BoulderCr_cms"),
-         legend = list(x = 1.1, y = 0.95))
+q_ensemble
 
 ```
 
@@ -986,887 +991,887 @@ cumulative_plots
 
 ```
 
-# Catchment results
+<!-- # Catchment results -->
 
-## Precip
+<!-- ## Precip -->
 
-```{r catch precip, echo = F}
-setwd("/Users/megansears/Documents/Repos/fourmile/catchment_output")
+<!-- ```{r catch precip, echo = F} -->
+<!-- setwd("/Users/megansears/Documents/Repos/fourmile/catchment_output") -->
 
-statn <- read_csv('statnall.csv')
-grid <- read_csv('gridall.csv')
-
-grid <- grid %>% mutate(site = 'grid')
-statn <- statn %>% mutate(site = 'statn')
+<!-- statn <- read_csv('statnall.csv') -->
+<!-- grid <- read_csv('gridall.csv') -->
+
+<!-- grid <- grid %>% mutate(site = 'grid') -->
+<!-- statn <- statn %>% mutate(site = 'statn') -->
 
-catchment <- bind_rows(grid, statn) %>%
-  mutate(year = as.factor(year(time))) %>%
-  group_by(year, site) %>%
-  mutate(cumulative_p = cumsum(precip))
-
-#plot cumulative precip by year
-plot_cumprecip <- function(calyear) {
-  {catchment %>%
-    filter(year == calyear) %>%
-    ggplot(aes(x = time,
-               y = cumulative_p, color = site)) +
-    geom_line(size=1) +
-    ggtitle(calyear) +
-    ylab('Cumulative precip (mm)') +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 45, hjust=1))} %>%
-    ggplotly()
-}
-
-name <- levels(catchment$year)
-
-precip_plots <- lapply(name, plot_cumprecip)
-
-htmltools::tagList(precip_plots)
-
-precip_plots
-
-## total P
-max_cumulativep <- catchment %>%
-  group_by(year, site) %>%
-  summarize(total_cumulativep = max(cumulative_p))
-
-ggplot(max_cumulativep, aes(x=year, y=total_cumulativep, color=site)) +
-  geom_point(size=3) +
-  ggtitle('Total cumulative precip (mm) by year')
-
-```
-
-## Tmean
-
-```{r tmean catch, echo = F}
-## tmean
-tmean <- catchment %>%
-  group_by(year, site) %>%
-  summarize(tmean = mean(tmean)) %>%
-  ggplot(aes(x = year, y=tmean, color = site)) +
-  geom_point(size=3) +
-  ggtitle('Average temp by year')
-
-tmean
-
-
-```
-
-## RD and RG
-
-```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
-
-gw_grid <- read_csv(here('catchment_output/gridall_outlet.csv')) %>%
-  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-  mutate(source = 'grid')
-
-gw_statn <- read_csv(here('catchment_output/statnall_outlet.csv')) %>%
-  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-  mutate(source = 'statn')
-
-gw <- bind_rows(gw_grid, gw_statn) %>%
-  mutate(year = year(time)) %>%
-  rename(date = time)
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=catchmentRD1_w), size =1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('RD1') +
-  theme(text = element_text(size = 20))
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=catchmentRD2_w), size =1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('RD2') +
-  theme(text = element_text(size = 20))
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=catchmentRG1_w), size =1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('RG1') +
-  theme(text = element_text(size = 20))
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=catchmentRG2_w), size =1) +
-  facet_wrap(~year, scales = 'free', ncol=2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('RG2') +
-  theme(text = element_text(size = 20))
-
-gw <- gw %>%
-  group_by(year, source) %>%
-  mutate(RD1cumsum = cumsum(catchmentRD1_w),
-         RD2cumsum = cumsum(catchmentRD2_w),
-         RG1cumsum = cumsum(catchmentRG1_w),
-         RG2cumsum = cumsum(catchmentRG2_w))
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RD1cumsum), size =1) +
-  facet_wrap(~year, scales = 'free', ncol=2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RD1') +
-  theme(text = element_text(size = 20))
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RD2cumsum), size = 1) +
-  facet_wrap(~year, scales = 'free', ncol=2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RD2') +
-  theme(text = element_text(size = 20))
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RG1cumsum), size  = 1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RG1') +
-  theme(text = element_text(size = 20))
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RG2cumsum), size =1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RG2') +
-  theme(text = element_text(size = 20))
-
-```
-
-
-```{r rd and rg sums, echo = F, fig.width = 22, fig.asp = 1.5, out.width = "100%"}
-
-##################
-# all 4 with facets
-
-ggplot(gw, aes(x=date)) +
-  geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) +
-  geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) +
-  geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) +
-  geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) +
-  scale_x_date(labels = date_format("%b")) +
-  facet_wrap(~year + source, scales = 'free_x', ncol=2) +
-  ggtitle('Cumulative RD and RG') +
-  theme(text = element_text(size = 24))
-
-```
-
-
-```{r gw boxplot, echo = F}
-
-gw_maxcumsum <- gw %>%
-  group_by(source, year) %>%
-  summarize(yr_max_RD1 = max(RD1cumsum),
-            yr_max_RD2 = max(RD2cumsum),
-            yr_max_RG1 = max(RG1cumsum),
-            yr_max_RG2 = max(RG2cumsum)) %>%
-  mutate(year = as.factor(year)) %>%
-  pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms')
-
-
-ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
-  geom_boxplot(position = position_dodge(1)) +
-  geom_point(position=position_jitterdodge(),alpha=0.3) +
-  ggtitle('Max annual cumulative sums')
-
-ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
-  geom_boxplot(position = position_dodge(1)) +
-  geom_point(position=position_jitterdodge(),alpha=0.3) +
-  #geom_point(aes(color = source)) +
-  facet_wrap(~flow_type, scales = 'free') +
-  ggtitle('Max annual cumulative sums')
-
-```
-
-### RD and RG by season
-
-```{r flow season, echo = F, fig.width = 12, fig.asp = 0.75, out.width = "100%"}
-
-#group by season and get max sums by season
-flow_season <- gw %>%
-  dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>%
-  mutate(month = month(date)) %>%
-  mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt',
-                            month %in% c(7,8,9,10) ~ 'monsoon',
-                            month %in% c(11,12,1,2) ~ 'baseflow')) %>%
-  group_by(source, year, season) %>%
-  summarize(yr_season_RD1 = max(RD1cumsum),
-            yr_season_RD2 = max(RD2cumsum),
-            yr_season_RG1 = max(RG1cumsum),
-            yr_season_RG2 = max(RG2cumsum)) %>%
-            pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'flow_cms')
-
-
-flow_season %>%
-  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
-  geom_boxplot(position = position_dodge(1)) +
-  geom_point(position=position_jitterdodge(),alpha=0.3) +
-  #geom_point(aes(color = source)) +
-  facet_wrap(~season, scales = 'free') +
-  ggtitle('Max annual season cumulative sums') +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(text = element_text(size = 20))
-
-
-flow_season %>%
-  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
-  geom_boxplot(position = position_dodge(1)) +
-  geom_point(position=position_jitterdodge(),alpha=0.3) +
-  #geom_point(aes(color = source)) +
-  facet_wrap(~season + flow_type, scales = 'free') +
-  ggtitle('Max annual season cumulative sums') +
-  theme_bw() +
-  theme(text = element_text(size = 20))
-
-
-```
-
-# HRU results
-
-## Tmean difference
-
-2011-2020 average of daily station-grid Tmean
-
-```{r cumulative tmean for HRUs, echo = F}
-#grid first
-setwd(here("HRU_output/grid"))
-
-read_ages_grid <- function(dataframe){
-  read_csv(dataframe, skip = 3) %>%
-  slice(3:n()) %>%
-  dplyr::select(-starts_with('@'),
-                -1) %>%
-  mutate(time = ymd(time)) %>%
-  mutate_if(is.character, as.numeric) %>%
-  mutate(source = 'grid')
-
-}
-
-#pull in all filenames with HRU in the name
-filenames <- list.files(".", pattern="HRU", full.names=F)
-
-#read all the csvs using read_ages function
-dataframes <- lapply(filenames, read_ages_grid)
-
-#name all the csvs based on first 6 characters
-names(dataframes) <- substr(filenames, 1, 6)
-
-#bind all and make 1 df
-hru_grids <- dataframes %>%
-  bind_rows()
-
-#statn next
-setwd(here("HRU_output/statn"))
-
-read_ages_statn <- function(dataframe){
-  read_csv(dataframe, skip = 3) %>%
-  slice(3:n()) %>%
-  dplyr::select(-starts_with('@'),
-                -1) %>%
-  mutate(time = ymd(time)) %>%
-  mutate_if(is.character, as.numeric) %>%
-  mutate(source = 'statn')
-
-}
-
-#pull in all filenames with HRU in the name
-filenames <- list.files(".", pattern="HRU", full.names=F)
-
-#read all the csvs using read_ages function
-dataframes <- lapply(filenames, read_ages_statn)
-
-#name all the csvs based on first 6 characters
-names(dataframes) <- substr(filenames, 1, 6)
-
-#bind all and make 1 df
-hru_statn <- dataframes %>%
-  bind_rows()
-
-#get rid of a bunch of data
-hru_grid_tmean <- hru_grids %>%
-  dplyr::select(c(time, ID, tmean)) %>%
-  rename(tmean_grid = tmean)  %>%
-  group_by(ID) %>%
-  summarize(tmean_all_grid = mean(tmean_grid))
-
-hru_statn_tmean <- hru_statn %>%
-  dplyr::select(c(time, ID, tmean)) %>%
-  rename(tmean_statn = tmean) %>%
-  group_by(ID) %>%
-  summarize(tmean_all_statn = mean(tmean_statn))
-
-tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
-  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
-  rename(value = ID)
-
-hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value')
-
-tmap_mode('view')
-
-locations_t <- locations %>%
-  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
-                        'Betasso', 'Niwot_Snotel',
-                        'University Camp SNTL'))
-
-tm_shape(hrus_map_tmean) +
-  tm_polygons('diff', id = 'value',
-              breaks = c(-6,-4,-2,0,2,4,6)) +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size=4)
-
-```
-
-## Tmax difference
-
-```{r tmax, echo = F}
-
-tmax_grid <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv'))%>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value',
-               values_to = 'tmax_grid') %>%
-  mutate(time = dmy(time)) %>%
-  group_by(value) %>%
-  summarize(Tmax_mean_grid = mean(tmax_grid))
-
-tmax_statn <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value',
-               values_to = 'tmax_statn') %>%
-  mutate(time = dmy(time)) %>%
-  group_by(value) %>%
-  summarize(Tmax_mean_statn = mean(tmax_statn))
-
-tmax_hrus <- left_join(tmax_grid, tmax_statn, by = c('value')) %>%
-  mutate(diff = Tmax_mean_statn - Tmax_mean_grid,
-         value = as.numeric(value))
-
-hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value')
-
-tmap_mode('view')
-
-tm_shape(hrus_map_tmax) +
-  tm_polygons('diff', id = 'value',
-              breaks = c(-6,-4,-2,0,2,4,6)) +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size=4)
-
-```
-
-## Tmax monthly average
-
-```{r tmax month, echo = F}
-
-tmax_grid_mo <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv')) %>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value',
-               values_to = 'tmax_grid') %>%
-  mutate(time = dmy(time),
-         month = month(time)) %>%
-  filter(month %in% c(3:6)) %>%
-  group_by(value, month) %>%
-  summarize(avg_tmax_grid = mean(tmax_grid))
-
-tmax_statn_mo <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value',
-               values_to = 'tmax_statn') %>%
-  mutate(time = dmy(time),
-         month = month(time)) %>%
-  filter(month %in% c(3:6)) %>%
-  group_by(value, month) %>%
-  summarize(avg_tmax_statn = mean(tmax_statn))
-
-tmax_hrus_mo <- left_join(tmax_grid_mo, tmax_statn_mo, by = c('value', 'month')) %>%
-  mutate(mo_tmax_diff = avg_tmax_statn - avg_tmax_grid,
-         value = as.numeric(value))
-
-tmap_mode('plot')
-
-#march
-tmax_hrus_mar<- tmax_hrus_mo %>%
-  filter(month == 3)
-
-hrus_map_tmax_mar <- left_join(hrus, tmax_hrus_mar, by = 'value')
-
-mar_tmax <- tm_shape(hrus_map_tmax_mar) +
-  #tm_polygons('mo_tmax_diff', id = 'value') +
-  tm_fill('mo_tmax_diff', id = 'value',
-          breaks = c(-6,-4,-2,0,2,4,6)) +
-  tm_borders() +
-  tm_shape(locations_t) +
-  tm_symbols(col='blue', size = 0.25) +
-  tm_layout(title = 'March avg tmax',
-            legend.outside = T)
-
-
-#april
-tmax_hrus_apr<- tmax_hrus_mo %>%
-  filter(month == 4)
-
-hrus_map_tmax_apr <- left_join(hrus, tmax_hrus_apr, by = 'value')
-
-apr_tmax <- tm_shape(hrus_map_tmax_apr) +
-  tm_fill('mo_tmax_diff', id = 'value',
-          breaks = c(-6,-4,-2,0,2,4,6)) +
-  tm_borders() +
-  tm_shape(locations_t) +
-  tm_symbols(col='blue', size = 0.25) +
-  tm_layout(title = 'April avg tmax',
-            legend.outside = T)
-
-#may
-tmax_hrus_may<- tmax_hrus_mo %>%
-  filter(month == 5)
-
-hrus_map_tmax_may <- left_join(hrus, tmax_hrus_may, by = 'value')
-
-may_tmax <- tm_shape(hrus_map_tmax_may) +
-  tm_fill('mo_tmax_diff', id = 'value',
-         breaks = c(-6,-4,-2,0,2,4,6)) +
-  tm_borders() +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size = 0.25) +
-  tm_layout(title = 'May avg tmax',
-            legend.outside = T)
-
-#june
-tmax_hrus_jun<- tmax_hrus_mo %>%
-  filter(month == 6)
-
-hrus_map_tmax_jun <- left_join(hrus, tmax_hrus_jun, by = 'value')
-
-jun_tmax <- tm_shape(hrus_map_tmax_jun) +
-  tm_fill('mo_tmax_diff', id = 'value',
-         breaks = c(-6,-4,-2,0,2,4,6)) +
-  tm_borders() +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size = 0.25) +
-  tm_layout(title = 'June avg tmax',
-            legend.outside = T)
-
-tmap_arrange(mar_tmax, apr_tmax, may_tmax, jun_tmax)
-
-```
-
-## Tmin difference
-
-```{r tmin, echo = F}
-
-tmin_grid <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value',
-               values_to = 'tmin_grid') %>%
-  mutate(time = dmy(time)) %>%
-  group_by(value) %>%
-  summarize(Tmin_mean_grid = mean(tmin_grid))
-
-tmin_statn <- read_csv(here('HRU_output/reg_tminAll.csv')) %>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value',
-               values_to = 'tmin_statn') %>%
-  mutate(time = dmy(time)) %>%
-  group_by(value) %>%
-  summarize(Tmin_mean_statn = mean(tmin_statn))
-
-tmin_hrus <- left_join(tmin_grid, tmin_statn, by = c('value')) %>%
-  mutate(diff = Tmin_mean_statn - Tmin_mean_grid,
-         value = as.numeric(value))
-
-hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value')
-
-tmap_mode('view')
-
-tm_shape(hrus_map_tmin) +
-  tm_polygons('diff', id = 'value',
-              breaks = c(-6,-4,-2,0,2,4,6)) +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size=4)
-
-```
-
-## Tmin monthly average
-
-```{r tmin month, echo = F}
-tmin_grid_mo <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value',
-               values_to = 'tmin_grid') %>%
-  mutate(time = dmy(time),
-         month = month(time)) %>%
-  filter(month %in% c(3:6)) %>%
-  group_by(value, month) %>%
-  summarize(avg_tmin_grid = mean(tmin_grid))
-
-tmin_statn_mo <- read_csv(here('HRU_output/reg_tminAll.csv')) %>%
-  pivot_longer(cols = `3`:`19`,
-               names_to = 'value',
-               values_to = 'tmin_statn') %>%
-  mutate(time = dmy(time),
-         month = month(time)) %>%
-  filter(month %in% c(3:6)) %>%
-  group_by(value, month) %>%
-  summarize(avg_tmin_statn = mean(tmin_statn))
-
-tmin_hrus_mo <- left_join(tmin_grid_mo, tmin_statn_mo, by = c('value', 'month')) %>%
-  mutate(mo_tmin_diff = avg_tmin_statn - avg_tmin_grid,
-         value = as.numeric(value))
-
-tmap_mode('plot')
-
-#march
-tmin_hrus_mar<- tmin_hrus_mo %>%
-  filter(month == 3)
-
-hrus_map_tmin_mar <- left_join(hrus, tmin_hrus_mar, by = 'value')
-
-mar_tmin <- tm_shape(hrus_map_tmin_mar) +
-  #tm_polygons('mo_tmin_diff', id = 'value') +
-  tm_fill('mo_tmin_diff', id = 'value',
-          breaks = c(-5,-2.5,0,2.5,5)) +
-  tm_borders() +
-  tm_shape(locations_t) +
-  tm_symbols(col='blue', size = 0.25) +
-  tm_layout(title = 'March avg tmin',
-            legend.outside = T)
-
-#april
-tmin_hrus_apr<- tmin_hrus_mo %>%
-  filter(month == 4)
-
-hrus_map_tmin_apr <- left_join(hrus, tmin_hrus_apr, by = 'value')
-
-apr_tmin <- tm_shape(hrus_map_tmin_apr) +
-  tm_fill('mo_tmin_diff', id = 'value',
-          breaks = c(-5,-2.5,0,2.5,5)) +
-  tm_borders() +
-  tm_shape(locations_t) +
-  tm_symbols(col='blue', size = 0.25) +
-  tm_layout(title = 'April avg tmin',
-            legend.outside = T)
-
-#may
-tmin_hrus_may<- tmin_hrus_mo %>%
-  filter(month == 5)
-
-hrus_map_tmin_may <- left_join(hrus, tmin_hrus_may, by = 'value')
-
-may_tmin <- tm_shape(hrus_map_tmin_may) +
-  tm_fill('mo_tmin_diff', id = 'value',
-         breaks = c(-5,-2.5,0,2.5,5)) +
-  tm_borders() +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size = 0.25) +
-  tm_layout(title = 'May avg tmin',
-            legend.outside = T)
-
-#june
-tmin_hrus_jun<- tmin_hrus_mo %>%
-  filter(month == 6)
-
-hrus_map_tmin_jun <- left_join(hrus, tmin_hrus_jun, by = 'value')
-
-jun_tmin <- tm_shape(hrus_map_tmin_jun) +
-  tm_fill('mo_tmin_diff', id = 'value',
-          breaks = c(-5,-2.5,0,2.5,5)) +
-  tm_borders() +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size = 0.25) +
-  tm_layout(title = 'June avg tmin',
-            legend.outside = T)
-
-tmap_arrange(mar_tmin, apr_tmin, may_tmin, jun_tmin)
-
-```
-
-## Cumulative Precip difference
-
-2011-2020 average of daily station-grid precip for DOY 365 (or 366)
-
-```{r cum precip, echo = F}
-#get rid of a bunch of data
-hru_grid_precip <- hru_grids %>%
-  dplyr::select(c(time, ID, precip)) %>%
-  rename(precip_grid = precip)
-
-hru_statn_precip <- hru_statn %>%
-  dplyr::select(c(time, ID, precip)) %>%
-  rename(precip_statn = precip)
-
-precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
-  mutate(diff = precip_statn - precip_grid,
-         year = year(time)) %>%
-  group_by(year, ID) %>%
-  mutate(total_diff = cumsum(diff)) %>%
-  filter(time == max(time)) %>%
-  group_by(ID) %>%
-  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
-  rename(value = ID)
-
-hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value')
-
-tmap_mode('view')
-
-locations_p <- locations %>%
-  filter(type == 'precip')
-
-tm_shape(hrus_map_precip) +
-  tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
-tm_shape(locations_p) +
-  tm_symbols(col='blue', size=4)
-
-```
-
-## Solar radiation difference
-
-2011-2020 average of daily station-grid solar rad
-
-```{r cum sol rad, echo = F}
-
-#get rid of a bunch of data
-hru_grid_solrad <- hru_grids %>%
-  dplyr::select(c(time, ID, solRad)) %>%
-  rename(solrad_grid = solRad)  %>%
-  group_by(ID) %>%
-  summarize(solrad_all_grid = mean(solrad_grid))
-
-hru_statn_solrad <- hru_statn %>%
-  dplyr::select(c(time, ID, solRad)) %>%
-  rename(solrad_statn = solRad) %>%
-  group_by(ID) %>%
-  summarize(solrad_all_statn = mean(solrad_statn))
-
-solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
-  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
-  rename(value = ID)
-
-hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value')
-
-tmap_mode('view')
-
-locations_solrad <- locations %>%
-  dplyr::filter(name %in% c('Gordon_South',
-                        'Betasso', 'Niwot_Snotel'))
-
-tm_shape(hrus_map_solrad) +
-  tm_polygons('diff', midpoint = NA, palette = 'YlOrRd', id = 'value') +
-tm_shape(locations_solrad) +
-  tm_symbols(col='blue', size=4)
-
-```
-
-## RH difference
-
-```{r rh, echo = F}
-
-#get rid of a bunch of data
-hru_grid_rh <- hru_grids %>%
-  dplyr::select(c(time, ID, rhum)) %>%
-  rename(rh_grid = rhum)  %>%
-  group_by(ID) %>%
-  summarize(rh_all_grid = mean(rh_grid))
-
-hru_statn_rh <- hru_statn %>%
-  dplyr::select(c(time, ID, rhum)) %>%
-  rename(rh_statn = rhum) %>%
-  group_by(ID) %>%
-  summarize(rh_all_statn = mean(rh_statn))
-
-rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
-  mutate(diff = rh_all_statn - rh_all_grid) %>%
-  rename(value = ID)
-
-hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value')
-
-tmap_mode('view')
-
-locations_rh <- locations %>%
-  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
-                        'Betasso', 'Niwot_Snotel'))
-
-tm_shape(hrus_map_rh) +
-  tm_polygons('diff', midpoint = NA, id = 'value') +
-tm_shape(locations_rh) +
-  tm_symbols(col='blue', size=4)
-
-```
-
-## Average soil sat comparison
-
-```{r soilsat, echo = F}
-
-#get rid of a bunch of data
-hru_grid_soilsat <- hru_grids %>%
-  dplyr::select(c(time, ID, soilSat)) %>%
-  rename(soilsat_grid = soilSat)  %>%
-  group_by(ID) %>%
-  summarize(soilsat_all_grid = mean(soilsat_grid))
-
-hru_statn_soilsat <- hru_statn %>%
-  dplyr::select(c(time, ID, soilSat)) %>%
-  rename(soilsat_statn = soilSat) %>%
-  group_by(ID) %>%
-  summarize(soilsat_all_statn = mean(soilsat_statn))
-
-soilsat_hrus <- left_join(hru_grid_soilsat, hru_statn_soilsat, by = c('ID')) %>%
-  rename(value = ID)
-
-hrus_map_soilsat <- left_join(hrus, soilsat_hrus, by = 'value')
-
-tmap_mode('plot')
-
-soilavg_grid <- tm_shape(hrus_map_soilsat) +
-  tm_polygons('soilsat_all_grid', midpoint = NA, id = 'value',
-              breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) +
-  tm_legend(legend.outside = T) +
-  tm_layout(main.title = 'Average soil sat')
-
-soilavg_statn <- tm_shape(hrus_map_soilsat) +
-  tm_polygons('soilsat_all_statn', midpoint = NA, id = 'value',
-              breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) +
-  tm_legend(legend.outside = T)
-
-tmap_arrange(soilavg_grid, soilavg_statn)
-
-```
-
-## Average max soil sat comparison
-
-```{r max soilsat, echo = F}
-
-#get rid of a bunch of data
-hru_grid_soilsat_max <- hru_grids %>%
-  dplyr::select(c(time, ID, soilSat)) %>%
-  rename(soilsat_grid = soilSat)  %>%
-  mutate(year = year(time)) %>%
-  group_by(ID, year) %>%
-  summarize(soilsat_yrmax_grid = max(soilsat_grid)) %>%
-  summarize(avg_max_grid = mean(soilsat_yrmax_grid))
-
-hru_statn_soilsat_max <- hru_statn %>%
-  dplyr::select(c(time, ID, soilSat)) %>%
-  rename(soilsat_statn = soilSat) %>%
-  mutate(year = year(time)) %>%
-  group_by(ID, year) %>%
-  summarize(soilsat_yrmax_statn = max(soilsat_statn)) %>%
-  summarize(avg_max_statn = mean(soilsat_yrmax_statn))
-
-soilsat_hrus_max <- left_join(hru_grid_soilsat_max, hru_statn_soilsat_max, by = c('ID')) %>%
-  rename(value = ID)
-
-hrus_map_soilsat_max <- left_join(hrus, soilsat_hrus_max, by = 'value')
-
-tmap_mode('plot')
-
-soilavg_grid_max <- tm_shape(hrus_map_soilsat_max) +
-  tm_polygons('avg_max_grid', midpoint = NA, id = 'value',
-              breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) +
-  tm_legend(legend.outside = T) +
-  tm_layout(main.title = 'Average max soil sat',
-            title.position = c('left', 'top'))
-
-soilavg_statn_max <- tm_shape(hrus_map_soilsat_max) +
-  tm_polygons('avg_max_statn', midpoint = NA, id = 'value',
-              breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) +
-  tm_legend(legend.outside = T)
-
-tmap_arrange(soilavg_grid_max, soilavg_statn_max)
-
-```
-
-## Average ET comparison
-
-```{r et, echo = F}
-#get rid of a bunch of data
-hru_grid_ET <- hru_grids %>%
-  dplyr::select(c(time, ID, actET)) %>%
-  rename(ET_grid = actET)  %>%
-  group_by(ID) %>%
-  summarize(ET_all_grid = mean(ET_grid))
-
-hru_statn_ET <- hru_statn %>%
-  dplyr::select(c(time, ID, actET)) %>%
-  rename(ET_statn = actET) %>%
-  group_by(ID) %>%
-  summarize(ET_all_statn = mean(ET_statn))
-
-ET_hrus <- left_join(hru_grid_ET, hru_statn_ET, by = c('ID')) %>%
-  rename(value = ID)
-
-hrus_map_ET <- left_join(hrus, ET_hrus, by = 'value')
-
-tmap_mode('plot')
-
-ETavg_grid <- tm_shape(hrus_map_ET) +
-  tm_polygons('ET_all_grid', midpoint = NA, id = 'value',
-              breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) +
-  tm_legend(legend.outside = T) +
-  tm_layout(main.title = 'Average ET')
-
-ETavg_statn <- tm_shape(hrus_map_ET) +
-  tm_polygons('ET_all_statn', midpoint = NA, id = 'value',
-             breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) +
-  tm_legend(legend.outside = T)
-
-tmap_arrange(ETavg_grid, ETavg_statn)
-
-```
-
-## Average ET difference
-
-```{r et diff, echo = F}
-
-ET_hrus <- ET_hrus %>%
-  mutate(diff = ET_all_statn - ET_all_grid)
-
-hrus_map_et_diff <- left_join(hrus, ET_hrus, by = 'value')
-
-tmap_mode('plot')
-
-tm_shape(hrus_map_et_diff) +
-  tm_polygons('diff', midpoint = NA, id = 'value')  +
-  tm_legend(legend.outside = T) +
-  tm_layout(main.title = 'Average ET difference')
-
-```
-
-## Average LAI comparison
-
-```{r lai, echo = F}
-
-#get rid of a bunch of data
-hru_grid_LAI <- hru_grids %>%
-  dplyr::select(c(time, ID, LAI)) %>%
-  rename(LAI_grid = LAI)  %>%
-  group_by(ID) %>%
-  summarize(LAI_all_grid = mean(LAI_grid))
-
-hru_statn_LAI <- hru_statn %>%
-  dplyr::select(c(time, ID, LAI)) %>%
-  rename(LAI_statn = LAI) %>%
-  group_by(ID) %>%
-  summarize(LAI_all_statn = mean(LAI_statn))
-
-LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>%
-  rename(value = ID)
-
-hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value')
-
-tmap_mode('view')
-
-LAIavg_grid <- tm_shape(hrus_map_LAI) +
-  tm_polygons('LAI_all_grid', midpoint = NA, id = 'value',
-              breaks = c(1,2,3,4,5)) +
-  tm_legend(legend.outside = T) +
-  tm_layout(main.title = 'Average LAI')
-
-LAIavg_statn <- tm_shape(hrus_map_LAI) +
-  tm_polygons('LAI_all_statn', midpoint = NA, id = 'value',
-              breaks = c(1,2,3,4,5)) +
-  tm_legend(legend.outside = T)
-
-tmap_arrange(LAIavg_grid, LAIavg_statn)
-
-```
+<!-- catchment <- bind_rows(grid, statn) %>% -->
+<!--   mutate(year = as.factor(year(time))) %>% -->
+<!--   group_by(year, site) %>% -->
+<!--   mutate(cumulative_p = cumsum(precip)) -->
+
+<!-- #plot cumulative precip by year -->
+<!-- plot_cumprecip <- function(calyear) { -->
+<!--   {catchment %>% -->
+<!--     filter(year == calyear) %>% -->
+<!--     ggplot(aes(x = time, -->
+<!--                y = cumulative_p, color = site)) + -->
+<!--     geom_line(size=1) + -->
+<!--     ggtitle(calyear) + -->
+<!--     ylab('Cumulative precip (mm)') + -->
+<!--     theme_bw() + -->
+<!--     theme(axis.text.x = element_text(angle = 45, hjust=1))} %>% -->
+<!--     ggplotly() -->
+<!-- } -->
+
+<!-- name <- levels(catchment$year) -->
+
+<!-- precip_plots <- lapply(name, plot_cumprecip) -->
+
+<!-- htmltools::tagList(precip_plots) -->
+
+<!-- precip_plots -->
+
+<!-- ## total P -->
+<!-- max_cumulativep <- catchment %>% -->
+<!--   group_by(year, site) %>% -->
+<!--   summarize(total_cumulativep = max(cumulative_p)) -->
+
+<!-- ggplot(max_cumulativep, aes(x=year, y=total_cumulativep, color=site)) + -->
+<!--   geom_point(size=3) + -->
+<!--   ggtitle('Total cumulative precip (mm) by year') -->
+
+<!-- ``` -->
+
+<!-- ## Tmean -->
+
+<!-- ```{r tmean catch, echo = F} -->
+<!-- ## tmean -->
+<!-- tmean <- catchment %>% -->
+<!--   group_by(year, site) %>% -->
+<!--   summarize(tmean = mean(tmean)) %>% -->
+<!--   ggplot(aes(x = year, y=tmean, color = site)) + -->
+<!--   geom_point(size=3) + -->
+<!--   ggtitle('Average temp by year') -->
+
+<!-- tmean -->
+
+
+<!-- ``` -->
+
+<!-- ## RD and RG -->
+
+<!-- ```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"} -->
+
+<!-- gw_grid <- read_csv(here('catchment_output/gridall_outlet.csv')) %>% -->
+<!--   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>% -->
+<!--   mutate(source = 'grid') -->
+
+<!-- gw_statn <- read_csv(here('catchment_output/statnall_outlet.csv')) %>% -->
+<!--   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>% -->
+<!--   mutate(source = 'statn') -->
+
+<!-- gw <- bind_rows(gw_grid, gw_statn) %>% -->
+<!--   mutate(year = year(time)) %>% -->
+<!--   rename(date = time) -->
+
+<!-- ggplot(gw, aes(x=date, color = source)) + -->
+<!--   geom_line(aes(y=catchmentRD1_w), size =1) + -->
+<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   ggtitle('RD1') + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+<!-- ggplot(gw, aes(x=date, color = source)) + -->
+<!--   geom_line(aes(y=catchmentRD2_w), size =1) + -->
+<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   ggtitle('RD2') + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+<!-- ggplot(gw, aes(x=date, color = source)) + -->
+<!--   geom_line(aes(y=catchmentRG1_w), size =1) + -->
+<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   ggtitle('RG1') + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+<!-- ggplot(gw, aes(x=date, color = source)) + -->
+<!--   geom_line(aes(y=catchmentRG2_w), size =1) + -->
+<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   ggtitle('RG2') + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+<!-- gw <- gw %>% -->
+<!--   group_by(year, source) %>% -->
+<!--   mutate(RD1cumsum = cumsum(catchmentRD1_w), -->
+<!--          RD2cumsum = cumsum(catchmentRD2_w), -->
+<!--          RG1cumsum = cumsum(catchmentRG1_w), -->
+<!--          RG2cumsum = cumsum(catchmentRG2_w)) -->
+
+<!-- ggplot(gw, aes(x=date, color = source)) + -->
+<!--   geom_line(aes(y=RD1cumsum), size =1) + -->
+<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   ggtitle('Cumulative RD1') + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+<!-- ggplot(gw, aes(x=date, color = source)) + -->
+<!--   geom_line(aes(y=RD2cumsum), size = 1) + -->
+<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   ggtitle('Cumulative RD2') + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+<!-- ggplot(gw, aes(x=date, color = source)) + -->
+<!--   geom_line(aes(y=RG1cumsum), size  = 1) + -->
+<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   ggtitle('Cumulative RG1') + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+<!-- ggplot(gw, aes(x=date, color = source)) + -->
+<!--   geom_line(aes(y=RG2cumsum), size =1) + -->
+<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   ggtitle('Cumulative RG2') + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+<!-- ``` -->
+
+
+<!-- ```{r rd and rg sums, echo = F, fig.width = 22, fig.asp = 1.5, out.width = "100%"} -->
+
+<!-- ################## -->
+<!-- # all 4 with facets -->
+
+<!-- ggplot(gw, aes(x=date)) + -->
+<!--   geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) + -->
+<!--   geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) + -->
+<!--   geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) + -->
+<!--   geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) + -->
+<!--   scale_x_date(labels = date_format("%b")) + -->
+<!--   facet_wrap(~year + source, scales = 'free_x', ncol=2) + -->
+<!--   ggtitle('Cumulative RD and RG') + -->
+<!--   theme(text = element_text(size = 24)) -->
+
+<!-- ``` -->
+
+
+<!-- ```{r gw boxplot, echo = F} -->
+
+<!-- gw_maxcumsum <- gw %>% -->
+<!--   group_by(source, year) %>% -->
+<!--   summarize(yr_max_RD1 = max(RD1cumsum), -->
+<!--             yr_max_RD2 = max(RD2cumsum), -->
+<!--             yr_max_RG1 = max(RG1cumsum), -->
+<!--             yr_max_RG2 = max(RG2cumsum)) %>% -->
+<!--   mutate(year = as.factor(year)) %>% -->
+<!--   pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms') -->
+
+
+<!-- ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) + -->
+<!--   geom_boxplot(position = position_dodge(1)) + -->
+<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
+<!--   ggtitle('Max annual cumulative sums') -->
+
+<!-- ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) + -->
+<!--   geom_boxplot(position = position_dodge(1)) + -->
+<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
+<!--   #geom_point(aes(color = source)) + -->
+<!--   facet_wrap(~flow_type, scales = 'free') + -->
+<!--   ggtitle('Max annual cumulative sums') -->
+
+<!-- ``` -->
+
+<!-- ### RD and RG by season -->
+
+<!-- ```{r flow season, echo = F, fig.width = 12, fig.asp = 0.75, out.width = "100%"} -->
+
+<!-- #group by season and get max sums by season -->
+<!-- flow_season <- gw %>% -->
+<!--   dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>% -->
+<!--   mutate(month = month(date)) %>% -->
+<!--   mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt', -->
+<!--                             month %in% c(7,8,9,10) ~ 'monsoon', -->
+<!--                             month %in% c(11,12,1,2) ~ 'baseflow')) %>% -->
+<!--   group_by(source, year, season) %>% -->
+<!--   summarize(yr_season_RD1 = max(RD1cumsum), -->
+<!--             yr_season_RD2 = max(RD2cumsum), -->
+<!--             yr_season_RG1 = max(RG1cumsum), -->
+<!--             yr_season_RG2 = max(RG2cumsum)) %>% -->
+<!--             pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'flow_cms') -->
+
+
+<!-- flow_season %>% -->
+<!--   ggplot(aes(x = flow_type, y = flow_cms, fill = source)) + -->
+<!--   geom_boxplot(position = position_dodge(1)) + -->
+<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
+<!--   #geom_point(aes(color = source)) + -->
+<!--   facet_wrap(~season, scales = 'free') + -->
+<!--   ggtitle('Max annual season cumulative sums') + -->
+<!--   theme_bw() + -->
+<!--   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+
+<!-- flow_season %>% -->
+<!--   ggplot(aes(x = flow_type, y = flow_cms, fill = source)) + -->
+<!--   geom_boxplot(position = position_dodge(1)) + -->
+<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
+<!--   #geom_point(aes(color = source)) + -->
+<!--   facet_wrap(~season + flow_type, scales = 'free') + -->
+<!--   ggtitle('Max annual season cumulative sums') + -->
+<!--   theme_bw() + -->
+<!--   theme(text = element_text(size = 20)) -->
+
+
+<!-- ``` -->
+
+<!-- # HRU results -->
+
+<!-- ## Tmean difference -->
+
+<!-- 2011-2020 average of daily station-grid Tmean -->
+
+<!-- ```{r cumulative tmean for HRUs, echo = F} -->
+<!-- #grid first -->
+<!-- setwd(here("HRU_output/grid")) -->
+
+<!-- read_ages_grid <- function(dataframe){ -->
+<!--   read_csv(dataframe, skip = 3) %>% -->
+<!--   slice(3:n()) %>% -->
+<!--   dplyr::select(-starts_with('@'), -->
+<!--                 -1) %>% -->
+<!--   mutate(time = ymd(time)) %>% -->
+<!--   mutate_if(is.character, as.numeric) %>% -->
+<!--   mutate(source = 'grid') -->
+
+<!-- } -->
+
+<!-- #pull in all filenames with HRU in the name -->
+<!-- filenames <- list.files(".", pattern="HRU", full.names=F) -->
+
+<!-- #read all the csvs using read_ages function -->
+<!-- dataframes <- lapply(filenames, read_ages_grid) -->
+
+<!-- #name all the csvs based on first 6 characters -->
+<!-- names(dataframes) <- substr(filenames, 1, 6) -->
+
+<!-- #bind all and make 1 df -->
+<!-- hru_grids <- dataframes %>% -->
+<!--   bind_rows() -->
+
+<!-- #statn next -->
+<!-- setwd(here("HRU_output/statn")) -->
+
+<!-- read_ages_statn <- function(dataframe){ -->
+<!--   read_csv(dataframe, skip = 3) %>% -->
+<!--   slice(3:n()) %>% -->
+<!--   dplyr::select(-starts_with('@'), -->
+<!--                 -1) %>% -->
+<!--   mutate(time = ymd(time)) %>% -->
+<!--   mutate_if(is.character, as.numeric) %>% -->
+<!--   mutate(source = 'statn') -->
+
+<!-- } -->
+
+<!-- #pull in all filenames with HRU in the name -->
+<!-- filenames <- list.files(".", pattern="HRU", full.names=F) -->
+
+<!-- #read all the csvs using read_ages function -->
+<!-- dataframes <- lapply(filenames, read_ages_statn) -->
+
+<!-- #name all the csvs based on first 6 characters -->
+<!-- names(dataframes) <- substr(filenames, 1, 6) -->
+
+<!-- #bind all and make 1 df -->
+<!-- hru_statn <- dataframes %>% -->
+<!--   bind_rows() -->
+
+<!-- #get rid of a bunch of data -->
+<!-- hru_grid_tmean <- hru_grids %>% -->
+<!--   dplyr::select(c(time, ID, tmean)) %>% -->
+<!--   rename(tmean_grid = tmean)  %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(tmean_all_grid = mean(tmean_grid)) -->
+
+<!-- hru_statn_tmean <- hru_statn %>% -->
+<!--   dplyr::select(c(time, ID, tmean)) %>% -->
+<!--   rename(tmean_statn = tmean) %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(tmean_all_statn = mean(tmean_statn)) -->
+
+<!-- tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>% -->
+<!--   mutate(diff = tmean_all_statn - tmean_all_grid) %>% -->
+<!--   rename(value = ID) -->
+
+<!-- hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value') -->
+
+<!-- tmap_mode('view') -->
+
+<!-- locations_t <- locations %>% -->
+<!--   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North', -->
+<!--                         'Betasso', 'Niwot_Snotel', -->
+<!--                         'University Camp SNTL')) -->
+
+<!-- tm_shape(hrus_map_tmean) + -->
+<!--   tm_polygons('diff', id = 'value', -->
+<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
+<!-- tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size=4) -->
+
+<!-- ``` -->
+
+<!-- ## Tmax difference -->
+
+<!-- ```{r tmax, echo = F} -->
+
+<!-- tmax_grid <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv'))%>% -->
+<!--   pivot_longer(cols = `3`:`19`, -->
+<!--                names_to = 'value', -->
+<!--                values_to = 'tmax_grid') %>% -->
+<!--   mutate(time = dmy(time)) %>% -->
+<!--   group_by(value) %>% -->
+<!--   summarize(Tmax_mean_grid = mean(tmax_grid)) -->
+
+<!-- tmax_statn <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>% -->
+<!--   pivot_longer(cols = `3`:`19`, -->
+<!--                names_to = 'value', -->
+<!--                values_to = 'tmax_statn') %>% -->
+<!--   mutate(time = dmy(time)) %>% -->
+<!--   group_by(value) %>% -->
+<!--   summarize(Tmax_mean_statn = mean(tmax_statn)) -->
+
+<!-- tmax_hrus <- left_join(tmax_grid, tmax_statn, by = c('value')) %>% -->
+<!--   mutate(diff = Tmax_mean_statn - Tmax_mean_grid, -->
+<!--          value = as.numeric(value)) -->
+
+<!-- hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value') -->
+
+<!-- tmap_mode('view') -->
+
+<!-- tm_shape(hrus_map_tmax) + -->
+<!--   tm_polygons('diff', id = 'value', -->
+<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
+<!-- tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size=4) -->
+
+<!-- ``` -->
+
+<!-- ## Tmax monthly average -->
+
+<!-- ```{r tmax month, echo = F} -->
+
+<!-- tmax_grid_mo <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv')) %>% -->
+<!--   pivot_longer(cols = `3`:`19`, -->
+<!--                names_to = 'value', -->
+<!--                values_to = 'tmax_grid') %>% -->
+<!--   mutate(time = dmy(time), -->
+<!--          month = month(time)) %>% -->
+<!--   filter(month %in% c(3:6)) %>% -->
+<!--   group_by(value, month) %>% -->
+<!--   summarize(avg_tmax_grid = mean(tmax_grid)) -->
+
+<!-- tmax_statn_mo <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>% -->
+<!--   pivot_longer(cols = `3`:`19`, -->
+<!--                names_to = 'value', -->
+<!--                values_to = 'tmax_statn') %>% -->
+<!--   mutate(time = dmy(time), -->
+<!--          month = month(time)) %>% -->
+<!--   filter(month %in% c(3:6)) %>% -->
+<!--   group_by(value, month) %>% -->
+<!--   summarize(avg_tmax_statn = mean(tmax_statn)) -->
+
+<!-- tmax_hrus_mo <- left_join(tmax_grid_mo, tmax_statn_mo, by = c('value', 'month')) %>% -->
+<!--   mutate(mo_tmax_diff = avg_tmax_statn - avg_tmax_grid, -->
+<!--          value = as.numeric(value)) -->
+
+<!-- tmap_mode('plot') -->
+
+<!-- #march -->
+<!-- tmax_hrus_mar<- tmax_hrus_mo %>% -->
+<!--   filter(month == 3) -->
+
+<!-- hrus_map_tmax_mar <- left_join(hrus, tmax_hrus_mar, by = 'value') -->
+
+<!-- mar_tmax <- tm_shape(hrus_map_tmax_mar) + -->
+<!--   #tm_polygons('mo_tmax_diff', id = 'value') + -->
+<!--   tm_fill('mo_tmax_diff', id = 'value', -->
+<!--           breaks = c(-6,-4,-2,0,2,4,6)) + -->
+<!--   tm_borders() + -->
+<!--   tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size = 0.25) + -->
+<!--   tm_layout(title = 'March avg tmax', -->
+<!--             legend.outside = T) -->
+
+
+<!-- #april -->
+<!-- tmax_hrus_apr<- tmax_hrus_mo %>% -->
+<!--   filter(month == 4) -->
+
+<!-- hrus_map_tmax_apr <- left_join(hrus, tmax_hrus_apr, by = 'value') -->
+
+<!-- apr_tmax <- tm_shape(hrus_map_tmax_apr) + -->
+<!--   tm_fill('mo_tmax_diff', id = 'value', -->
+<!--           breaks = c(-6,-4,-2,0,2,4,6)) + -->
+<!--   tm_borders() + -->
+<!--   tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size = 0.25) + -->
+<!--   tm_layout(title = 'April avg tmax', -->
+<!--             legend.outside = T) -->
+
+<!-- #may -->
+<!-- tmax_hrus_may<- tmax_hrus_mo %>% -->
+<!--   filter(month == 5) -->
+
+<!-- hrus_map_tmax_may <- left_join(hrus, tmax_hrus_may, by = 'value') -->
+
+<!-- may_tmax <- tm_shape(hrus_map_tmax_may) + -->
+<!--   tm_fill('mo_tmax_diff', id = 'value', -->
+<!--          breaks = c(-6,-4,-2,0,2,4,6)) + -->
+<!--   tm_borders() + -->
+<!-- tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size = 0.25) + -->
+<!--   tm_layout(title = 'May avg tmax', -->
+<!--             legend.outside = T) -->
+
+<!-- #june -->
+<!-- tmax_hrus_jun<- tmax_hrus_mo %>% -->
+<!--   filter(month == 6) -->
+
+<!-- hrus_map_tmax_jun <- left_join(hrus, tmax_hrus_jun, by = 'value') -->
+
+<!-- jun_tmax <- tm_shape(hrus_map_tmax_jun) + -->
+<!--   tm_fill('mo_tmax_diff', id = 'value', -->
+<!--          breaks = c(-6,-4,-2,0,2,4,6)) + -->
+<!--   tm_borders() + -->
+<!-- tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size = 0.25) + -->
+<!--   tm_layout(title = 'June avg tmax', -->
+<!--             legend.outside = T) -->
+
+<!-- tmap_arrange(mar_tmax, apr_tmax, may_tmax, jun_tmax) -->
+
+<!-- ``` -->
+
+<!-- ## Tmin difference -->
+
+<!-- ```{r tmin, echo = F} -->
+
+<!-- tmin_grid <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>% -->
+<!--   pivot_longer(cols = `3`:`19`, -->
+<!--                names_to = 'value', -->
+<!--                values_to = 'tmin_grid') %>% -->
+<!--   mutate(time = dmy(time)) %>% -->
+<!--   group_by(value) %>% -->
+<!--   summarize(Tmin_mean_grid = mean(tmin_grid)) -->
+
+<!-- tmin_statn <- read_csv(here('HRU_output/reg_tminAll.csv')) %>% -->
+<!--   pivot_longer(cols = `3`:`19`, -->
+<!--                names_to = 'value', -->
+<!--                values_to = 'tmin_statn') %>% -->
+<!--   mutate(time = dmy(time)) %>% -->
+<!--   group_by(value) %>% -->
+<!--   summarize(Tmin_mean_statn = mean(tmin_statn)) -->
+
+<!-- tmin_hrus <- left_join(tmin_grid, tmin_statn, by = c('value')) %>% -->
+<!--   mutate(diff = Tmin_mean_statn - Tmin_mean_grid, -->
+<!--          value = as.numeric(value)) -->
+
+<!-- hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value') -->
+
+<!-- tmap_mode('view') -->
+
+<!-- tm_shape(hrus_map_tmin) + -->
+<!--   tm_polygons('diff', id = 'value', -->
+<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
+<!-- tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size=4) -->
+
+<!-- ``` -->
+
+<!-- ## Tmin monthly average -->
+
+<!-- ```{r tmin month, echo = F} -->
+<!-- tmin_grid_mo <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>% -->
+<!--   pivot_longer(cols = `3`:`19`, -->
+<!--                names_to = 'value', -->
+<!--                values_to = 'tmin_grid') %>% -->
+<!--   mutate(time = dmy(time), -->
+<!--          month = month(time)) %>% -->
+<!--   filter(month %in% c(3:6)) %>% -->
+<!--   group_by(value, month) %>% -->
+<!--   summarize(avg_tmin_grid = mean(tmin_grid)) -->
+
+<!-- tmin_statn_mo <- read_csv(here('HRU_output/reg_tminAll.csv')) %>% -->
+<!--   pivot_longer(cols = `3`:`19`, -->
+<!--                names_to = 'value', -->
+<!--                values_to = 'tmin_statn') %>% -->
+<!--   mutate(time = dmy(time), -->
+<!--          month = month(time)) %>% -->
+<!--   filter(month %in% c(3:6)) %>% -->
+<!--   group_by(value, month) %>% -->
+<!--   summarize(avg_tmin_statn = mean(tmin_statn)) -->
+
+<!-- tmin_hrus_mo <- left_join(tmin_grid_mo, tmin_statn_mo, by = c('value', 'month')) %>% -->
+<!--   mutate(mo_tmin_diff = avg_tmin_statn - avg_tmin_grid, -->
+<!--          value = as.numeric(value)) -->
+
+<!-- tmap_mode('plot') -->
+
+<!-- #march -->
+<!-- tmin_hrus_mar<- tmin_hrus_mo %>% -->
+<!--   filter(month == 3) -->
+
+<!-- hrus_map_tmin_mar <- left_join(hrus, tmin_hrus_mar, by = 'value') -->
+
+<!-- mar_tmin <- tm_shape(hrus_map_tmin_mar) + -->
+<!--   #tm_polygons('mo_tmin_diff', id = 'value') + -->
+<!--   tm_fill('mo_tmin_diff', id = 'value', -->
+<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
+<!--   tm_borders() + -->
+<!--   tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size = 0.25) + -->
+<!--   tm_layout(title = 'March avg tmin', -->
+<!--             legend.outside = T) -->
+
+<!-- #april -->
+<!-- tmin_hrus_apr<- tmin_hrus_mo %>% -->
+<!--   filter(month == 4) -->
+
+<!-- hrus_map_tmin_apr <- left_join(hrus, tmin_hrus_apr, by = 'value') -->
+
+<!-- apr_tmin <- tm_shape(hrus_map_tmin_apr) + -->
+<!--   tm_fill('mo_tmin_diff', id = 'value', -->
+<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
+<!--   tm_borders() + -->
+<!--   tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size = 0.25) + -->
+<!--   tm_layout(title = 'April avg tmin', -->
+<!--             legend.outside = T) -->
+
+<!-- #may -->
+<!-- tmin_hrus_may<- tmin_hrus_mo %>% -->
+<!--   filter(month == 5) -->
+
+<!-- hrus_map_tmin_may <- left_join(hrus, tmin_hrus_may, by = 'value') -->
+
+<!-- may_tmin <- tm_shape(hrus_map_tmin_may) + -->
+<!--   tm_fill('mo_tmin_diff', id = 'value', -->
+<!--          breaks = c(-5,-2.5,0,2.5,5)) + -->
+<!--   tm_borders() + -->
+<!-- tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size = 0.25) + -->
+<!--   tm_layout(title = 'May avg tmin', -->
+<!--             legend.outside = T) -->
+
+<!-- #june -->
+<!-- tmin_hrus_jun<- tmin_hrus_mo %>% -->
+<!--   filter(month == 6) -->
+
+<!-- hrus_map_tmin_jun <- left_join(hrus, tmin_hrus_jun, by = 'value') -->
+
+<!-- jun_tmin <- tm_shape(hrus_map_tmin_jun) + -->
+<!--   tm_fill('mo_tmin_diff', id = 'value', -->
+<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
+<!--   tm_borders() + -->
+<!-- tm_shape(locations_t) + -->
+<!--   tm_symbols(col='blue', size = 0.25) + -->
+<!--   tm_layout(title = 'June avg tmin', -->
+<!--             legend.outside = T) -->
+
+<!-- tmap_arrange(mar_tmin, apr_tmin, may_tmin, jun_tmin) -->
+
+<!-- ``` -->
+
+<!-- ## Cumulative Precip difference -->
+
+<!-- 2011-2020 average of daily station-grid precip for DOY 365 (or 366) -->
+
+<!-- ```{r cum precip, echo = F} -->
+<!-- #get rid of a bunch of data -->
+<!-- hru_grid_precip <- hru_grids %>% -->
+<!--   dplyr::select(c(time, ID, precip)) %>% -->
+<!--   rename(precip_grid = precip) -->
+
+<!-- hru_statn_precip <- hru_statn %>% -->
+<!--   dplyr::select(c(time, ID, precip)) %>% -->
+<!--   rename(precip_statn = precip) -->
+
+<!-- precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>% -->
+<!--   mutate(diff = precip_statn - precip_grid, -->
+<!--          year = year(time)) %>% -->
+<!--   group_by(year, ID) %>% -->
+<!--   mutate(total_diff = cumsum(diff)) %>% -->
+<!--   filter(time == max(time)) %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(precip_avg_cumdiff = mean(total_diff)) %>% -->
+<!--   rename(value = ID) -->
+
+<!-- hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value') -->
+
+<!-- tmap_mode('view') -->
+
+<!-- locations_p <- locations %>% -->
+<!--   filter(type == 'precip') -->
+
+<!-- tm_shape(hrus_map_precip) + -->
+<!--   tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') + -->
+<!-- tm_shape(locations_p) + -->
+<!--   tm_symbols(col='blue', size=4) -->
+
+<!-- ``` -->
+
+<!-- ## Solar radiation difference -->
+
+<!-- 2011-2020 average of daily station-grid solar rad -->
+
+<!-- ```{r cum sol rad, echo = F} -->
+
+<!-- #get rid of a bunch of data -->
+<!-- hru_grid_solrad <- hru_grids %>% -->
+<!--   dplyr::select(c(time, ID, solRad)) %>% -->
+<!--   rename(solrad_grid = solRad)  %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(solrad_all_grid = mean(solrad_grid)) -->
+
+<!-- hru_statn_solrad <- hru_statn %>% -->
+<!--   dplyr::select(c(time, ID, solRad)) %>% -->
+<!--   rename(solrad_statn = solRad) %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(solrad_all_statn = mean(solrad_statn)) -->
+
+<!-- solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>% -->
+<!--   mutate(diff = solrad_all_statn - solrad_all_grid) %>% -->
+<!--   rename(value = ID) -->
+
+<!-- hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value') -->
+
+<!-- tmap_mode('view') -->
+
+<!-- locations_solrad <- locations %>% -->
+<!--   dplyr::filter(name %in% c('Gordon_South', -->
+<!--                         'Betasso', 'Niwot_Snotel')) -->
+
+<!-- tm_shape(hrus_map_solrad) + -->
+<!--   tm_polygons('diff', midpoint = NA, palette = 'YlOrRd', id = 'value') + -->
+<!-- tm_shape(locations_solrad) + -->
+<!--   tm_symbols(col='blue', size=4) -->
+
+<!-- ``` -->
+
+<!-- ## RH difference -->
+
+<!-- ```{r rh, echo = F} -->
+
+<!-- #get rid of a bunch of data -->
+<!-- hru_grid_rh <- hru_grids %>% -->
+<!--   dplyr::select(c(time, ID, rhum)) %>% -->
+<!--   rename(rh_grid = rhum)  %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(rh_all_grid = mean(rh_grid)) -->
+
+<!-- hru_statn_rh <- hru_statn %>% -->
+<!--   dplyr::select(c(time, ID, rhum)) %>% -->
+<!--   rename(rh_statn = rhum) %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(rh_all_statn = mean(rh_statn)) -->
+
+<!-- rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>% -->
+<!--   mutate(diff = rh_all_statn - rh_all_grid) %>% -->
+<!--   rename(value = ID) -->
+
+<!-- hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value') -->
+
+<!-- tmap_mode('view') -->
+
+<!-- locations_rh <- locations %>% -->
+<!--   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North', -->
+<!--                         'Betasso', 'Niwot_Snotel')) -->
+
+<!-- tm_shape(hrus_map_rh) + -->
+<!--   tm_polygons('diff', midpoint = NA, id = 'value') + -->
+<!-- tm_shape(locations_rh) + -->
+<!--   tm_symbols(col='blue', size=4) -->
+
+<!-- ``` -->
+
+<!-- ## Average soil sat comparison -->
+
+<!-- ```{r soilsat, echo = F} -->
+
+<!-- #get rid of a bunch of data -->
+<!-- hru_grid_soilsat <- hru_grids %>% -->
+<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
+<!--   rename(soilsat_grid = soilSat)  %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(soilsat_all_grid = mean(soilsat_grid)) -->
+
+<!-- hru_statn_soilsat <- hru_statn %>% -->
+<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
+<!--   rename(soilsat_statn = soilSat) %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(soilsat_all_statn = mean(soilsat_statn)) -->
+
+<!-- soilsat_hrus <- left_join(hru_grid_soilsat, hru_statn_soilsat, by = c('ID')) %>% -->
+<!--   rename(value = ID) -->
+
+<!-- hrus_map_soilsat <- left_join(hrus, soilsat_hrus, by = 'value') -->
+
+<!-- tmap_mode('plot') -->
+
+<!-- soilavg_grid <- tm_shape(hrus_map_soilsat) + -->
+<!--   tm_polygons('soilsat_all_grid', midpoint = NA, id = 'value', -->
+<!--               breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) + -->
+<!--   tm_legend(legend.outside = T) + -->
+<!--   tm_layout(main.title = 'Average soil sat') -->
+
+<!-- soilavg_statn <- tm_shape(hrus_map_soilsat) + -->
+<!--   tm_polygons('soilsat_all_statn', midpoint = NA, id = 'value', -->
+<!--               breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) + -->
+<!--   tm_legend(legend.outside = T) -->
+
+<!-- tmap_arrange(soilavg_grid, soilavg_statn) -->
+
+<!-- ``` -->
+
+<!-- ## Average max soil sat comparison -->
+
+<!-- ```{r max soilsat, echo = F} -->
+
+<!-- #get rid of a bunch of data -->
+<!-- hru_grid_soilsat_max <- hru_grids %>% -->
+<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
+<!--   rename(soilsat_grid = soilSat)  %>% -->
+<!--   mutate(year = year(time)) %>% -->
+<!--   group_by(ID, year) %>% -->
+<!--   summarize(soilsat_yrmax_grid = max(soilsat_grid)) %>% -->
+<!--   summarize(avg_max_grid = mean(soilsat_yrmax_grid)) -->
+
+<!-- hru_statn_soilsat_max <- hru_statn %>% -->
+<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
+<!--   rename(soilsat_statn = soilSat) %>% -->
+<!--   mutate(year = year(time)) %>% -->
+<!--   group_by(ID, year) %>% -->
+<!--   summarize(soilsat_yrmax_statn = max(soilsat_statn)) %>% -->
+<!--   summarize(avg_max_statn = mean(soilsat_yrmax_statn)) -->
+
+<!-- soilsat_hrus_max <- left_join(hru_grid_soilsat_max, hru_statn_soilsat_max, by = c('ID')) %>% -->
+<!--   rename(value = ID) -->
+
+<!-- hrus_map_soilsat_max <- left_join(hrus, soilsat_hrus_max, by = 'value') -->
+
+<!-- tmap_mode('plot') -->
+
+<!-- soilavg_grid_max <- tm_shape(hrus_map_soilsat_max) + -->
+<!--   tm_polygons('avg_max_grid', midpoint = NA, id = 'value', -->
+<!--               breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) + -->
+<!--   tm_legend(legend.outside = T) + -->
+<!--   tm_layout(main.title = 'Average max soil sat', -->
+<!--             title.position = c('left', 'top')) -->
+
+<!-- soilavg_statn_max <- tm_shape(hrus_map_soilsat_max) + -->
+<!--   tm_polygons('avg_max_statn', midpoint = NA, id = 'value', -->
+<!--               breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) + -->
+<!--   tm_legend(legend.outside = T) -->
+
+<!-- tmap_arrange(soilavg_grid_max, soilavg_statn_max) -->
+
+<!-- ``` -->
+
+<!-- ## Average ET comparison -->
+
+<!-- ```{r et, echo = F} -->
+<!-- #get rid of a bunch of data -->
+<!-- hru_grid_ET <- hru_grids %>% -->
+<!--   dplyr::select(c(time, ID, actET)) %>% -->
+<!--   rename(ET_grid = actET)  %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(ET_all_grid = mean(ET_grid)) -->
+
+<!-- hru_statn_ET <- hru_statn %>% -->
+<!--   dplyr::select(c(time, ID, actET)) %>% -->
+<!--   rename(ET_statn = actET) %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(ET_all_statn = mean(ET_statn)) -->
+
+<!-- ET_hrus <- left_join(hru_grid_ET, hru_statn_ET, by = c('ID')) %>% -->
+<!--   rename(value = ID) -->
+
+<!-- hrus_map_ET <- left_join(hrus, ET_hrus, by = 'value') -->
+
+<!-- tmap_mode('plot') -->
+
+<!-- ETavg_grid <- tm_shape(hrus_map_ET) + -->
+<!--   tm_polygons('ET_all_grid', midpoint = NA, id = 'value', -->
+<!--               breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) + -->
+<!--   tm_legend(legend.outside = T) + -->
+<!--   tm_layout(main.title = 'Average ET') -->
+
+<!-- ETavg_statn <- tm_shape(hrus_map_ET) + -->
+<!--   tm_polygons('ET_all_statn', midpoint = NA, id = 'value', -->
+<!--              breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) + -->
+<!--   tm_legend(legend.outside = T) -->
+
+<!-- tmap_arrange(ETavg_grid, ETavg_statn) -->
+
+<!-- ``` -->
+
+<!-- ## Average ET difference -->
+
+<!-- ```{r et diff, echo = F} -->
+
+<!-- ET_hrus <- ET_hrus %>% -->
+<!--   mutate(diff = ET_all_statn - ET_all_grid) -->
+
+<!-- hrus_map_et_diff <- left_join(hrus, ET_hrus, by = 'value') -->
+
+<!-- tmap_mode('plot') -->
+
+<!-- tm_shape(hrus_map_et_diff) + -->
+<!--   tm_polygons('diff', midpoint = NA, id = 'value')  + -->
+<!--   tm_legend(legend.outside = T) + -->
+<!--   tm_layout(main.title = 'Average ET difference') -->
+
+<!-- ``` -->
+
+<!-- ## Average LAI comparison -->
+
+<!-- ```{r lai, echo = F} -->
+
+<!-- #get rid of a bunch of data -->
+<!-- hru_grid_LAI <- hru_grids %>% -->
+<!--   dplyr::select(c(time, ID, LAI)) %>% -->
+<!--   rename(LAI_grid = LAI)  %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(LAI_all_grid = mean(LAI_grid)) -->
+
+<!-- hru_statn_LAI <- hru_statn %>% -->
+<!--   dplyr::select(c(time, ID, LAI)) %>% -->
+<!--   rename(LAI_statn = LAI) %>% -->
+<!--   group_by(ID) %>% -->
+<!--   summarize(LAI_all_statn = mean(LAI_statn)) -->
+
+<!-- LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>% -->
+<!--   rename(value = ID) -->
+
+<!-- hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value') -->
+
+<!-- tmap_mode('view') -->
+
+<!-- LAIavg_grid <- tm_shape(hrus_map_LAI) + -->
+<!--   tm_polygons('LAI_all_grid', midpoint = NA, id = 'value', -->
+<!--               breaks = c(1,2,3,4,5)) + -->
+<!--   tm_legend(legend.outside = T) + -->
+<!--   tm_layout(main.title = 'Average LAI') -->
+
+<!-- LAIavg_statn <- tm_shape(hrus_map_LAI) + -->
+<!--   tm_polygons('LAI_all_statn', midpoint = NA, id = 'value', -->
+<!--               breaks = c(1,2,3,4,5)) + -->
+<!--   tm_legend(legend.outside = T) -->
+
+<!-- tmap_arrange(LAIavg_grid, LAIavg_statn) -->
+
+<!-- ``` -->
 
