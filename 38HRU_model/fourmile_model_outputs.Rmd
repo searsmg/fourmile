@@ -34,6 +34,7 @@ library(dataRetrieval)
 library(tmap)
 library(ggpubr)
 library(gridExtra)
+library(stringr)
 
 ```
 
@@ -211,7 +212,7 @@ lapply(name, plotdens_params)
 
 ```
 
-## Burn params
+## Burn parameters
 
 ```{echo = FALSE, message = FALSE, warning = FALSE, include = F}
 
@@ -307,2438 +308,1565 @@ burn_params <- bind_rows(grid_burn, statn_burn) %>%
   ungroup() %>%
   mutate(across(c(luca_a_rain:luca_soilDistMPSLPS), as.numeric)) %>%
   group_by(cal) %>%
-  summarise(across(c(luca_a_rain:luca_soilDistMPSLPS), mean)) %>%
-  pivot_longer(!cal, 
+  mutate(across(c(luca_a_rain:luca_soilDistMPSLPS), mean)) %>%
+  filter(soilID == 22) %>%
+  dplyr::select(-soilID) %>% 
+  pivot_longer(!c(cal, input_data, year_missing), 
                names_to = 'params',
-               values_to = 'value')
+               values_to = 'value') %>% 
+  mutate(params = str_remove(params, 'luca_')) %>%
+  mutate(params = as.factor(params),
+         burn = 'yes') 
+  
 
 ```
 
 ```{r}
 
-# plot_burnparams <- function(param_name) {
-#   params %>%
-#     filter(params == param_name) %>%
-#     ggplot(aes(x = value,
-#                y = cal)) + 
-#     geom_point() +
-#     ggtitle(param_name) +
-#     theme_bw()
-# }
-# 
-# name <- levels(burn_params$params)
-# 
-# lapply(name, plot_burnparams)
+plot_burnparams <- function(param_name) {
+  burn_params %>%
+    filter(params == param_name) %>%
+    ggplot(aes(y = value,
+               x = year_missing,
+               color = input_data)) +
+    geom_point(size = 3) +
+    ggtitle(param_name) +
+    theme_bw()
+}
+
+name <- levels(burn_params$params)
+
+lapply(name, plot_burnparams)
 
 
 ```
 
-
-<!-- # Outlet results -->
-
-<!-- ## Hydrograph -->
-
-<!-- ```{r hydrographs, echo = F} -->
-<!-- flow <- read_csv('discharge_all.csv') %>% -->
-<!--   replace(.==-9999, NA) -->
-
-
-<!-- flow_pivot <- flow %>% -->
-<!--   pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>% -->
-<!--   mutate(year = as.factor(year(date))) -->
-
-
-<!-- q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) + -->
-<!--   geom_line() + -->
-<!--   scale_color_manual(name="cal_run", values=c('obs' = 'black', -->
-<!--                                             "grid_2011"="seagreen", -->
-<!--                                             "grid_2012"="seagreen2", -->
-<!--                                             "grid_2013"="steelblue", -->
-<!--                                             "grid_2014"='dodgerblue', -->
-<!--                                             "grid_2015" = "cyan3", -->
-<!--                                             'grid_2016' = 'blue', -->
-<!--                                             'grid_2017' = 'blue4', -->
-<!--                                             'grid_2018' = 'cadetblue', -->
-<!--                                             'grid_2019' = 'lightgreen', -->
-<!--                                             'grid_2020' = 'olivedrab', -->
-<!--                                             'grid_all' = 'steelblue3', -->
-<!--                                             "statn_2011"="maroon", -->
-<!--                                             "statn_2012"="deeppink4", -->
-<!--                                             "statn_2013"="deeppink", -->
-<!--                                             "statn_2014"='purple', -->
-<!--                                             "statn_2015" = "mediumorchid1", -->
-<!--                                             'statn_2016' = 'indianred', -->
-<!--                                             'statn_2017' = 'sienna', -->
-<!--                                             'statn_2018' = 'salmon2', -->
-<!--                                             'statn_2019' = 'mediumpurple1', -->
-<!--                                             'statn_2020' = 'violetred', -->
-<!--                                             'statn_all' = 'red')) -->
-
-<!-- ggplotly(q) -->
-
-<!-- ``` -->
-
-<!-- ## Annual hydrographs -->
-
-<!-- ```{r cy hydrographs, echo = F} -->
-
-<!-- plotq_cy <- function(calyear) { -->
-<!--   {flow_pivot %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = date, -->
-<!--                y = q_m3s, -->
-<!--                color = cal_run)) + -->
-<!--     geom_line() + -->
-<!--         scale_color_manual(name="cal_run", values=c('obs' = 'black', -->
-<!--                                             "grid_2011"="seagreen",  -->
-<!--                                             "grid_2012"="seagreen2",  -->
-<!--                                             "grid_2013"="steelblue", -->
-<!--                                             "grid_2014"='dodgerblue',  -->
-<!--                                             "grid_2015" = "cyan3", -->
-<!--                                             'grid_2016' = 'blue', -->
-<!--                                             'grid_2017' = 'blue4', -->
-<!--                                             'grid_2018' = 'cadetblue', -->
-<!--                                             'grid_2019' = 'lightgreen', -->
-<!--                                             'grid_2020' = 'olivedrab', -->
-<!--                                             'grid_all' = 'steelblue3', -->
-<!--                                             "statn_2011"="maroon",  -->
-<!--                                             "statn_2012"="deeppink4",  -->
-<!--                                             "statn_2013"="deeppink", -->
-<!--                                             "statn_2014"='purple',  -->
-<!--                                             "statn_2015" = "mediumorchid1", -->
-<!--                                             'statn_2016' = 'indianred', -->
-<!--                                             'statn_2017' = 'sienna', -->
-<!--                                             'statn_2018' = 'salmon2', -->
-<!--                                             'statn_2019' = 'mediumpurple1', -->
-<!--                                             'statn_2020' = 'violetred', -->
-<!--                                             'statn_all' = 'red')) + -->
-<!--     ggtitle(calyear) + -->
-<!--     theme_bw()} %>% -->
-<!--     ggplotly() -->
-
-<!-- } -->
-
-<!-- name <- levels(flow_pivot$year) -->
-
-<!-- try <- lapply(name, plotq_cy) -->
-
-<!-- htmltools::tagList(try) -->
-
-<!-- try -->
-<!-- ``` -->
-
-<!-- ## KGE -->
-
-<!-- ### Overall KGE -->
-
-<!-- ```{r kge overall, echo = F} -->
-
-<!-- flow_kge_all <- flow %>% -->
-<!--   summarize(grid2011 = KGE(grid_2011, obs), -->
-<!--             grid2012 = KGE(grid_2012, obs), -->
-<!--             grid2013 = KGE(grid_2013, obs), -->
-<!--             grid2014 = KGE(grid_2014, obs), -->
-<!--             grid2015 = KGE(grid_2015, obs), -->
-<!--             grid2016 = KGE(grid_2016, obs), -->
-<!--             grid2017 = KGE(grid_2017, obs), -->
-<!--             grid2018 = KGE(grid_2018, obs), -->
-<!--             grid2019 = KGE(grid_2019, obs), -->
-<!--             grid2020 = KGE(grid_2020, obs), -->
-<!--             gridall = KGE(grid_all, obs), -->
-<!--             statn2011 = KGE(statn_2011, obs), -->
-<!--             statn2012 = KGE(statn_2012, obs), -->
-<!--             statn2013 = KGE(statn_2013, obs), -->
-<!--             statn2014 = KGE(statn_2014, obs), -->
-<!--             statn2015 = KGE(statn_2015, obs), -->
-<!--             statn2016 = KGE(statn_2016, obs), -->
-<!--             statn2017 = KGE(statn_2017, obs), -->
-<!--             statn2018 = KGE(statn_2018, obs), -->
-<!--             statn2019 = KGE(statn_2019, obs), -->
-<!--             statn2020 = KGE(statn_2020, obs), -->
-<!--             statnall = KGE(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 2) -->
-
-<!-- flow_kge_all <- flow_kge_all %>% -->
-<!--   pivot_longer(everything()) %>% -->
-<!--   arrange(value) -->
-
-<!-- kable(flow_kge_all) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-<!-- ``` -->
-
-<!-- ### KGE by year -->
-
-<!-- ```{r kge by year, echo = F} -->
-
-<!-- flow_year <- flow %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   group_by(year) %>% -->
-<!--   summarize(grid2011 = KGE(grid_2011, obs), -->
-<!--             grid2012 = KGE(grid_2012, obs), -->
-<!--             grid2013 = KGE(grid_2013, obs), -->
-<!--             grid2014 = KGE(grid_2014, obs), -->
-<!--             grid2015 = KGE(grid_2015, obs), -->
-<!--             grid2016 = KGE(grid_2016, obs), -->
-<!--             grid2017 = KGE(grid_2017, obs), -->
-<!--             grid2018 = KGE(grid_2018, obs), -->
-<!--             grid2019 = KGE(grid_2019, obs), -->
-<!--             grid2020 = KGE(grid_2020, obs), -->
-<!--             gridall = KGE(grid_all, obs), -->
-<!--             statn2011 = KGE(statn_2011, obs), -->
-<!--             statn2012 = KGE(statn_2012, obs), -->
-<!--             statn2013 = KGE(statn_2013, obs), -->
-<!--             statn2014 = KGE(statn_2014, obs), -->
-<!--             statn2015 = KGE(statn_2015, obs), -->
-<!--             statn2016 = KGE(statn_2016, obs), -->
-<!--             statn2017 = KGE(statn_2017, obs), -->
-<!--             statn2018 = KGE(statn_2018, obs), -->
-<!--             statn2019 = KGE(statn_2019, obs), -->
-<!--             statn2020 = KGE(statn_2020, obs), -->
-<!--             statnall = KGE(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 2) -->
-
-<!-- flow_kge <- flow_year %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>% -->
-<!--   pivot_wider(names_from = 'year', values_from = 'kge') -->
-
-<!-- flow_kge %>% -->
-<!--   kable(.) %>% -->
-<!--   kable_styling() -->
-
-
-<!-- flow_plot <- flow_year %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>% -->
-<!--   mutate(year = as.factor(year)) -->
-
-
-<!-- kge_plot_cy <- ggplot(flow_plot, aes(year, kge, color = model_run)) +  -->
-<!--   geom_point(size = 3) + -->
-<!--   scale_color_manual(name="model_run", values=c("grid2011"="seagreen",  -->
-<!--                                             "grid2012"="seagreen2",  -->
-<!--                                             "grid2013"="steelblue", -->
-<!--                                             "grid2014"='dodgerblue',  -->
-<!--                                             "grid2015" = "cyan3", -->
-<!--                                             'grid2016' = 'blue', -->
-<!--                                             'grid2017' = 'blue4', -->
-<!--                                             'grid2018' = 'cadetblue', -->
-<!--                                             'grid2019' = 'lightgreen', -->
-<!--                                             'grid2020' = 'olivedrab', -->
-<!--                                             'gridall' = 'steelblue3', -->
-<!--                                             "statn2011"="maroon",  -->
-<!--                                             "statn2012"="deeppink4",  -->
-<!--                                             "statn2013"="deeppink", -->
-<!--                                             "statn2014"='purple',  -->
-<!--                                             "statn2015" = "mediumorchid1", -->
-<!--                                             'statn2016' = 'indianred', -->
-<!--                                             'statn2017' = 'sienna', -->
-<!--                                             'statn2018' = 'salmon2', -->
-<!--                                             'statn2019' = 'mediumpurple1', -->
-<!--                                             'statn2020' = 'violetred', -->
-<!--                                             'statnall' = 'red')) + -->
-<!--   theme_bw() -->
-
-<!-- ggplotly(kge_plot_cy) -->
-
-
-<!-- ``` -->
-
-<!-- ### Annual KGE plots -->
-
-<!-- ```{r wy plots, echo = F} -->
-
-<!-- plot_kge <- function(calyear) { -->
-<!--   flow_plot %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = model_run, -->
-<!--                y = kge)) + -->
-<!--     geom_col() + -->
-<!--     ggtitle(calyear) + -->
-<!--     theme_bw() + -->
-<!--     theme(axis.text.x = element_text(angle = 45, hjust=1)) -->
-<!-- } -->
-
-<!-- name <- levels(flow_plot$year) -->
-
-<!-- lapply(name, plot_kge) -->
-
-<!-- ``` -->
-
-<!-- # Ensembles -->
-
-<!-- ## Hydrograph -->
-
-<!-- ```{r boulder cr gage, echo = F} -->
-
-<!-- #pull in Boulder Creek @ N 75th gage -->
-
-<!-- bouldcr <- readNWISdv(siteNumbers = "06730200", -->
-<!--                           parameterCd = "00060",  -->
-<!--                           startDate = "2011-01-01",  -->
-<!--                           endDate = "2020-12-31")  %>% -->
-<!--   dplyr::select(date = Date, -->
-<!--          q_cfs = X_00060_00003) %>% -->
-<!--   mutate(bouldcr = q_cfs/35.3146662) %>% -->
-<!--   dplyr::select(-q_cfs) %>% -->
-<!--   mutate(year = year(date)) -->
-
-<!-- ``` -->
-
-<!-- ```{r ensemble hydrographs, echo = F} -->
-
-<!-- ensem <- flow %>% -->
-<!--   rowwise() %>% -->
-<!--   mutate(grid_ensemble = mean(c(grid_2011, grid_2012, -->
-<!--                                 grid_2013, grid_2014, -->
-<!--                                 grid_2015, grid_2016, -->
-<!--                                 grid_2017, grid_2018, -->
-<!--                                 grid_2019, grid_2020)), -->
-<!--          statn_ensemble = mean(c(statn_2011, statn_2012, -->
-<!--                                  statn_2013, statn_2014, -->
-<!--                                  statn_2015, statn_2016, -->
-<!--                                  statn_2017, statn_2018, -->
-<!--                                  statn_2019, statn_2020)), -->
-<!--          all_ensemble = mean(c(grid_2011, grid_2012, -->
-<!--                                grid_2013, grid_2014, -->
-<!--                                grid_2015, grid_2016, -->
-<!--                                grid_2017, grid_2018, -->
-<!--                                grid_2019, grid_2020, -->
-<!--                                statn_2011, statn_2012, -->
-<!--                                statn_2013, statn_2014, -->
-<!--                                statn_2015, statn_2016, -->
-<!--                                statn_2017, statn_2018, -->
-<!--                                statn_2019, statn_2020, -->
-<!--                                grid_all, statn_all))) %>% -->
-<!--   dplyr::select(date, grid_ensemble, statn_ensemble,  -->
-<!--          all_ensemble, grid_all,  -->
-<!--          statn_all, obs)  -->
-
-<!-- ensem_pivot <- ensem %>% -->
-<!--   pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>% -->
-<!--   mutate(year = as.factor(year(date))) -->
-
-
-<!-- q_ensemble <- ggplot(ensem_pivot, aes(date, q_m3s, color = cal_run)) + -->
-<!--   geom_line() + -->
-<!--   scale_color_manual(name="cal_run", values=c('obs'='black', -->
-<!--                                             "grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--   geom_line(data = bouldcr, aes(date, bouldcr/10), color = 'darkgrey') + -->
-<!--   scale_y_continuous(name = 'Q_m3s', -->
-<!--                     sec.axis = sec_axis(~.*10, name='BoulderCr_cms')) + -->
-<!--   theme_bw() -->
-
-
-<!-- ggplotly(q_ensemble) %>% -->
-<!--   add_lines(data=bouldcr, x=~date, y=~bouldcr, colors=NULL, yaxis="y2",  -->
-<!--               inherit=FALSE, showlegend = FALSE) %>% -->
-<!--   layout(yaxis2 = list(overlaying = "y", side = "right", -->
-<!--                        color = 'darkgray', -->
-<!--                        title = "BoulderCr_cms"), -->
-<!--          legend = list(x = 1.1, y = 0.95)) -->
-
-<!-- ``` -->
-
-<!-- ## Annual hydrographs -->
-
-<!-- ```{r hydrogs by cy, echo = F} -->
-
-<!-- plotqensem_cy <- function(calyear) { -->
-<!--   {ensem_pivot %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = date, -->
-<!--                y = q_m3s, -->
-<!--                color = cal_run)) + -->
-<!--     geom_line() + -->
-<!--     scale_color_manual(name="cal_run", values=c('obs' = 'black', -->
-<!--                                             "grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--     ggtitle(calyear) + -->
-<!--     theme_bw() -->
-<!--     } %>% -->
-<!--     ggplotly() -->
-<!-- } -->
-
-<!-- name <- levels(ensem_pivot$year) -->
-
-<!-- try <- lapply(name, plotqensem_cy) -->
-
-<!-- htmltools::tagList(try) -->
-
-<!-- try -->
-
-<!-- ``` -->
-
-<!-- ## KGE -->
-
-<!-- ### KGE for ensembles (entire period) -->
-
-<!-- ```{r ensemble kge, echo = F} -->
-
-<!-- ensem_kge_all <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   summarize(grid_ensemble = KGE(grid_ensemble, obs), -->
-<!--             statn_ensemble = KGE(statn_ensemble, obs), -->
-<!--             all_ensemble = KGE(all_ensemble, obs), -->
-<!--             grid_all = KGE(grid_all, obs), -->
-<!--             statn_all = KGE(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 2) -->
-
-<!-- kable(ensem_kge_all) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-
-<!-- ``` -->
-
-<!-- ### Annual KGEs for ensembles -->
-
-<!-- ```{r annual kge ensemble, echo = F} -->
-
-<!-- yr_kge_ensem <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   group_by(year) %>% -->
-<!--   summarize(grid_ensemble = KGE(grid_ensemble, obs), -->
-<!--             statn_ensemble = KGE(statn_ensemble, obs), -->
-<!--             all_ensemble = KGE(all_ensemble, obs), -->
-<!--             grid_all = KGE(grid_all, obs), -->
-<!--             statn_all = KGE(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 2) -->
-
-<!-- yr_kge_table <- yr_kge_ensem %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>% -->
-<!--   pivot_wider(names_from = 'year', values_from = 'kge') -->
-
-<!-- yr_kge_table %>% -->
-<!--   kable(.) %>% -->
-<!--   kable_styling() -->
-
-<!-- yr_kge_plot <- yr_kge_ensem %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>% -->
-<!--   mutate(year = as.factor(year)) -->
-
-<!-- #plot annual kge vals for ensembles -->
-<!-- plot_kge_yr_ensem <- function(calyear) { -->
-<!--   yr_kge_plot %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = model_run, -->
-<!--                y = kge)) + -->
-<!--     geom_col() + -->
-<!--     ggtitle(calyear) + -->
-<!--     theme_bw() + -->
-<!--     theme(axis.text.x = element_text(angle = 45, hjust=1)) -->
-<!-- } -->
-
-<!-- name <- levels(yr_kge_plot$year) -->
-
-<!-- lapply(name, plot_kge_yr_ensem) -->
-
-
-<!-- ``` -->
-
-<!-- ### Monthly KGEs for ensembles -->
-
-<!-- ```{r monthly kge ensemble, echo = F} -->
-
-<!-- mo_kge <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   drop_na() %>%  -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   group_by(month) %>% -->
-<!--   summarize(grid_ensemble = KGE(grid_ensemble, obs), -->
-<!--             statn_ensemble = KGE(statn_ensemble, obs), -->
-<!--             all_ensemble = KGE(all_ensemble, obs), -->
-<!--             grid_all = KGE(grid_all, obs), -->
-<!--             statn_all = KGE(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 2) -->
-
-<!-- kable(mo_kge) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-<!-- mo_pivot <- mo_kge %>% -->
-<!--   pivot_longer(!month, names_to = 'cal_run', values_to = 'KGE') %>% -->
-<!--   drop_na() -->
-
-<!-- kge_plot_mo <- ggplot(mo_pivot, aes(month, KGE, color = cal_run)) + geom_point(size = 3) + -->
-<!--     scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--   theme_bw() -->
-
-<!-- ggplotly(kge_plot_mo) -->
-
-<!-- ``` -->
-
-<!-- ## RMSE -->
-
-<!-- ### Ensemble RMSE for entire period -->
-
-<!-- ```{r ensemble rmse, echo = F} -->
-
-<!-- ensem_rmse_all <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   summarize(grid_ensemble = rmse(grid_ensemble, obs), -->
-<!--             statn_ensemble = rmse(statn_ensemble, obs), -->
-<!--             all_ensemble = rmse(all_ensemble, obs), -->
-<!--             grid_all = rmse(grid_all, obs), -->
-<!--             statn_all = rmse(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 4) -->
-
-<!-- kable(ensem_rmse_all) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-<!-- ``` -->
-
-<!-- ### Annual RMSE for ensembles -->
-
-<!-- ```{r annual rmse ensem, echo = F} -->
-
-<!-- yr_rmse_ensem <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   group_by(year) %>% -->
-<!--   summarize(grid_ensemble = rmse(grid_ensemble, obs), -->
-<!--             statn_ensemble = rmse(statn_ensemble, obs), -->
-<!--             all_ensemble = rmse(all_ensemble, obs), -->
-<!--             grid_all = rmse(grid_all, obs), -->
-<!--             statn_all = rmse(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 4) -->
-
-<!-- yr_rmse_table <- yr_rmse_ensem %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'rmse') %>% -->
-<!--   pivot_wider(names_from = 'year', values_from = 'rmse') -->
-
-<!-- yr_rmse_table %>% -->
-<!--   kable(.) %>% -->
-<!--   kable_styling() -->
-
-<!-- yr_rmse_plot <- yr_rmse_ensem %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'rmse') %>% -->
-<!--   mutate(year = as.factor(year)) -->
-
-<!-- #plot annual rmse vals for ensembles -->
-<!-- plot_rmse_yr_ensem <- function(calyear) { -->
-<!--   yr_rmse_plot %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = model_run, -->
-<!--                y = rmse)) + -->
-<!--     geom_col() + -->
-<!--     ggtitle(calyear) + -->
-<!--     theme_bw() + -->
-<!--     theme(axis.text.x = element_text(angle = 45, hjust=1)) -->
-<!-- } -->
-
-<!-- name <- levels(yr_rmse_plot$year) -->
-
-<!-- lapply(name, plot_rmse_yr_ensem) -->
-
-
-<!-- ``` -->
-
-<!-- ### Monthly RMSEs for ensembles -->
-
-<!-- ```{r month ensem rmse, echo = F} -->
-
-<!-- mo_rmse <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   drop_na() %>%  -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   group_by(month) %>% -->
-<!--   summarize(grid_ensemble = rmse(grid_ensemble, obs), -->
-<!--             statn_ensemble = rmse(statn_ensemble, obs), -->
-<!--             all_ensemble = rmse(all_ensemble, obs), -->
-<!--             grid_all = rmse(grid_all, obs), -->
-<!--             statn_all = rmse(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 4) -->
-
-<!-- kable(mo_rmse) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-<!-- mo_pivot2 <- mo_rmse %>% -->
-<!--   pivot_longer(!month, names_to = 'cal_run', values_to = 'RMSE') %>% -->
-<!--   drop_na() -->
-
-<!-- rmse_plot_mo <- ggplot(mo_pivot2, aes(month, RMSE, color = cal_run)) + geom_point(size = 3) + -->
-<!--     scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--   theme_bw() -->
-
-<!-- ggplotly(rmse_plot_mo) -->
-
-<!-- ``` -->
-
-<!-- ## NSE -->
-
-<!-- ### Ensemble NSE for entire period -->
-
-<!-- ```{r nse all, echo = F} -->
-
-<!-- ensem_nse_all <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   summarize(grid_ensemble = NSE(grid_ensemble, obs), -->
-<!--             statn_ensemble = NSE(statn_ensemble, obs), -->
-<!--             all_ensemble = NSE(all_ensemble, obs), -->
-<!--             grid_all = NSE(grid_all, obs), -->
-<!--             statn_all = NSE(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 2) -->
-
-<!-- kable(ensem_nse_all) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-
-<!-- ``` -->
-
-<!-- ### Annual NSE for ensembles -->
-
-<!-- ```{r annual nse, echo = F} -->
-
-<!-- yr_nse_ensem <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   group_by(year) %>% -->
-<!--   summarize(grid_ensemble = NSE(grid_ensemble, obs), -->
-<!--             statn_ensemble = NSE(statn_ensemble, obs), -->
-<!--             all_ensemble = NSE(all_ensemble, obs), -->
-<!--             grid_all = NSE(grid_all, obs), -->
-<!--             statn_all = NSE(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 4) -->
-
-<!-- yr_nse_table <- yr_nse_ensem %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'nse') %>% -->
-<!--   pivot_wider(names_from = 'year', values_from = 'nse') -->
-
-<!-- yr_nse_table %>% -->
-<!--   kable(.) %>% -->
-<!--   kable_styling() -->
-
-<!-- yr_nse_plot <- yr_nse_ensem %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'nse') %>% -->
-<!--   mutate(year = as.factor(year)) -->
-
-<!-- #plot annual nse vals for ensembles -->
-<!-- plot_nse_yr_ensem <- function(calyear) { -->
-<!--   yr_nse_plot %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = model_run, -->
-<!--                y = nse)) + -->
-<!--     geom_col() + -->
-<!--     ggtitle(calyear) + -->
-<!--     theme_bw() + -->
-<!--     theme(axis.text.x = element_text(angle = 45, hjust=1)) -->
-<!-- } -->
-
-<!-- name <- levels(yr_nse_plot$year) -->
-
-<!-- lapply(name, plot_nse_yr_ensem) -->
-
-<!-- ``` -->
-
-<!-- ### Monthly NSE for ensembles -->
-
-<!-- ```{r monthly rmse, echo =F} -->
-
-<!-- mo_nse <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   drop_na() %>%  -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   group_by(month) %>% -->
-<!--   summarize(grid_ensemble = NSE(grid_ensemble, obs), -->
-<!--             statn_ensemble = NSE(statn_ensemble, obs), -->
-<!--             all_ensemble = NSE(all_ensemble, obs), -->
-<!--             grid_all = NSE(grid_all, obs), -->
-<!--             statn_all = NSE(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 4) -->
-
-<!-- kable(mo_nse) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-<!-- mo_pivot2 <- mo_nse %>% -->
-<!--   pivot_longer(!month, names_to = 'cal_run', values_to = 'nse') %>% -->
-<!--   drop_na() -->
-
-<!-- nse_plot_mo <- ggplot(mo_pivot2, aes(month, nse, color = cal_run)) + geom_point(size = 3) + -->
-<!--   theme_bw() + -->
-<!--   scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange"))  -->
-
-<!-- ggplotly(nse_plot_mo) -->
-
-<!-- ``` -->
-
-<!-- ## Percent bias -->
-
-<!-- Positive values indicate model overestimation and negative values model underestimation. -->
-
-<!-- ### Ensemble pbias for entire period -->
-
-<!-- ```{r pbias all, echo = F} -->
-
-<!-- ensem_pbias_all <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   summarize(grid_ensemble = pbias(grid_ensemble, obs), -->
-<!--             statn_ensemble = pbias(statn_ensemble, obs), -->
-<!--             all_ensemble = pbias(all_ensemble, obs), -->
-<!--             grid_all = pbias(grid_all, obs), -->
-<!--             statn_all = pbias(statn_all, obs)) -->
-
-<!-- kable(ensem_pbias_all) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-
-<!-- ``` -->
-
-<!-- ### Annual pbias for ensembles -->
-
-<!-- ```{r annualpbias, echo = F} -->
-
-<!-- yr_pbias_ensem <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   group_by(year) %>% -->
-<!--   summarize(grid_ensemble = pbias(grid_ensemble, obs), -->
-<!--             statn_ensemble = pbias(statn_ensemble, obs), -->
-<!--             all_ensemble = pbias(all_ensemble, obs), -->
-<!--             grid_all = pbias(grid_all, obs), -->
-<!--             statn_all = pbias(statn_all, obs)) -->
-
-<!-- yr_pbias_table <- yr_pbias_ensem %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'pbias') %>% -->
-<!--   pivot_wider(names_from = 'year', values_from = 'pbias') -->
-
-<!-- yr_pbias_table %>% -->
-<!--   kable(.) %>% -->
-<!--   kable_styling() -->
-
-<!-- yr_pbias_plot <- yr_pbias_ensem %>% -->
-<!--   pivot_longer(!year, names_to = 'model_run', values_to = 'pbias') %>% -->
-<!--   mutate(year = as.factor(year)) -->
-
-<!-- #plot annual pbias vals for ensembles -->
-<!-- plot_pbias_yr_ensem <- function(calyear) { -->
-<!--   yr_pbias_plot %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = model_run, -->
-<!--                y = pbias)) + -->
-<!--     geom_col() + -->
-<!--     ggtitle(calyear) + -->
-<!--     theme_bw() + -->
-<!--     theme(axis.text.x = element_text(angle = 45, hjust=1)) -->
-<!-- } -->
-
-<!-- name <- levels(yr_pbias_plot$year) -->
-
-<!-- lapply(name, plot_pbias_yr_ensem) -->
-
-<!-- ``` -->
-
-<!-- ### Monthly pbias for ensembles -->
-
-<!-- ```{r monthly pbias, echo =F} -->
-
-<!-- mo_pbias <- ensem %>% -->
-<!--   ungroup() %>% -->
-<!--   drop_na() %>%  -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   group_by(month) %>% -->
-<!--   summarize(grid_ensemble = pbias(grid_ensemble, obs), -->
-<!--             statn_ensemble = pbias(statn_ensemble, obs), -->
-<!--             all_ensemble = pbias(all_ensemble, obs), -->
-<!--             grid_all = pbias(grid_all, obs), -->
-<!--             statn_all = pbias(statn_all, obs)) %>% -->
-<!--     mutate_if(is.numeric, -->
-<!--             round, -->
-<!--             digits = 4) -->
-
-<!-- kable(mo_pbias) %>% -->
-<!--   kable_styling(full_width = F) -->
-
-<!-- mo_pivot2 <- mo_pbias %>% -->
-<!--   pivot_longer(!month, names_to = 'cal_run', values_to = 'pbias') %>% -->
-<!--   drop_na() -->
-
-<!-- pbias_plot_mo <- ggplot(mo_pivot2, aes(month, pbias, color = cal_run)) +  -->
-<!--   geom_point(size = 3) + -->
-<!--   scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--   theme_bw() -->
-
-<!-- ggplotly(pbias_plot_mo) -->
-
-<!-- ``` -->
-
-<!-- ## Cumulative Q -->
-
-<!-- ```{r cumq, echo = F} -->
-
-<!-- ensem_cumq <- ensem %>% -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   filter(month %in% c(4:9)) %>% -->
-<!--   dplyr::select(-month) %>%  -->
-<!--   pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>% -->
-<!--   group_by(cal_run, year(date)) %>% -->
-<!--   mutate(cumsum = cumsum(replace_na(q_m3s, 0))) %>% -->
-<!--   rename(year = 4) %>% -->
-<!--   mutate(year = as.factor(year)) %>% -->
-<!--   ungroup() -->
-
-<!-- #plot annual cumulative Q vals for ensembles -->
-<!-- plot_cumulq_yr_ensem <- function(calyear) { -->
-<!--   {ensem_cumq %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = date, -->
-<!--                y = cumsum, -->
-<!--                color = cal_run)) + -->
-<!--     geom_line() + -->
-<!--     scale_color_manual(name="cal_run", values=c("obs"="black", -->
-<!--                                              "grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--     ggtitle(calyear) + -->
-<!--     theme_bw() + -->
-<!--     labs(y = 'cumulative Q (m3s)')} %>% -->
-<!--     ggplotly() -->
-<!-- } -->
-
-<!-- name <- levels(ensem_cumq$year) -->
-
-<!-- cumulative_plots <- lapply(name, plot_cumulq_yr_ensem) -->
-
-<!-- htmltools::tagList(cumulative_plots) -->
-
-<!-- cumulative_plots -->
-
-<!-- ``` -->
-
-<!-- ## Percentiles -->
-
-<!-- ```{r percentiles, echo = F} -->
-
-
-<!-- quantile_calc <- function(x, probs, date) { -->
-<!--   tibble(x = quantile(x, probs), probs = probs, -->
-<!--          date = date[x = quantile(x, probs)]) -->
-<!-- } -->
-
-
-<!-- percent <- ensem_cumq %>% -->
-<!--   group_by(year, cal_run) %>% -->
-<!--   summarize(quantile_calc(cumsum, c(0.25, 0.5, 0.75), date)) %>% -->
-<!--   mutate(date = as.Date(date)) %>% -->
-<!--   mutate(probs = as.factor(probs)) -->
-
-<!-- ### -->
-<!-- quantile_cal <- function(data, prob) { -->
-<!--   data %>% -->
-<!--     dplyr::group_by(cal_run, year) %>% -->
-<!--     mutate(quantile = paste0(prob), -->
-<!--            value = quantile(cumsum, prob)) %>% -->
-<!--     group_by(cal_run, year, quantile) %>%  -->
-<!--     filter(cumsum >= value) %>% -->
-<!--     filter(date == min(date)) -->
-<!--   } -->
-
-<!-- quantiles <- c(0.25, 0.5, 0.75) -->
-
-<!-- quants <- quantiles %>% -->
-<!--   map(~ quantile_cal(data = ensem_cumq, prob = .)) %>% -->
-<!--   bind_rows() -->
-<!-- #### -->
-
-
-<!-- #plot percentiles -->
-<!-- plot_perc_ensem <- function(perc) { -->
-<!--   {percent %>% -->
-<!--     filter(probs == perc) %>% -->
-<!--     ggplot(aes(x = year, -->
-<!--                y = x, -->
-<!--                color = cal_run)) + -->
-<!--     geom_point(size=3) + -->
-<!--     scale_color_manual(name="cal_run", values=c("obs"="black", -->
-<!--                                              "grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--     ggtitle(perc) + -->
-<!--     ylab('Streamflow (cms)') + -->
-<!--     theme_bw()} %>% -->
-<!--     ggplotly() -->
-<!-- } -->
-
-<!-- name <- levels(percent$probs) -->
-
-<!-- perc_plots <- lapply(name, plot_perc_ensem) -->
-
-<!-- htmltools::tagList(perc_plots) -->
-
-<!-- perc_plots -->
-
-<!-- ``` -->
-
-<!-- ## Max Q prior to April 1 -->
-
-<!-- ```{r early max q, echo = F} -->
-
-<!-- ensem_bould <- left_join(ensem, bouldcr, by = 'date') %>% -->
-<!--   pivot_longer(!c(date, year), names_to = 'source', values_to = 'q_m3s') %>% -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   filter(month %in% 3) %>% -->
-<!--   group_by(source, year) %>% -->
-<!--   slice_max(q_m3s, n=1) -->
-
-<!-- early_peakq <- ensem_bould %>% -->
-<!--   mutate(doy = yday(date)) %>% -->
-<!--   dplyr::select(c(doy, source, q_m3s, year)) %>% -->
-<!--   drop_na() %>%  -->
-<!--   pivot_wider(names_from = 'source', values_from = c('q_m3s', 'doy')) -->
-
-
-<!-- marpeakq <- ggplot(early_peakq, aes(x = doy_bouldcr)) + -->
-<!--   geom_point(aes(y = doy_all_ensemble, shape = "all_ensemble",  -->
-<!--                  color = 'all_ensemble'), size=2.5) + -->
-<!--   geom_point(aes(y = doy_grid_all, shape = 'grid_all',  -->
-<!--                  color = 'grid_all'), size=2.5) + -->
-<!--   geom_point(aes(y = doy_grid_ensemble, shape = 'grid_ensemble',  -->
-<!--                  color = 'grid_ensemble'), size=2.5) + -->
-<!--   geom_point(aes(y = doy_statn_all, shape = 'statn_all',  -->
-<!--                  color = 'statn_all'), size=2.5) + -->
-<!--   geom_point(aes(y = doy_statn_ensemble, shape = 'statn_ensemble',  -->
-<!--                  color = 'statn_ensemble'), size=2.5) + -->
-<!--   geom_abline(intercept = 0, slope = 1, size=1, color='black') + -->
-<!--   labs(x = "Boulder Creek DOY for March Peak Q",  -->
-<!--        y = 'DOY for March Peak Q') + -->
-<!--   theme_bw() + -->
-<!--   scale_shape_manual(name="source", values=c("all_ensemble"=15,  -->
-<!--                                             "grid_all"=16,  -->
-<!--                                             "grid_ensemble"=17, -->
-<!--                                             "statn_all"=18,  -->
-<!--                                             "statn_ensemble" = 8)) + -->
-<!--     scale_color_manual(name="source", values=c("all_ensemble"='orange',  -->
-<!--                                             "grid_all"='purple1',  -->
-<!--                                             "grid_ensemble"='maroon', -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "statn_ensemble" = 'darkturquoise')) + -->
-<!--   ggtitle('DOY of peak Q in March') -->
-
-<!-- ggplotly(marpeakq) -->
-
-
-<!-- # ggplot(early_peakq, aes(doy_bouldcr, doy_grid_all)) + -->
-<!-- #   geom_point(size=2.5) + -->
-<!-- #   geom_abline(intercept = 0, slope = 1, size=1, color='red') + -->
-<!-- #   theme_bw() + -->
-<!-- #   ggtitle('DOY of peak Q prior to April 1st - Grid All') -->
-<!-- #  -->
-<!-- #  -->
-<!-- # ggplot(early_peakq, aes(doy_bouldcr, doy_grid_ensemble)) + -->
-<!-- #   geom_point(size=2.5) + -->
-<!-- #   geom_abline(intercept = 0, slope = 1, size=1, color='red') + -->
-<!-- #   theme_bw() + -->
-<!-- #   ggtitle('DOY of peak Q prior to April 1st - Grid Ensemble') -->
-<!-- #  -->
-<!-- #  -->
-<!-- # ggplot(early_peakq, aes(doy_bouldcr, doy_statn_all)) + -->
-<!-- #   geom_point(size=2.5) + -->
-<!-- #   geom_abline(intercept = 0, slope = 1, size=1, color='red') + -->
-<!-- #   theme_bw() + -->
-<!-- #   ggtitle('DOY of peak Q prior to April 1st - Station All') -->
-<!-- #  -->
-<!-- #  -->
-<!-- # ggplot(early_peakq, aes(doy_bouldcr, doy_statn_ensemble)) + -->
-<!-- #   geom_point(size=2.5) + -->
-<!-- #   geom_abline(intercept = 0, slope = 1, size=1, color='red') + -->
-<!-- #   theme_bw() + -->
-<!-- #   ggtitle('DOY of peak Q prior to April 1st - Station Ensemble') -->
-
-<!-- early_peakq_table <- ensem_bould %>% -->
-<!--   mutate(doy = yday(date)) %>% -->
-<!--   dplyr::arrange(date) -->
-
-<!-- kable(early_peakq_table) %>% -->
-<!--   kable_styling(full_width = F) %>%  -->
-<!--   scroll_box(width = "100%", height = "500px") -->
-
-<!-- bouldcr3 <- bouldcr %>% -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   filter(month == 3, year == 2011) -->
-
-<!-- test1 <- ensem_pivot %>% -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   filter(year == 2011, -->
-<!--          month == 3) %>%  -->
-<!--   ggplot(aes(date, q_m3s, color = cal_run)) + -->
-<!--   geom_line() + -->
-<!--   scale_color_manual(name="cal_run", values=c('obs'='black', -->
-<!--                                             "grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--   geom_line(data = bouldcr3, aes(date, bouldcr/10), color = 'darkgrey') + -->
-<!--   scale_y_continuous(name = 'Q_m3s', -->
-<!--                     sec.axis = sec_axis(~.*10, name='BoulderCr_cms')) + -->
-<!--   theme_bw() + -->
-<!--   ggtitle('March 2011') -->
-
-<!-- ggplotly(test1) %>% -->
-<!--   add_lines(data=bouldcr, x=~date, y=~bouldcr, colors=NULL, yaxis="y2",  -->
-<!--               inherit=FALSE, showlegend = FALSE) %>% -->
-<!--   layout(yaxis2 = list(overlaying = "y", side = "right", -->
-<!--                        color = 'darkgray', -->
-<!--                        title = "BoulderCr_cms"), -->
-<!--          legend = list(x = 1.1, y = 0.95)) -->
-
-<!-- ################################################ -->
-
-<!-- bouldcr3_2 <- bouldcr %>% -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   filter(month == 3, year == 2019) -->
-
-<!-- test2 <- ensem_pivot %>% -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   filter(year == 2019, -->
-<!--          month == 3) %>%  -->
-<!--   ggplot(aes(date, q_m3s, color = cal_run)) + -->
-<!--   geom_line() + -->
-<!--   scale_color_manual(name="cal_run", values=c('obs'='black', -->
-<!--                                             "grid_ensemble"="maroon",  -->
-<!--                                             "statn_ensemble"="darkturquoise",  -->
-<!--                                             "grid_all"="purple1", -->
-<!--                                             "statn_all"='springgreen4',  -->
-<!--                                             "all_ensemble" = "orange")) + -->
-<!--   geom_line(data = bouldcr3_2, aes(date, bouldcr/10), color = 'darkgrey') + -->
-<!--   scale_y_continuous(name = 'Q_m3s', -->
-<!--                     sec.axis = sec_axis(~.*10, name='BoulderCr_cms')) + -->
-<!--   theme_bw() + -->
-<!--   ggtitle('March 2019') -->
-
-
-<!-- ggplotly(test2) %>% -->
-<!--   add_lines(data=bouldcr, x=~date, y=~bouldcr, colors=NULL, yaxis="y2",  -->
-<!--               inherit=FALSE, showlegend = FALSE) %>% -->
-<!--   layout(yaxis2 = list(overlaying = "y", side = "right", -->
-<!--                        color = 'darkgray', -->
-<!--                        title = "BoulderCr_cms"), -->
-<!--          legend = list(x = 1.1, y = 0.95)) -->
-
-<!-- ``` -->
-
-<!-- # Catchment results -->
-
-<!-- ## Precip -->
-
-<!-- ```{r catch precip, echo = F} -->
-<!-- setwd("/Users/megansears/Documents/Repos/fourmile/catchment_output") -->
-
-<!-- statn <- read_csv('statnall.csv') -->
-<!-- grid <- read_csv('gridall.csv') -->
-
-<!-- grid <- grid %>% mutate(site = 'grid') -->
-<!-- statn <- statn %>% mutate(site = 'statn') -->
-
-<!-- catchment <- bind_rows(grid, statn) %>% -->
-<!--   mutate(year = as.factor(year(time))) %>% -->
-<!--   group_by(year, site) %>% -->
-<!--   mutate(cumulative_p = cumsum(precip)) -->
-
-<!-- #plot cumulative precip by year -->
-<!-- plot_cumprecip <- function(calyear) { -->
-<!--   {catchment %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = time, -->
-<!--                y = cumulative_p, color = site)) + -->
-<!--     geom_line(size=1) + -->
-<!--     ggtitle(calyear) + -->
-<!--     ylab('Cumulative precip (mm)') + -->
-<!--     theme_bw() + -->
-<!--     theme(axis.text.x = element_text(angle = 45, hjust=1))} %>% -->
-<!--     ggplotly() -->
-<!-- } -->
-
-<!-- name <- levels(catchment$year) -->
-
-<!-- precip_plots <- lapply(name, plot_cumprecip) -->
-
-<!-- htmltools::tagList(precip_plots) -->
-
-<!-- precip_plots -->
-
-<!-- ## total P -->
-<!-- max_cumulativep <- catchment %>% -->
-<!--   group_by(year, site) %>% -->
-<!--   summarize(total_cumulativep = max(cumulative_p)) -->
-
-<!-- ggplot(max_cumulativep, aes(x=year, y=total_cumulativep, color=site)) +  -->
-<!--   geom_point(size=3) + -->
-<!--   ggtitle('Total cumulative precip (mm) by year') -->
-
-<!-- ``` -->
-
-<!-- ## Tmean -->
-
-<!-- ```{r tmean catch, echo = F} -->
-<!-- ## tmean  -->
-<!-- tmean <- catchment %>% -->
-<!--   group_by(year, site) %>% -->
-<!--   summarize(tmean = mean(tmean)) %>% -->
-<!--   ggplot(aes(x = year, y=tmean, color = site)) + -->
-<!--   geom_point(size=3) + -->
-<!--   ggtitle('Average temp by year') -->
-
-<!-- tmean -->
-
-
-<!-- ``` -->
-
-<!-- ## RD and RG -->
-
-<!-- ```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"} -->
-
-<!-- gw_grid <- read_csv(here('catchment_output/gridall_outlet.csv')) %>% -->
-<!--   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>% -->
-<!--   mutate(source = 'grid') -->
-
-<!-- gw_statn <- read_csv(here('catchment_output/statnall_outlet.csv')) %>% -->
-<!--   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>% -->
-<!--   mutate(source = 'statn') -->
-
-<!-- gw <- bind_rows(gw_grid, gw_statn) %>% -->
-<!--   mutate(year = year(time)) %>% -->
-<!--   rename(date = time) -->
-
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=catchmentRD1_w), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('RD1') + -->
-<!--   theme(text = element_text(size = 20))    -->
-
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=catchmentRD2_w), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('RD2') + -->
-<!--   theme(text = element_text(size = 20))    -->
-
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=catchmentRG1_w), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('RG1') + -->
-<!--   theme(text = element_text(size = 20))    -->
-
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=catchmentRG2_w), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('RG2') + -->
-<!--   theme(text = element_text(size = 20))    -->
-
-<!-- gw <- gw %>% -->
-<!--   group_by(year, source) %>% -->
-<!--   mutate(RD1cumsum = cumsum(catchmentRD1_w), -->
-<!--          RD2cumsum = cumsum(catchmentRD2_w), -->
-<!--          RG1cumsum = cumsum(catchmentRG1_w), -->
-<!--          RG2cumsum = cumsum(catchmentRG2_w)) -->
-
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=RD1cumsum), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('Cumulative RD1') + -->
-<!--   theme(text = element_text(size = 20))    -->
-
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=RD2cumsum), size = 1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('Cumulative RD2') + -->
-<!--   theme(text = element_text(size = 20))    -->
-
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=RG1cumsum), size  = 1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('Cumulative RG1') + -->
-<!--   theme(text = element_text(size = 20))    -->
-
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=RG2cumsum), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('Cumulative RG2') + -->
-<!--   theme(text = element_text(size = 20))    -->
-
-<!-- ``` -->
-
-
-<!-- ```{r rd and rg sums, echo = F, fig.width = 22, fig.asp = 1.5, out.width = "100%"} -->
-
-<!-- ################## -->
-<!-- # all 4 with facets -->
-
-<!-- ggplot(gw, aes(x=date)) + -->
-<!--   geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) + -->
-<!--   geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) + -->
-<!--   geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) + -->
-<!--   geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   facet_wrap(~year + source, scales = 'free_x', ncol=2) + -->
-<!--   ggtitle('Cumulative RD and RG') + -->
-<!--   theme(text = element_text(size = 24))    -->
-
-<!-- ``` -->
-
-
-<!-- ```{r gw boxplot, echo = F} -->
-
-<!-- gw_maxcumsum <- gw %>% -->
-<!--   group_by(source, year) %>% -->
-<!--   summarize(yr_max_RD1 = max(RD1cumsum), -->
-<!--             yr_max_RD2 = max(RD2cumsum), -->
-<!--             yr_max_RG1 = max(RG1cumsum), -->
-<!--             yr_max_RG2 = max(RG2cumsum)) %>% -->
-<!--   mutate(year = as.factor(year)) %>% -->
-<!--   pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms') -->
-
-
-<!-- ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) + -->
-<!--   geom_boxplot(position = position_dodge(1)) +  -->
-<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
-<!--   ggtitle('Max annual cumulative sums') -->
-
-<!-- ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) + -->
-<!--   geom_boxplot(position = position_dodge(1)) + -->
-<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
-<!--   #geom_point(aes(color = source)) + -->
-<!--   facet_wrap(~flow_type, scales = 'free') + -->
-<!--   ggtitle('Max annual cumulative sums') -->
-
-<!-- ``` -->
-
-<!-- ### RD and RG by season -->
-
-<!-- ```{r flow season, echo = F, fig.width = 12, fig.asp = 0.75, out.width = "100%"} -->
-
-<!-- #group by season and get max sums by season -->
-<!-- flow_season <- gw %>% -->
-<!--   dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>% -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt', -->
-<!--                             month %in% c(7,8,9,10) ~ 'monsoon', -->
-<!--                             month %in% c(11,12,1,2) ~ 'baseflow')) %>% -->
-<!--   group_by(source, year, season) %>% -->
-<!--   summarize(yr_season_RD1 = max(RD1cumsum), -->
-<!--             yr_season_RD2 = max(RD2cumsum), -->
-<!--             yr_season_RG1 = max(RG1cumsum), -->
-<!--             yr_season_RG2 = max(RG2cumsum)) %>% -->
-<!--             pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'flow_cms') -->
-
-
-<!-- flow_season %>% -->
-<!--   ggplot(aes(x = flow_type, y = flow_cms, fill = source)) + -->
-<!--   geom_boxplot(position = position_dodge(1)) + -->
-<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
-<!--   #geom_point(aes(color = source)) + -->
-<!--   facet_wrap(~season, scales = 'free') + -->
-<!--   ggtitle('Max annual season cumulative sums') + -->
-<!--   theme_bw() + -->
-<!--   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + -->
-<!--   theme(text = element_text(size = 20))  -->
-
-
-<!-- flow_season %>% -->
-<!--   ggplot(aes(x = flow_type, y = flow_cms, fill = source)) + -->
-<!--   geom_boxplot(position = position_dodge(1)) + -->
-<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
-<!--   #geom_point(aes(color = source)) + -->
-<!--   facet_wrap(~season + flow_type, scales = 'free') + -->
-<!--   ggtitle('Max annual season cumulative sums') + -->
-<!--   theme_bw() + -->
-<!--   theme(text = element_text(size = 20)) -->
-
-
-<!-- ``` -->
-
-
-<!-- # HRU results -->
-
-<!-- ## HRU Map -->
-
-<!-- ```{r map, echo = F} -->
-
-<!-- locations <- read_csv(here('data/GIS', 'fourmile_sensors.csv')) -->
-
-<!-- hrus <- st_read(here('data/GIS', 'hrus_final.shp')) -->
-
-<!-- locations <- locations %>% -->
-<!--   st_as_sf(., coords=c('y','x'), crs = 4326) -->
-
-<!-- mapviewOptions(basemaps = c("Esri.WorldShadedRelief", "OpenStreetMap.DE"), -->
-<!--                layers.control.pos = "topright") -->
-
-<!-- mapview(locations, zcol = 'type') + mapview(hrus) -->
-
-<!-- ``` -->
-
-<!-- ## Niwot and HRU7 -->
-
-<!-- ### SWE and precip -->
-
-<!-- ```{r niwot, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"} -->
-<!-- library(snotelr) -->
-
-<!-- niwot_snotel <- snotel_download(site_id = 663, internal = T) -->
-
-<!-- niwot_snotel <- niwot_snotel %>% -->
-<!--   dplyr::select(date, snow_water_equivalent, precipitation) %>% -->
-<!--   mutate(date = as.Date(date)) %>% -->
-<!--   rename(swe_mm_snotel = snow_water_equivalent, -->
-<!--          precip_mm_snotel = precipitation) %>% -->
-<!--   #mutate(swe_mm_snotel = swe_mm_snotel*25.4, -->
-<!--          #precip_mm_snotel = precip_mm_snotel*25.4) %>% -->
-<!--   filter(date > '2010-12-31' & date < '2020-10-01') -->
-
-<!-- hru7_grid <- read_csv(here('HRU_output/HRU_7_grid.csv')) %>% -->
-<!--   dplyr::select(date, precip_mm, swe_mm) %>% -->
-<!--   rename(precip_mm_hrugrid = precip_mm, -->
-<!--          swe_mm_hrugrid = swe_mm) -->
-
-<!-- hru7_statn <- read_csv(here('HRU_output/HRU_7_statn.csv')) %>% -->
-<!--   dplyr::select(date, precip_mm, swe_mm) %>% -->
-<!--   rename(precip_mm_hrustatn = precip_mm, -->
-<!--          swe_mm_hrustatn = swe_mm) -->
-
-<!-- niwot <- niwot_snotel %>% -->
-<!--   left_join(hru7_grid, by = 'date') %>% -->
-<!--   left_join(hru7_statn, by = 'date') -->
-
-<!-- # look at swe -->
-<!-- niwot_swe <- niwot %>% -->
-<!--   dplyr::select(date, swe_mm_snotel, swe_mm_hrugrid, swe_mm_hrustatn) -->
-
-<!-- kable(niwot_swe) %>% -->
-<!--   kable_styling(full_width = F) %>%  -->
-<!--   scroll_box(width = "100%", height = "500px") -->
-
-<!-- # cumulative swe -->
-<!-- niwot_swe2 <- niwot_swe %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   pivot_longer(!c(date,year), names_to = 'source', values_to = 'swe_mm') %>% -->
-<!--   group_by(year, source) %>% -->
-<!--   mutate(swe_cumsum_mm = cumsum(swe_mm)) -->
-
-<!-- cum_swe_niwot <- ggplot(niwot_swe2, aes(date, swe_cumsum_mm, color = source)) + -->
-<!--   geom_line(size =1) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
-<!--   theme(text = element_text(size = 20))   -->
-
-<!-- cum_swe_niwot -->
-
-<!-- #look at precip -->
-<!-- niwot_p <- niwot %>% -->
-<!--   dplyr::select(date, precip_mm_snotel, precip_mm_hrugrid, precip_mm_hrustatn) -->
-
-<!-- kable(niwot_p) %>% -->
-<!--   kable_styling(full_width = F) %>%  -->
-<!--   scroll_box(width = "100%", height = "500px") -->
-
-<!-- # cumulative precip -->
-<!-- niwot_p2 <- niwot_p %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   pivot_longer(!c(date,year), names_to = 'source', values_to = 'precip_mm') %>% -->
-<!--   group_by(year, source) %>% -->
-<!--   mutate(p_cumsum_mm = cumsum(precip_mm)) -->
-
-<!-- cum_precip_niwot <- ggplot(niwot_p2, aes(date, p_cumsum_mm, color = source)) + -->
-<!--   geom_line(size=1) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
-<!--   theme(text = element_text(size = 20))   -->
-
-<!-- cum_precip_niwot -->
-
-<!-- ``` -->
-
-<!-- ### ET -->
-
-<!-- ```{r ET, echo = F} -->
-
-<!-- niwot_et <- read_csv(here('HRU_output/Niwot_daily_et.csv')) %>% -->
-<!--   filter(year > 2010) %>% -->
-<!--   mutate(date = make_date(year = year, month = month, day = day)) %>% -->
-<!--   dplyr::select(date, et) %>% -->
-<!--   rename(et_niwot = et) -->
-
-
-<!-- hru7_grid <- read_csv(here('HRU_output/HRU_7_grid.csv')) %>% -->
-<!--   dplyr::select(date, AET_mm) %>% -->
-<!--   rename(et_hru7grid = AET_mm) -->
-
-<!-- hru7_statn <- read_csv(here('HRU_output/HRU_7_statn.csv')) %>% -->
-<!--   dplyr::select(date, AET_mm) %>% -->
-<!--   rename(et_hru7statn = AET_mm) -->
-
-<!-- niwot_et_compare <- niwot_et %>% -->
-<!--   left_join(hru7_grid, by = 'date') %>% -->
-<!--   left_join(hru7_statn, by = 'date') %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   filter(year < 2021) %>%  -->
-<!--   pivot_longer(!c(date, year), names_to= 'source', values_to = 'et_mm') %>% -->
-<!--   mutate(year = as.factor(year)) -->
-
-<!-- #plot ET by year -->
-<!-- plot_ET <- function(calyear) { -->
-<!--   {niwot_et_compare %>% -->
-<!--     filter(year == calyear) %>% -->
-<!--     ggplot(aes(x = date, -->
-<!--                y = et_mm, color = source)) + -->
-<!--     geom_line(size=1) + -->
-<!--     ggtitle(calyear) + -->
-<!--     ylab('ET (mm/day)') + -->
-<!--     theme_bw() + -->
-<!--     theme(axis.text.x = element_text(angle = 45, hjust=1))} %>% -->
-<!--     ggplotly() -->
-<!-- } -->
-
-<!-- name <- levels(niwot_et_compare$year) -->
-
-<!-- ET_plots <- lapply(name, plot_ET) -->
-
-<!-- htmltools::tagList(ET_plots) -->
-
-<!-- ET_plots -->
-
-<!-- # 1:1 scatter plots for Niwot vs grid and Niwot vs station -->
-<!-- niwot_et_scatter <- niwot_et_compare %>% -->
-<!--   filter(et_mm > 0) -->
-
-<!-- # Niwot vs grid -->
-<!-- et_grid_obs <- niwot_et_scatter %>% -->
-<!--   filter(source == c('et_niwot','et_hru7grid')) %>% -->
-<!--   pivot_wider(names_from = 'source', values_from = 'et_mm') -->
-
-<!-- #scatter of grid vs niwot -->
-<!-- et_scatter_grid_obs <- ggplot(et_grid_obs, aes(x = et_niwot, y = et_hru7grid)) + -->
-<!--   geom_point() + -->
-<!--   geom_abline(intercept = 0, slope = 1, size=1, color='red') +  -->
-<!--   ggtitle('Niwot ET vs. HRU7 grid ET') -->
-
-<!-- et_scatter_grid_obs -->
-
-<!-- # Niwot vs statn inputs -->
-<!-- et_statn_obs <- niwot_et_scatter %>% -->
-<!--   filter(source == c('et_niwot','et_hru7statn')) %>% -->
-<!--   pivot_wider(names_from = 'source', values_from = 'et_mm') -->
-
-<!-- #scatter of grid vs niwot -->
-<!-- et_scatter_statn_obs <- ggplot(et_statn_obs, aes(x = et_niwot, y = et_hru7statn)) + -->
-<!--   geom_point() + -->
-<!--   geom_abline(intercept = 0, slope = 1, size=1, color='red') +  -->
-<!--   ggtitle('Niwot ET vs. HRU7 station ET') -->
-
-<!-- et_scatter_statn_obs -->
-
-<!-- ``` -->
-
-<!-- ## Tmean for HRUs 7, 9, 22, 36 -->
-
-<!-- ```{r hru7 temp, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"} -->
-
-<!-- tmean7_grid <- read_csv(here('HRU_output/HRU_7_grid.csv')) %>% -->
-<!--   dplyr::select(date, tmean) %>% -->
-<!--   rename(t7_grid = tmean) -->
-
-<!-- tmean7_statn <- read_csv(here('HRU_output/HRU_7_statn.csv')) %>% -->
-<!--   dplyr::select(date, tmean) %>% -->
-<!--   rename(t7_statn = tmean) -->
-
-<!-- tmean9_grid <- read_csv(here('HRU_output/HRU_9_grid.csv')) %>% -->
-<!--   dplyr::select(date, tmean) %>% -->
-<!--   rename(t9_grid = tmean) -->
-
-<!-- tmean9_statn <- read_csv(here('HRU_output/HRU_9_statn.csv')) %>% -->
-<!--   dplyr::select(date, tmean) %>% -->
-<!--   rename(t9_statn = tmean) -->
-
-<!-- tmean22_grid <- read_csv(here('HRU_output/HRU_22_grid.csv')) %>% -->
-<!--   dplyr::select(date, tmean) %>% -->
-<!--   rename(t22_grid = tmean) -->
-
-<!-- tmean22_statn <- read_csv(here('HRU_output/HRU_22_statn.csv')) %>% -->
-<!--   dplyr::select(date, tmean) %>% -->
-<!--   rename(t22_statn = tmean) -->
-
-<!-- tmean36_grid <- read_csv(here('HRU_output/HRU_36_grid.csv')) %>% -->
-<!--   dplyr::select(date, tmean) %>% -->
-<!--   rename(t36_grid = tmean) -->
-
-<!-- tmean36_statn <- read_csv(here('HRU_output/HRU_36_statn.csv')) %>% -->
-<!--   dplyr::select(date, tmean) %>% -->
-<!--   rename(t36_statn = tmean) -->
-
-<!-- tmean_hrus <- list(tmean7_grid, tmean7_statn, tmean9_grid,  -->
-<!--      tmean9_statn, tmean22_grid, tmean22_statn, -->
-<!--      tmean36_grid, tmean36_statn) -->
-
-<!-- t_hrus <- tmean_hrus %>% reduce(left_join, by='date') -->
-
-<!-- t_hrus <- t_hrus %>% -->
-<!--   mutate(year = year(date)) %>% -->
-<!--   mutate(t7_diff = t7_statn - t7_grid, -->
-<!--          t9_diff = t9_statn - t9_grid, -->
-<!--          t22_diff = t22_statn - t22_grid, -->
-<!--          t36_diff = t36_statn - t36_grid) %>% -->
-<!--   group_by(year) %>% -->
-<!--   mutate(t7_cumdiff = cumsum(t7_diff), -->
-<!--          t9_cumdiff = cumsum(t9_diff), -->
-<!--          t22_cumdiff = cumsum(t22_diff), -->
-<!--          t36_cumdiff = cumsum(t36_diff)) -->
-
-<!-- tmean_cumdiff_plot <- ggplot(t_hrus, aes(x = date)) + -->
-<!--   geom_line(aes(y = t7_cumdiff, color = 'HRU7'), size =1) +  -->
-<!--   geom_line(aes(y = t9_cumdiff, color = 'HRU9'), size =1) +  -->
-<!--   geom_line(aes(y = t22_cumdiff, color = 'HRU22'), size =1) +  -->
-<!--   geom_line(aes(y = t36_cumdiff, color = 'HRU36'), size =1) +  -->
-<!--   facet_wrap(~year, scales = 'free',ncol=2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   labs(y = 'Tmean cumulative difference (deg C)') + -->
-<!--   ggtitle('Tmean station and grid cumulative difference (Station - Grid)') + -->
-<!--   theme(text = element_text(size = 20))   -->
-
-<!-- tmean_cumdiff_plot -->
-
-<!-- ``` -->
-
-<!-- ## Tmean difference -->
-
-<!-- 2011-2020 average of daily station-grid Tmean  -->
-
-<!-- ```{r cumulative tmean for HRUs, echo = F} -->
-<!-- #grid first -->
-<!-- setwd(here("HRU_output/grid")) -->
-
-<!-- read_ages_grid <- function(dataframe){ -->
-<!--   read_csv(dataframe, skip = 3) %>% -->
-<!--   slice(3:n()) %>% -->
-<!--   dplyr::select(-starts_with('@'), -->
-<!--                 -1) %>% -->
-<!--   mutate(time = ymd(time)) %>% -->
-<!--   mutate_if(is.character, as.numeric) %>% -->
-<!--   mutate(source = 'grid') -->
-
-<!-- } -->
-
-<!-- #pull in all filenames with HRU in the name -->
-<!-- filenames <- list.files(".", pattern="HRU", full.names=F) -->
-
-<!-- #read all the csvs using read_ages function -->
-<!-- dataframes <- lapply(filenames, read_ages_grid)  -->
-
-<!-- #name all the csvs based on first 6 characters -->
-<!-- names(dataframes) <- substr(filenames, 1, 6) -->
-
-<!-- #bind all and make 1 df -->
-<!-- hru_grids <- dataframes %>% -->
-<!--   bind_rows()  -->
-
-<!-- #statn next -->
-<!-- setwd(here("HRU_output/statn")) -->
-
-<!-- read_ages_statn <- function(dataframe){ -->
-<!--   read_csv(dataframe, skip = 3) %>% -->
-<!--   slice(3:n()) %>% -->
-<!--   dplyr::select(-starts_with('@'), -->
-<!--                 -1) %>% -->
-<!--   mutate(time = ymd(time)) %>% -->
-<!--   mutate_if(is.character, as.numeric) %>% -->
-<!--   mutate(source = 'statn') -->
-
-<!-- } -->
-
-<!-- #pull in all filenames with HRU in the name -->
-<!-- filenames <- list.files(".", pattern="HRU", full.names=F) -->
-
-<!-- #read all the csvs using read_ages function -->
-<!-- dataframes <- lapply(filenames, read_ages_statn)  -->
-
-<!-- #name all the csvs based on first 6 characters -->
-<!-- names(dataframes) <- substr(filenames, 1, 6) -->
-
-<!-- #bind all and make 1 df -->
-<!-- hru_statn <- dataframes %>% -->
-<!--   bind_rows()  -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_tmean <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, tmean)) %>% -->
-<!--   rename(tmean_grid = tmean)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(tmean_all_grid = mean(tmean_grid)) -->
-
-<!-- hru_statn_tmean <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, tmean)) %>% -->
-<!--   rename(tmean_statn = tmean) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(tmean_all_statn = mean(tmean_statn)) -->
-
-<!-- tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>% -->
-<!--   mutate(diff = tmean_all_statn - tmean_all_grid) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- locations_t <- locations %>%  -->
-<!--   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North', -->
-<!--                         'Betasso', 'Niwot_Snotel', -->
-<!--                         'University Camp SNTL')) -->
-
-<!-- tm_shape(hrus_map_tmean) + -->
-<!--   tm_polygons('diff', id = 'value', -->
-<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Tmax difference -->
-
-<!-- ```{r tmax, echo = F} -->
-
-<!-- tmax_grid <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv'))%>%  -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value',  -->
-<!--                values_to = 'tmax_grid') %>% -->
-<!--   mutate(time = dmy(time)) %>% -->
-<!--   group_by(value) %>% -->
-<!--   summarize(Tmax_mean_grid = mean(tmax_grid)) -->
-
-<!-- tmax_statn <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>%  -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value',  -->
-<!--                values_to = 'tmax_statn') %>% -->
-<!--   mutate(time = dmy(time)) %>% -->
-<!--   group_by(value) %>% -->
-<!--   summarize(Tmax_mean_statn = mean(tmax_statn)) -->
-
-<!-- tmax_hrus <- left_join(tmax_grid, tmax_statn, by = c('value')) %>% -->
-<!--   mutate(diff = Tmax_mean_statn - Tmax_mean_grid, -->
-<!--          value = as.numeric(value)) -->
-
-<!-- hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- tm_shape(hrus_map_tmax) + -->
-<!--   tm_polygons('diff', id = 'value', -->
-<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Tmax monthly average -->
-
-<!-- ```{r tmax month, echo = F} -->
-
-<!-- tmax_grid_mo <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv')) %>%  -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value',  -->
-<!--                values_to = 'tmax_grid') %>% -->
-<!--   mutate(time = dmy(time), -->
-<!--          month = month(time)) %>% -->
-<!--   filter(month %in% c(3:6)) %>% -->
-<!--   group_by(value, month) %>% -->
-<!--   summarize(avg_tmax_grid = mean(tmax_grid)) -->
-
-<!-- tmax_statn_mo <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>%  -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value',  -->
-<!--                values_to = 'tmax_statn') %>% -->
-<!--   mutate(time = dmy(time), -->
-<!--          month = month(time)) %>% -->
-<!--   filter(month %in% c(3:6)) %>% -->
-<!--   group_by(value, month) %>% -->
-<!--   summarize(avg_tmax_statn = mean(tmax_statn)) -->
-
-<!-- tmax_hrus_mo <- left_join(tmax_grid_mo, tmax_statn_mo, by = c('value', 'month')) %>% -->
-<!--   mutate(mo_tmax_diff = avg_tmax_statn - avg_tmax_grid, -->
-<!--          value = as.numeric(value)) -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- #march -->
-<!-- tmax_hrus_mar<- tmax_hrus_mo %>% -->
-<!--   filter(month == 3) -->
-
-<!-- hrus_map_tmax_mar <- left_join(hrus, tmax_hrus_mar, by = 'value') -->
-
-<!-- mar_tmax <- tm_shape(hrus_map_tmax_mar) + -->
-<!--   #tm_polygons('mo_tmax_diff', id = 'value') + -->
-<!--   tm_fill('mo_tmax_diff', id = 'value', -->
-<!--           breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!--   tm_borders() + -->
-<!--   tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'March avg tmax', -->
-<!--             legend.outside = T) -->
-
-
-<!-- #april -->
-<!-- tmax_hrus_apr<- tmax_hrus_mo %>% -->
-<!--   filter(month == 4) -->
-
-<!-- hrus_map_tmax_apr <- left_join(hrus, tmax_hrus_apr, by = 'value') -->
-
-<!-- apr_tmax <- tm_shape(hrus_map_tmax_apr) + -->
-<!--   tm_fill('mo_tmax_diff', id = 'value', -->
-<!--           breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!--   tm_borders() + -->
-<!--   tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'April avg tmax', -->
-<!--             legend.outside = T) -->
-
-<!-- #may -->
-<!-- tmax_hrus_may<- tmax_hrus_mo %>% -->
-<!--   filter(month == 5) -->
-
-<!-- hrus_map_tmax_may <- left_join(hrus, tmax_hrus_may, by = 'value') -->
-
-<!-- may_tmax <- tm_shape(hrus_map_tmax_may) + -->
-<!--   tm_fill('mo_tmax_diff', id = 'value', -->
-<!--          breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!--   tm_borders() + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'May avg tmax', -->
-<!--             legend.outside = T) -->
-
-<!-- #june -->
-<!-- tmax_hrus_jun<- tmax_hrus_mo %>% -->
-<!--   filter(month == 6) -->
-
-<!-- hrus_map_tmax_jun <- left_join(hrus, tmax_hrus_jun, by = 'value') -->
-
-<!-- jun_tmax <- tm_shape(hrus_map_tmax_jun) + -->
-<!--   tm_fill('mo_tmax_diff', id = 'value', -->
-<!--          breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!--   tm_borders() + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'June avg tmax', -->
-<!--             legend.outside = T) -->
-
-<!-- tmap_arrange(mar_tmax, apr_tmax, may_tmax, jun_tmax) -->
-
-<!-- ``` -->
-
-<!-- ## Tmin difference -->
-
-<!-- ```{r tmin, echo = F} -->
-
-<!-- tmin_grid <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>%  -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value',  -->
-<!--                values_to = 'tmin_grid') %>% -->
-<!--   mutate(time = dmy(time)) %>% -->
-<!--   group_by(value) %>% -->
-<!--   summarize(Tmin_mean_grid = mean(tmin_grid)) -->
-
-<!-- tmin_statn <- read_csv(here('HRU_output/reg_tminAll.csv')) %>%  -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value',  -->
-<!--                values_to = 'tmin_statn') %>% -->
-<!--   mutate(time = dmy(time)) %>% -->
-<!--   group_by(value) %>% -->
-<!--   summarize(Tmin_mean_statn = mean(tmin_statn)) -->
-
-<!-- tmin_hrus <- left_join(tmin_grid, tmin_statn, by = c('value')) %>% -->
-<!--   mutate(diff = Tmin_mean_statn - Tmin_mean_grid, -->
-<!--          value = as.numeric(value)) -->
-
-<!-- hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- tm_shape(hrus_map_tmin) + -->
-<!--   tm_polygons('diff', id = 'value', -->
-<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Tmin monthly average -->
-
-<!-- ```{r tmin month, echo = F} -->
-<!-- tmin_grid_mo <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>%  -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value',  -->
-<!--                values_to = 'tmin_grid') %>% -->
-<!--   mutate(time = dmy(time), -->
-<!--          month = month(time)) %>% -->
-<!--   filter(month %in% c(3:6)) %>% -->
-<!--   group_by(value, month) %>% -->
-<!--   summarize(avg_tmin_grid = mean(tmin_grid)) -->
-
-<!-- tmin_statn_mo <- read_csv(here('HRU_output/reg_tminAll.csv')) %>%  -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value',  -->
-<!--                values_to = 'tmin_statn') %>% -->
-<!--   mutate(time = dmy(time), -->
-<!--          month = month(time)) %>% -->
-<!--   filter(month %in% c(3:6)) %>% -->
-<!--   group_by(value, month) %>% -->
-<!--   summarize(avg_tmin_statn = mean(tmin_statn)) -->
-
-<!-- tmin_hrus_mo <- left_join(tmin_grid_mo, tmin_statn_mo, by = c('value', 'month')) %>% -->
-<!--   mutate(mo_tmin_diff = avg_tmin_statn - avg_tmin_grid, -->
-<!--          value = as.numeric(value)) -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- #march -->
-<!-- tmin_hrus_mar<- tmin_hrus_mo %>% -->
-<!--   filter(month == 3) -->
-
-<!-- hrus_map_tmin_mar <- left_join(hrus, tmin_hrus_mar, by = 'value') -->
-
-<!-- mar_tmin <- tm_shape(hrus_map_tmin_mar) + -->
-<!--   #tm_polygons('mo_tmin_diff', id = 'value') + -->
-<!--   tm_fill('mo_tmin_diff', id = 'value', -->
-<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
-<!--   tm_borders() + -->
-<!--   tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'March avg tmin', -->
-<!--             legend.outside = T) -->
-
-<!-- #april -->
-<!-- tmin_hrus_apr<- tmin_hrus_mo %>% -->
-<!--   filter(month == 4) -->
-
-<!-- hrus_map_tmin_apr <- left_join(hrus, tmin_hrus_apr, by = 'value') -->
-
-<!-- apr_tmin <- tm_shape(hrus_map_tmin_apr) + -->
-<!--   tm_fill('mo_tmin_diff', id = 'value', -->
-<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
-<!--   tm_borders() + -->
-<!--   tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'April avg tmin', -->
-<!--             legend.outside = T) -->
-
-<!-- #may -->
-<!-- tmin_hrus_may<- tmin_hrus_mo %>% -->
-<!--   filter(month == 5) -->
-
-<!-- hrus_map_tmin_may <- left_join(hrus, tmin_hrus_may, by = 'value') -->
-
-<!-- may_tmin <- tm_shape(hrus_map_tmin_may) + -->
-<!--   tm_fill('mo_tmin_diff', id = 'value', -->
-<!--          breaks = c(-5,-2.5,0,2.5,5)) + -->
-<!--   tm_borders() + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'May avg tmin', -->
-<!--             legend.outside = T) -->
-
-<!-- #june -->
-<!-- tmin_hrus_jun<- tmin_hrus_mo %>% -->
-<!--   filter(month == 6) -->
-
-<!-- hrus_map_tmin_jun <- left_join(hrus, tmin_hrus_jun, by = 'value') -->
-
-<!-- jun_tmin <- tm_shape(hrus_map_tmin_jun) + -->
-<!--   tm_fill('mo_tmin_diff', id = 'value', -->
-<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
-<!--   tm_borders() + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'June avg tmin', -->
-<!--             legend.outside = T) -->
-
-<!-- tmap_arrange(mar_tmin, apr_tmin, may_tmin, jun_tmin) -->
-
-<!-- ``` -->
-
-<!-- ## Cumulative Precip difference -->
-
-<!-- 2011-2020 average of daily station-grid precip for DOY 365 (or 366) -->
-
-<!-- ```{r cum precip, echo = F} -->
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_precip <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, precip)) %>% -->
-<!--   rename(precip_grid = precip) -->
-
-<!-- hru_statn_precip <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, precip)) %>% -->
-<!--   rename(precip_statn = precip) -->
-
-<!-- precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>% -->
-<!--   mutate(diff = precip_statn - precip_grid, -->
-<!--          year = year(time)) %>% -->
-<!--   group_by(year, ID) %>% -->
-<!--   mutate(total_diff = cumsum(diff)) %>%  -->
-<!--   filter(time == max(time)) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(precip_avg_cumdiff = mean(total_diff)) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- locations_p <- locations %>% -->
-<!--   filter(type == 'precip') -->
-
-<!-- tm_shape(hrus_map_precip) + -->
-<!--   tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') + -->
-<!-- tm_shape(locations_p) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-
-<!-- ```{r relative p, echo = F} -->
-
-<!-- # reg_p <- read_csv(here('HRU_output/reg_precipAll.csv'), -->
-<!-- #                       skip = 21) %>% -->
-<!-- #   dplyr::select(-starts_with('@')) %>% -->
-<!-- #   mutate(time = dmy(time)) %>% -->
-<!-- #   summarize(across(`3`:`19`, ~ mean(.))) %>% -->
-<!-- #   pivot_longer(cols = `3`:`19`, -->
-<!-- #                names_to = 'value',  -->
-<!-- #                values_to = 'precip_avg') %>% -->
-<!-- #   mutate(value = as.numeric(value)) -->
-<!-- #  -->
-<!-- #  -->
-<!-- # hrus_map_precip <- left_join(hrus_map_precip, reg_p, by = 'value')  -->
-<!-- #  -->
-<!-- # hrus_map_precip <- hrus_map_precip %>% -->
-<!-- #   mutate(relative_avgcum_diff = precip_avg_cumdiff / precip_avg) -->
-<!-- #  -->
-<!-- # tm_shape(hrus_map_precip) + -->
-<!-- #   tm_polygons('relative_avgcum_diff', midpoint = NA, palette = 'YlGnBu', id = 'value') + -->
-<!-- # tm_shape(locations_p) + -->
-<!-- #   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Solar radiation difference -->
-
-<!-- 2011-2020 average of daily station-grid solar rad -->
-
-<!-- ```{r cum sol rad, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_solrad <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, solRad)) %>% -->
-<!--   rename(solrad_grid = solRad)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(solrad_all_grid = mean(solrad_grid)) -->
-
-<!-- hru_statn_solrad <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, solRad)) %>% -->
-<!--   rename(solrad_statn = solRad) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(solrad_all_statn = mean(solrad_statn)) -->
-
-<!-- solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>% -->
-<!--   mutate(diff = solrad_all_statn - solrad_all_grid) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- locations_solrad <- locations %>%  -->
-<!--   dplyr::filter(name %in% c('Gordon_South', -->
-<!--                         'Betasso', 'Niwot_Snotel')) -->
-
-<!-- tm_shape(hrus_map_solrad) + -->
-<!--   tm_polygons('diff', midpoint = NA, palette = 'YlOrRd', id = 'value') + -->
-<!-- tm_shape(locations_solrad) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## RH difference -->
-
-<!-- ```{r rh, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_rh <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, rhum)) %>% -->
-<!--   rename(rh_grid = rhum)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(rh_all_grid = mean(rh_grid)) -->
-
-<!-- hru_statn_rh <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, rhum)) %>% -->
-<!--   rename(rh_statn = rhum) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(rh_all_statn = mean(rh_statn)) -->
-
-<!-- rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>% -->
-<!--   mutate(diff = rh_all_statn - rh_all_grid) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- locations_rh <- locations %>%  -->
-<!--   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North', -->
-<!--                         'Betasso', 'Niwot_Snotel')) -->
-
-<!-- tm_shape(hrus_map_rh) + -->
-<!--   tm_polygons('diff', midpoint = NA, id = 'value') + -->
-<!-- tm_shape(locations_rh) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Average soil sat comparison -->
-
-<!-- ```{r soilsat, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_soilsat <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
-<!--   rename(soilsat_grid = soilSat)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(soilsat_all_grid = mean(soilsat_grid)) -->
-
-<!-- hru_statn_soilsat <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
-<!--   rename(soilsat_statn = soilSat) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(soilsat_all_statn = mean(soilsat_statn)) -->
-
-<!-- soilsat_hrus <- left_join(hru_grid_soilsat, hru_statn_soilsat, by = c('ID')) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_soilsat <- left_join(hrus, soilsat_hrus, by = 'value') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- soilavg_grid <- tm_shape(hrus_map_soilsat) + -->
-<!--   tm_polygons('soilsat_all_grid', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average soil sat') -->
-
-<!-- soilavg_statn <- tm_shape(hrus_map_soilsat) + -->
-<!--   tm_polygons('soilsat_all_statn', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) + -->
-<!--   tm_legend(legend.outside = T) -->
-
-<!-- tmap_arrange(soilavg_grid, soilavg_statn)  -->
-
-<!-- ``` -->
-
-<!-- ## Average max soil sat comparison -->
-
-<!-- ```{r max soilsat, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_soilsat_max <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
-<!--   rename(soilsat_grid = soilSat)  %>% -->
-<!--   mutate(year = year(time)) %>%  -->
-<!--   group_by(ID, year) %>% -->
-<!--   summarize(soilsat_yrmax_grid = max(soilsat_grid)) %>% -->
-<!--   summarize(avg_max_grid = mean(soilsat_yrmax_grid)) -->
-
-<!-- hru_statn_soilsat_max <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
-<!--   rename(soilsat_statn = soilSat) %>% -->
-<!--   mutate(year = year(time)) %>%  -->
-<!--   group_by(ID, year) %>% -->
-<!--   summarize(soilsat_yrmax_statn = max(soilsat_statn)) %>% -->
-<!--   summarize(avg_max_statn = mean(soilsat_yrmax_statn)) -->
-
-<!-- soilsat_hrus_max <- left_join(hru_grid_soilsat_max, hru_statn_soilsat_max, by = c('ID')) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_soilsat_max <- left_join(hrus, soilsat_hrus_max, by = 'value') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- soilavg_grid_max <- tm_shape(hrus_map_soilsat_max) + -->
-<!--   tm_polygons('avg_max_grid', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average max soil sat', -->
-<!--             title.position = c('left', 'top')) -->
-
-<!-- soilavg_statn_max <- tm_shape(hrus_map_soilsat_max) + -->
-<!--   tm_polygons('avg_max_statn', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) + -->
-<!--   tm_legend(legend.outside = T) -->
-
-<!-- tmap_arrange(soilavg_grid_max, soilavg_statn_max)  -->
-
-<!-- ``` -->
-
-<!-- ## Average ET comparison -->
-
-<!-- ```{r et, echo = F} -->
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_ET <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, actET)) %>% -->
-<!--   rename(ET_grid = actET)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(ET_all_grid = mean(ET_grid)) -->
-
-<!-- hru_statn_ET <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, actET)) %>% -->
-<!--   rename(ET_statn = actET) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(ET_all_statn = mean(ET_statn)) -->
-
-<!-- ET_hrus <- left_join(hru_grid_ET, hru_statn_ET, by = c('ID')) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_ET <- left_join(hrus, ET_hrus, by = 'value') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- ETavg_grid <- tm_shape(hrus_map_ET) + -->
-<!--   tm_polygons('ET_all_grid', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average ET') -->
-
-<!-- ETavg_statn <- tm_shape(hrus_map_ET) + -->
-<!--   tm_polygons('ET_all_statn', midpoint = NA, id = 'value', -->
-<!--              breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) + -->
-<!--   tm_legend(legend.outside = T) -->
-
-<!-- tmap_arrange(ETavg_grid, ETavg_statn) -->
-
-<!-- ``` -->
-
-<!-- ## Average ET difference -->
-
-<!-- ```{r et diff, echo = F} -->
-
-<!-- ET_hrus <- ET_hrus %>% -->
-<!--   mutate(diff = ET_all_statn - ET_all_grid) -->
-
-<!-- hrus_map_et_diff <- left_join(hrus, ET_hrus, by = 'value') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- tm_shape(hrus_map_et_diff) + -->
-<!--   tm_polygons('diff', midpoint = NA, id = 'value')  + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average ET difference') -->
-
-<!-- ``` -->
-
-<!-- ## Average LAI comparison -->
-
-<!-- ```{r lai, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_LAI <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, LAI)) %>% -->
-<!--   rename(LAI_grid = LAI)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(LAI_all_grid = mean(LAI_grid)) -->
-
-<!-- hru_statn_LAI <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, LAI)) %>% -->
-<!--   rename(LAI_statn = LAI) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(LAI_all_statn = mean(LAI_statn)) -->
-
-<!-- LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- LAIavg_grid <- tm_shape(hrus_map_LAI) + -->
-<!--   tm_polygons('LAI_all_grid', midpoint = NA, id = 'value', -->
-<!--               breaks = c(1,2,3,4,5)) + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average LAI') -->
-
-<!-- LAIavg_statn <- tm_shape(hrus_map_LAI) + -->
-<!--   tm_polygons('LAI_all_statn', midpoint = NA, id = 'value', -->
-<!--               breaks = c(1,2,3,4,5)) + -->
-<!--   tm_legend(legend.outside = T) -->
-
-<!-- tmap_arrange(LAIavg_grid, LAIavg_statn) -->
-
-<!-- ``` -->
-
-<!-- ## LAI over time  -->
-
-<!-- ```{r lai over time, echo = F} -->
-
-<!-- # plot time series of LAI over for HRU 1 and HRU 12 -->
-<!-- hru_grid_select <- hru_grids %>% -->
-<!--   filter(ID == 1 | ID == 12) %>% -->
-<!--   dplyr::select(time, ID, LAI_grid = LAI) -->
-
-<!-- hru_statn_select <- hru_statn %>% -->
-<!--   filter(ID == 1 | ID == 12) %>% -->
-<!--   dplyr::select(time, ID, LAI_statn = LAI) -->
-
-<!-- hru_select <- left_join(hru_grid_select, hru_statn_select, by = c('time', 'ID')) %>% -->
-<!--   rename(value = ID) -->
-
-
-<!-- # plot time series of LAI over for HRU 1 -->
-<!-- hru_select %>% -->
-<!--   mutate(year = year(time)) %>%  -->
-<!--   filter(value == 1) %>%  -->
-<!-- ggplot(aes(x = time)) + -->
-<!--   geom_line(aes(y = LAI_grid, color = "HRU1_burn_grid"), size = 1) + -->
-<!--   geom_line(aes(y = LAI_statn, color = 'HRU1_burn_statn'), size = 1) + -->
-<!--   ggtitle('LAI over time for HRU 1 (burned)') + -->
-<!--   scale_color_manual(name = 'HRU' , values=c("HRU1_burn_grid"='orange',  -->
-<!--                                             "HRU1_burn_statn"='springgreen4')) + -->
-<!--   theme_bw() -->
-
-<!-- # plot time series of LAI over for HRU 12 -->
-<!-- {hru_select %>% -->
-<!--   mutate(year = year(time)) %>%  -->
-<!--   filter(value == 12) %>%  -->
-<!-- ggplot(aes(x = time)) + -->
-<!--   geom_line(aes(y = LAI_grid, color = "HRU12_unburn_grid"), size = 1) + -->
-<!--   geom_line(aes(y = LAI_statn, color = 'HRU12_unburn_statn'), size = 1) + -->
-<!--   ggtitle('LAI over time for HRU 12 (unburned)') + -->
-<!--   scale_color_manual(name = 'HRU' , values=c("HRU12_unburn_grid"='orange',  -->
-<!--                                             "HRU12_unburn_statn"='springgreen4')) + -->
-<!--   theme_bw()} %>% -->
-<!--   ggplotly() -->
-
-
-<!-- ``` -->
-
-<!-- ## HRU 29 LAI and biomass -->
-
-<!-- ```{r hru29 lai and biomass} -->
-
-<!-- # plot time series of LAI 29 -->
-<!-- hru_grid29 <- hru_grids %>% -->
-<!--   filter(ID == 29) %>% -->
-<!--   dplyr::select(time, ID, LAI_grid = LAI) -->
-
-<!-- hru_statn29 <- hru_statn %>% -->
-<!--   filter(ID == 29) %>% -->
-<!--   dplyr::select(time, ID, LAI_statn = LAI) -->
-
-<!-- hru_29 <- left_join(hru_grid29, hru_statn29, by = c('time', 'ID'))  -->
-
-<!-- # plot time series of LAI over for HRU 29 -->
-<!-- {hru_29 %>% -->
-<!--   ggplot(aes(x = time)) + -->
-<!--   geom_line(aes(y = LAI_grid, color = "HRU29_grid"), size = 1) + -->
-<!--   geom_line(aes(y = LAI_statn, color = 'HRU29_statn'), size = 1) + -->
-<!--   ggtitle('LAI - HRU 29') + -->
-<!--   scale_color_manual(name = 'HRU' , values=c("HRU29_grid"='orange',  -->
-<!--                                             "HRU29_statn"='springgreen4')) + -->
-<!--   theme_bw()} %>% -->
-<!--   ggplotly() -->
-
-
-<!-- hru29grid_bio <- read_csv('/Users/megansears/Documents/Repos/fourmile/HRU_output/HRU_29_grid.csv') %>% -->
-<!--   mutate(time = mdy(time)) %>% -->
-<!--   dplyr::select(time, BioAct_grid = BioAct_kgha) -->
-
-<!-- hru29statn_bio <- read_csv('/Users/megansears/Documents/Repos/fourmile/HRU_output/HRU_29_statn.csv') %>% -->
-<!--   mutate(time = mdy(time)) %>% -->
-<!--   dplyr::select(time, BioAct_statn= BioAct_kgha) -->
-
-<!-- hru_29_bio <- left_join(hru29grid_bio, hru29statn_bio, by = c('time'))  -->
-
-<!-- #plot time series of biomass over time for HRU 29 -->
-<!-- {hru_29_bio %>% -->
-<!--   ggplot(aes(x = time)) + -->
-<!--   geom_line(aes(y = BioAct_grid, color = "HRU29_grid"), size = 1) + -->
-<!--   geom_line(aes(y = BioAct_statn, color = 'HRU29_statn'), size = 1) + -->
-<!--   ggtitle('Biomass') + -->
-<!--   scale_color_manual(name = 'HRU' , values=c("HRU29_grid"='orange',  -->
-<!--                                             "HRU29_statn"='springgreen4')) + -->
-<!--   theme_bw()} %>% -->
-<!--   ggplotly() -->
-
-
-<!-- ``` -->
-
-<!-- # Mauscript figs -->
-
-<!-- ## Figure 1 -->
-
-<!-- ```{r fig1} -->
-
-<!-- library(usmap) -->
-
-<!-- dem <- raster('/Users/megansears/Documents/Repos/fourmile/data/GIS/cutDEM.tif') -->
-
-<!-- hru_bnds <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- tm_shape(dem) + -->
-<!--   tm_raster(palette = terrain.colors(5)) + -->
-<!--   tm_shape(hru_bnds) + -->
-<!--   tm_polygons(alpha =0, col = 'black') + -->
-<!--   tm_compass() + -->
-<!--   tm_scale_bar() + -->
-<!--   tm_layout(legend.outside = T, -->
-<!--             main.title = 'A') -->
-
-
-<!-- dem2 <- as.data.frame(dem, xy = TRUE) -->
-
-<!-- # ggplot() + -->
-<!-- #  geom_polygon(data = hru_bnds, aes(x = x, y = y, fill = value)) + -->
-<!-- #   geom_raster(data = dem2, aes(x = x, y = y, -->
-<!-- #                                       fill = cutDEM)) + -->
-<!-- #   theme_bw() + -->
-<!-- #   coord_quickmap() -->
-
-<!-- ################################################### -->
-
-<!-- catchment_mo_mean <- catchment %>% -->
-<!--   mutate(month = month(time)) %>% -->
-<!--   group_by(site, month) %>% -->
-<!--   summarise(across(precip:solRad, ~ mean(.x, na.rm = TRUE))) %>% -->
-<!--   dplyr::select(site, month, -->
-<!--                 precip_mean = precip, tmean_mean = tmean,  -->
-<!--                 solrad_mean = solRad, rh_mean = rhum) -->
-
-<!-- catchment_mo_sd <- catchment %>% -->
-<!--   mutate(month = month(time)) %>% -->
-<!--   group_by(site, month) %>% -->
-<!--   summarise(across(precip:solRad, ~ sd(.x, na.rm = TRUE))) %>% -->
-<!--   dplyr::select(site, month, -->
-<!--                 precip_sd = precip, tmean_sd = tmean,  -->
-<!--                 solrad_sd = solRad, rh_sd = rhum) -->
-
-
-<!-- catchment_mo <- left_join(catchment_mo_mean, catchment_mo_sd,  -->
-<!--                           by = c('month', 'site')) -->
-
-<!-- catchment_mo2 <- catchment_mo %>% -->
-<!--   mutate(month_name = month.abb[month]) %>% -->
-<!--   mutate(month_name = factor(month_name,  -->
-<!--                              levels = c('Jan', 'Feb', 'Mar', -->
-<!--                                         'Apr', 'May', 'Jun', -->
-<!--                                         'Jul', 'Aug', 'Sep', -->
-<!--                                         'Oct', 'Nov', 'Dec'))) -->
-
-
-<!-- p_cols <- ggplot(catchment_mo2, aes(x = month_name, y = precip_mean, -->
-<!--                           color = site, fill = site)) + -->
-<!--   geom_col(position='dodge') + -->
-<!--   geom_errorbar(aes(ymin = 0, ymax = precip_mean + precip_sd),  -->
-<!--                 position = position_dodge(width = 0.6), width = 0.2) + -->
-<!--   theme_bw(base_size = 14) + -->
-<!--   labs(y = 'Precipitation (mm)', -->
-<!--        x = element_blank())  -->
-
-<!-- ggsave("P.png", plot = p_cols, width = 8, height = 6, dpi = 300) -->
-
-
-<!-- t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean,  -->
-<!--                                       color = site, group = site)) + -->
-<!--   geom_ribbon(aes(ymin = tmean_mean - tmean_sd, ymax = tmean_mean + tmean_sd, fill = site), alpha = 0.2) + -->
-<!--   geom_line() + -->
-<!--   geom_point() + -->
-<!--   theme_bw(base_size=14) + -->
-<!--   labs(y = expression("Mean temperature " ( degree~C)), -->
-<!--        x = element_blank()) -->
-
-<!-- t_moplot -->
-
-<!-- sol_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = solrad_mean,  -->
-<!--                                       color = site, group = site)) + -->
-<!--   geom_ribbon(aes(ymin = solrad_mean - solrad_sd, ymax = solrad_mean + solrad_sd, fill = site), alpha = 0.2) + -->
-<!--   geom_line() + -->
-<!--   geom_point() + -->
-<!--   theme_bw(base_size = 14) + -->
-<!--   labs(y = expression("Solar radiation (MJ/m"^"2" * ")"), -->
-<!--        x = element_blank())  -->
-
-<!-- sol_moplot -->
-
-
-<!-- rh_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = rh_mean,  -->
-<!--                                       color = site, group = site)) + -->
-<!--   geom_ribbon(aes(ymin = rh_mean - rh_sd, ymax = rh_mean + rh_sd, fill = site), alpha = 0.2) + -->
-<!--   geom_line() + -->
-<!--   geom_point() + -->
-<!--   theme_bw(base_size = 14) + -->
-<!--   labs(y = 'RH (%)', x= element_blank())  -->
-<!-- rh_moplot -->
-
-<!-- quad <- ggarrange(p_cols,  -->
-<!--           t_moplot, -->
-<!--           sol_moplot, -->
-<!--           rh_moplot, -->
-<!--           common.legend = T, -->
-<!--           legend = 'bottom', -->
-<!--              nrow = 2, -->
-<!--           ncol= 2) -->
-
-
-<!-- ggsave("quad.png", plot = quad, width = 8, height = 6, dpi = 300) -->
-
-
-<!-- ``` -->
+## Combined parameters
+
+The two burned HRU parameters were averaged together.
+
+```{r}
+params <- params %>%
+  mutate(burn = 'no')
+
+params_combo <- bind_rows(params,
+                          burn_params %>%
+                            rename(param = params))
+
+#function to plot all params
+plot_params <- function(param_name) {
+  params_combo %>%
+    filter(param == param_name) %>%
+    ggplot(aes(x = year_missing,
+               y = value,
+               shape = burn, 
+               color = input_data)) + 
+    geom_point(size = 3) + 
+    ggtitle(param_name) +
+    theme_bw()
+}
+
+name <- levels(params_combo$param)
+
+lapply(name, plot_params)
+
+```
+
+# Outlet results
+
+## Hydrograph
+
+```{r hydrographs, echo = F}
+flow <- read_csv('discharge_all.csv') %>%
+  replace(.==-9999, NA)
+
+
+flow_pivot <- flow %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(year = as.factor(year(date)))
+
+
+q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) +
+  geom_line() +
+  scale_color_manual(name="cal_run", values=c('obs' = 'black',
+                                            "grid_2011"="seagreen",
+                                            "grid_2012"="seagreen2",
+                                            "grid_2013"="steelblue",
+                                            "grid_2014"='dodgerblue',
+                                            "grid_2015" = "cyan3",
+                                            'grid_2016' = 'blue',
+                                            'grid_2017' = 'blue4',
+                                            'grid_2018' = 'cadetblue',
+                                            'grid_2019' = 'lightgreen',
+                                            'grid_2020' = 'olivedrab',
+                                            'grid_all' = 'steelblue3',
+                                            "statn_2011"="maroon",
+                                            "statn_2012"="deeppink4",
+                                            "statn_2013"="deeppink",
+                                            "statn_2014"='purple',
+                                            "statn_2015" = "mediumorchid1",
+                                            'statn_2016' = 'indianred',
+                                            'statn_2017' = 'sienna',
+                                            'statn_2018' = 'salmon2',
+                                            'statn_2019' = 'mediumpurple1',
+                                            'statn_2020' = 'violetred',
+                                            'statn_all' = 'red'))
+
+ggplotly(q)
+
+```
+
+## KGE
+
+### Overall KGE
+
+```{r kge overall, echo = F}
+
+flow_kge_all <- flow %>%
+  summarize(grid2011 = KGE(grid_2011, obs),
+            grid2012 = KGE(grid_2012, obs),
+            grid2013 = KGE(grid_2013, obs),
+            grid2014 = KGE(grid_2014, obs),
+            grid2015 = KGE(grid_2015, obs),
+            grid2016 = KGE(grid_2016, obs),
+            grid2017 = KGE(grid_2017, obs),
+            grid2018 = KGE(grid_2018, obs),
+            grid2019 = KGE(grid_2019, obs),
+            grid2020 = KGE(grid_2020, obs),
+            gridall = KGE(grid_all, obs),
+            statn2011 = KGE(statn_2011, obs),
+            statn2012 = KGE(statn_2012, obs),
+            statn2013 = KGE(statn_2013, obs),
+            statn2014 = KGE(statn_2014, obs),
+            statn2015 = KGE(statn_2015, obs),
+            statn2016 = KGE(statn_2016, obs),
+            statn2017 = KGE(statn_2017, obs),
+            statn2018 = KGE(statn_2018, obs),
+            statn2019 = KGE(statn_2019, obs),
+            statn2020 = KGE(statn_2020, obs),
+            statnall = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_kge_all <- flow_kge_all %>%
+  pivot_longer(everything()) %>%
+  arrange(value)
+
+kable(flow_kge_all) %>%
+  kable_styling(full_width = F)
+
+```
+
+### KGE by year
+
+```{r kge by year, echo = F}
+
+flow_year <- flow %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid2011 = KGE(grid_2011, obs),
+            grid2012 = KGE(grid_2012, obs),
+            grid2013 = KGE(grid_2013, obs),
+            grid2014 = KGE(grid_2014, obs),
+            grid2015 = KGE(grid_2015, obs),
+            grid2016 = KGE(grid_2016, obs),
+            grid2017 = KGE(grid_2017, obs),
+            grid2018 = KGE(grid_2018, obs),
+            grid2019 = KGE(grid_2019, obs),
+            grid2020 = KGE(grid_2020, obs),
+            gridall = KGE(grid_all, obs),
+            statn2011 = KGE(statn_2011, obs),
+            statn2012 = KGE(statn_2012, obs),
+            statn2013 = KGE(statn_2013, obs),
+            statn2014 = KGE(statn_2014, obs),
+            statn2015 = KGE(statn_2015, obs),
+            statn2016 = KGE(statn_2016, obs),
+            statn2017 = KGE(statn_2017, obs),
+            statn2018 = KGE(statn_2018, obs),
+            statn2019 = KGE(statn_2019, obs),
+            statn2020 = KGE(statn_2020, obs),
+            statnall = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_kge <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  pivot_wider(names_from = 'year', values_from = 'kge')
+
+flow_kge %>%
+  kable(.) %>%
+  kable_styling()
+
+
+flow_plot <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  mutate(year = as.factor(year))
+
+
+kge_plot_cy <- ggplot(flow_plot, aes(year, kge, color = model_run)) +
+  geom_point(size = 3) +
+  scale_color_manual(name="model_run", values=c("grid2011"="seagreen",
+                                            "grid2012"="seagreen2",
+                                            "grid2013"="steelblue",
+                                            "grid2014"='dodgerblue',
+                                            "grid2015" = "cyan3",
+                                            'grid2016' = 'blue',
+                                            'grid2017' = 'blue4',
+                                            'grid2018' = 'cadetblue',
+                                            'grid2019' = 'lightgreen',
+                                            'grid2020' = 'olivedrab',
+                                            'gridall' = 'steelblue3',
+                                            "statn2011"="maroon",
+                                            "statn2012"="deeppink4",
+                                            "statn2013"="deeppink",
+                                            "statn2014"='purple',
+                                            "statn2015" = "mediumorchid1",
+                                            'statn2016' = 'indianred',
+                                            'statn2017' = 'sienna',
+                                            'statn2018' = 'salmon2',
+                                            'statn2019' = 'mediumpurple1',
+                                            'statn2020' = 'violetred',
+                                            'statnall' = 'red')) +
+  theme_bw()
+
+ggplotly(kge_plot_cy)
+
+
+```
+
+### Annual KGE plots
+
+```{r wy plots, echo = F}
+
+plot_kge <- function(calyear) {
+  flow_plot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = model_run,
+               y = kge)) +
+    geom_col() +
+    ggtitle(calyear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(flow_plot$year)
+
+lapply(name, plot_kge)
+
+```
+
+# Ensembles
+
+## Hydrograph
+
+```{r ensemble hydrographs, echo = F}
+
+ensem <- flow %>%
+  rowwise() %>%
+  mutate(grid_ensemble = mean(c(grid_2011, grid_2012,
+                                grid_2013, grid_2014,
+                                grid_2015, grid_2016,
+                                grid_2017, grid_2018,
+                                grid_2019, grid_2020)),
+         statn_ensemble = mean(c(statn_2011, statn_2012,
+                                 statn_2013, statn_2014,
+                                 statn_2015, statn_2016,
+                                 statn_2017, statn_2018,
+                                 statn_2019, statn_2020)),
+         all_ensemble = mean(c(grid_2011, grid_2012,
+                               grid_2013, grid_2014,
+                               grid_2015, grid_2016,
+                               grid_2017, grid_2018,
+                               grid_2019, grid_2020,
+                               statn_2011, statn_2012,
+                               statn_2013, statn_2014,
+                               statn_2015, statn_2016,
+                               statn_2017, statn_2018,
+                               statn_2019, statn_2020,
+                               grid_all, statn_all))) %>%
+  dplyr::select(date, grid_ensemble, statn_ensemble,
+         all_ensemble, grid_all,
+         statn_all, obs)
+
+ensem_pivot <- ensem %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(year = as.factor(year(date)))
+
+
+q_ensemble <- ggplot(ensem_pivot, aes(date, q_m3s, color = cal_run)) +
+  geom_line() +
+  scale_color_manual(name="cal_run", values=c('obs'='black',
+                                            "grid_ensemble"="maroon",
+                                            "statn_ensemble"="darkturquoise",
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4',
+                                            "all_ensemble" = "orange")) +
+  geom_line(data = bouldcr, aes(date, bouldcr/10), color = 'darkgrey') +
+  scale_y_continuous(name = 'Q_m3s',
+                    sec.axis = sec_axis(~.*10, name='BoulderCr_cms')) +
+  theme_bw()
+
+
+ggplotly(q_ensemble) %>%
+  add_lines(data=bouldcr, x=~date, y=~bouldcr, colors=NULL, yaxis="y2",
+              inherit=FALSE, showlegend = FALSE) %>%
+  layout(yaxis2 = list(overlaying = "y", side = "right",
+                       color = 'darkgray',
+                       title = "BoulderCr_cms"),
+         legend = list(x = 1.1, y = 0.95))
+
+```
+
+## KGE
+
+### KGE for ensembles (entire period)
+
+```{r ensemble kge, echo = F}
+
+ensem_kge_all <- ensem %>%
+  ungroup() %>%
+  summarize(grid_ensemble = KGE(grid_ensemble, obs),
+            statn_ensemble = KGE(statn_ensemble, obs),
+            all_ensemble = KGE(all_ensemble, obs),
+            grid_all = KGE(grid_all, obs),
+            statn_all = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+kable(ensem_kge_all) %>%
+  kable_styling(full_width = F)
+
+
+```
+
+### Annual KGEs for ensembles
+
+```{r annual kge ensemble, echo = F}
+
+yr_kge_ensem <- ensem %>%
+  ungroup() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_ensemble = KGE(grid_ensemble, obs),
+            statn_ensemble = KGE(statn_ensemble, obs),
+            all_ensemble = KGE(all_ensemble, obs),
+            grid_all = KGE(grid_all, obs),
+            statn_all = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+yr_kge_table <- yr_kge_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  pivot_wider(names_from = 'year', values_from = 'kge')
+
+yr_kge_table %>%
+  kable(.) %>%
+  kable_styling()
+
+yr_kge_plot <- yr_kge_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  mutate(year = as.factor(year))
+
+#plot annual kge vals for ensembles
+plot_kge_yr_ensem <- function(calyear) {
+  yr_kge_plot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = model_run,
+               y = kge)) +
+    geom_col() +
+    ggtitle(calyear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(yr_kge_plot$year)
+
+lapply(name, plot_kge_yr_ensem)
+
+
+```
+
+### Monthly KGEs for ensembles
+
+```{r monthly kge ensemble, echo = F}
+
+mo_kge <- ensem %>%
+  ungroup() %>%
+  drop_na() %>%
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  summarize(grid_ensemble = KGE(grid_ensemble, obs),
+            statn_ensemble = KGE(statn_ensemble, obs),
+            all_ensemble = KGE(all_ensemble, obs),
+            grid_all = KGE(grid_all, obs),
+            statn_all = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+kable(mo_kge) %>%
+  kable_styling(full_width = F)
+
+mo_pivot <- mo_kge %>%
+  pivot_longer(!month, names_to = 'cal_run', values_to = 'KGE') %>%
+  drop_na()
+
+kge_plot_mo <- ggplot(mo_pivot, aes(month, KGE, color = cal_run)) + geom_point(size = 3) +
+    scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon",
+                                            "statn_ensemble"="darkturquoise",
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4',
+                                            "all_ensemble" = "orange")) +
+  theme_bw()
+
+ggplotly(kge_plot_mo)
+
+```
+
+## RMSE
+
+### Ensemble RMSE for entire period
+
+```{r ensemble rmse, echo = F}
+
+ensem_rmse_all <- ensem %>%
+  ungroup() %>%
+  summarize(grid_ensemble = rmse(grid_ensemble, obs),
+            statn_ensemble = rmse(statn_ensemble, obs),
+            all_ensemble = rmse(all_ensemble, obs),
+            grid_all = rmse(grid_all, obs),
+            statn_all = rmse(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 4)
+
+kable(ensem_rmse_all) %>%
+  kable_styling(full_width = F)
+
+```
+
+### Annual RMSE for ensembles
+
+```{r annual rmse ensem, echo = F}
+
+yr_rmse_ensem <- ensem %>%
+  ungroup() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_ensemble = rmse(grid_ensemble, obs),
+            statn_ensemble = rmse(statn_ensemble, obs),
+            all_ensemble = rmse(all_ensemble, obs),
+            grid_all = rmse(grid_all, obs),
+            statn_all = rmse(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 4)
+
+yr_rmse_table <- yr_rmse_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'rmse') %>%
+  pivot_wider(names_from = 'year', values_from = 'rmse')
+
+yr_rmse_table %>%
+  kable(.) %>%
+  kable_styling()
+
+yr_rmse_plot <- yr_rmse_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'rmse') %>%
+  mutate(year = as.factor(year))
+
+#plot annual rmse vals for ensembles
+plot_rmse_yr_ensem <- function(calyear) {
+  yr_rmse_plot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = model_run,
+               y = rmse)) +
+    geom_col() +
+    ggtitle(calyear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(yr_rmse_plot$year)
+
+lapply(name, plot_rmse_yr_ensem)
+
+
+```
+
+### Monthly RMSEs for ensembles
+
+```{r month ensem rmse, echo = F}
+
+mo_rmse <- ensem %>%
+  ungroup() %>%
+  drop_na() %>%
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  summarize(grid_ensemble = rmse(grid_ensemble, obs),
+            statn_ensemble = rmse(statn_ensemble, obs),
+            all_ensemble = rmse(all_ensemble, obs),
+            grid_all = rmse(grid_all, obs),
+            statn_all = rmse(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 4)
+
+kable(mo_rmse) %>%
+  kable_styling(full_width = F)
+
+mo_pivot2 <- mo_rmse %>%
+  pivot_longer(!month, names_to = 'cal_run', values_to = 'RMSE') %>%
+  drop_na()
+
+rmse_plot_mo <- ggplot(mo_pivot2, aes(month, RMSE, color = cal_run)) + geom_point(size = 3) +
+    scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon",
+                                            "statn_ensemble"="darkturquoise",
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4',
+                                            "all_ensemble" = "orange")) +
+  theme_bw()
+
+ggplotly(rmse_plot_mo)
+
+```
+
+## NSE
+
+### Ensemble NSE for entire period
+
+```{r nse all, echo = F}
+
+ensem_nse_all <- ensem %>%
+  ungroup() %>%
+  summarize(grid_ensemble = NSE(grid_ensemble, obs),
+            statn_ensemble = NSE(statn_ensemble, obs),
+            all_ensemble = NSE(all_ensemble, obs),
+            grid_all = NSE(grid_all, obs),
+            statn_all = NSE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+kable(ensem_nse_all) %>%
+  kable_styling(full_width = F)
+
+
+```
+
+### Annual NSE for ensembles
+
+```{r annual nse, echo = F}
+
+yr_nse_ensem <- ensem %>%
+  ungroup() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_ensemble = NSE(grid_ensemble, obs),
+            statn_ensemble = NSE(statn_ensemble, obs),
+            all_ensemble = NSE(all_ensemble, obs),
+            grid_all = NSE(grid_all, obs),
+            statn_all = NSE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 4)
+
+yr_nse_table <- yr_nse_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'nse') %>%
+  pivot_wider(names_from = 'year', values_from = 'nse')
+
+yr_nse_table %>%
+  kable(.) %>%
+  kable_styling()
+
+yr_nse_plot <- yr_nse_ensem %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'nse') %>%
+  mutate(year = as.factor(year))
+
+#plot annual nse vals for ensembles
+plot_nse_yr_ensem <- function(calyear) {
+  yr_nse_plot %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = model_run,
+               y = nse)) +
+    geom_col() +
+    ggtitle(calyear) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))
+}
+
+name <- levels(yr_nse_plot$year)
+
+lapply(name, plot_nse_yr_ensem)
+
+```
+
+### Monthly NSE for ensembles
+
+```{r monthly rmse, echo =F}
+
+mo_nse <- ensem %>%
+  ungroup() %>%
+  drop_na() %>%
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  summarize(grid_ensemble = NSE(grid_ensemble, obs),
+            statn_ensemble = NSE(statn_ensemble, obs),
+            all_ensemble = NSE(all_ensemble, obs),
+            grid_all = NSE(grid_all, obs),
+            statn_all = NSE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 4)
+
+kable(mo_nse) %>%
+  kable_styling(full_width = F)
+
+mo_pivot2 <- mo_nse %>%
+  pivot_longer(!month, names_to = 'cal_run', values_to = 'nse') %>%
+  drop_na()
+
+nse_plot_mo <- ggplot(mo_pivot2, aes(month, nse, color = cal_run)) + geom_point(size = 3) +
+  theme_bw() +
+  scale_color_manual(name="cal_run", values=c("grid_ensemble"="maroon",
+                                            "statn_ensemble"="darkturquoise",
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4',
+                                            "all_ensemble" = "orange"))
+
+ggplotly(nse_plot_mo)
+
+```
+
+## Cumulative Q
+
+```{r cumq, echo = F}
+
+ensem_cumq <- ensem %>%
+  mutate(month = month(date)) %>%
+  filter(month %in% c(4:9)) %>%
+  dplyr::select(-month) %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  group_by(cal_run, year(date)) %>%
+  mutate(cumsum = cumsum(replace_na(q_m3s, 0))) %>%
+  rename(year = 4) %>%
+  mutate(year = as.factor(year)) %>%
+  ungroup()
+
+#plot annual cumulative Q vals for ensembles
+plot_cumulq_yr_ensem <- function(calyear) {
+  {ensem_cumq %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = date,
+               y = cumsum,
+               color = cal_run)) +
+    geom_line() +
+    scale_color_manual(name="cal_run", values=c("obs"="black",
+                                             "grid_ensemble"="maroon",
+                                            "statn_ensemble"="darkturquoise",
+                                            "grid_all"="purple1",
+                                            "statn_all"='springgreen4',
+                                            "all_ensemble" = "orange")) +
+    ggtitle(calyear) +
+    theme_bw() +
+    labs(y = 'cumulative Q (m3s)')} %>%
+    ggplotly()
+}
+
+name <- levels(ensem_cumq$year)
+
+cumulative_plots <- lapply(name, plot_cumulq_yr_ensem)
+
+htmltools::tagList(cumulative_plots)
+
+cumulative_plots
+
+```
+
+# Catchment results
+
+## Precip
+
+```{r catch precip, echo = F}
+setwd("/Users/megansears/Documents/Repos/fourmile/catchment_output")
+
+statn <- read_csv('statnall.csv')
+grid <- read_csv('gridall.csv')
+
+grid <- grid %>% mutate(site = 'grid')
+statn <- statn %>% mutate(site = 'statn')
+
+catchment <- bind_rows(grid, statn) %>%
+  mutate(year = as.factor(year(time))) %>%
+  group_by(year, site) %>%
+  mutate(cumulative_p = cumsum(precip))
+
+#plot cumulative precip by year
+plot_cumprecip <- function(calyear) {
+  {catchment %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = time,
+               y = cumulative_p, color = site)) +
+    geom_line(size=1) +
+    ggtitle(calyear) +
+    ylab('Cumulative precip (mm)') +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust=1))} %>%
+    ggplotly()
+}
+
+name <- levels(catchment$year)
+
+precip_plots <- lapply(name, plot_cumprecip)
+
+htmltools::tagList(precip_plots)
+
+precip_plots
+
+## total P
+max_cumulativep <- catchment %>%
+  group_by(year, site) %>%
+  summarize(total_cumulativep = max(cumulative_p))
+
+ggplot(max_cumulativep, aes(x=year, y=total_cumulativep, color=site)) +
+  geom_point(size=3) +
+  ggtitle('Total cumulative precip (mm) by year')
+
+```
+
+## Tmean
+
+```{r tmean catch, echo = F}
+## tmean
+tmean <- catchment %>%
+  group_by(year, site) %>%
+  summarize(tmean = mean(tmean)) %>%
+  ggplot(aes(x = year, y=tmean, color = site)) +
+  geom_point(size=3) +
+  ggtitle('Average temp by year')
+
+tmean
+
+
+```
+
+## RD and RG
+
+```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
+
+gw_grid <- read_csv(here('catchment_output/gridall_outlet.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid')
+
+gw_statn <- read_csv(here('catchment_output/statnall_outlet.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn')
+
+gw <- bind_rows(gw_grid, gw_statn) %>%
+  mutate(year = year(time)) %>%
+  rename(date = time)
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRD1_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RD1') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRD2_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RD2') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRG1_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RG1') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRG2_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RG2') +
+  theme(text = element_text(size = 20))
+
+gw <- gw %>%
+  group_by(year, source) %>%
+  mutate(RD1cumsum = cumsum(catchmentRD1_w),
+         RD2cumsum = cumsum(catchmentRD2_w),
+         RG1cumsum = cumsum(catchmentRG1_w),
+         RG2cumsum = cumsum(catchmentRG2_w))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RD1cumsum), size =1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RD1') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RD2cumsum), size = 1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RD2') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RG1cumsum), size  = 1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RG1') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RG2cumsum), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RG2') +
+  theme(text = element_text(size = 20))
+
+```
+
+
+```{r rd and rg sums, echo = F, fig.width = 22, fig.asp = 1.5, out.width = "100%"}
+
+##################
+# all 4 with facets
+
+ggplot(gw, aes(x=date)) +
+  geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) +
+  geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) +
+  geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) +
+  geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) +
+  scale_x_date(labels = date_format("%b")) +
+  facet_wrap(~year + source, scales = 'free_x', ncol=2) +
+  ggtitle('Cumulative RD and RG') +
+  theme(text = element_text(size = 24))
+
+```
+
+
+```{r gw boxplot, echo = F}
+
+gw_maxcumsum <- gw %>%
+  group_by(source, year) %>%
+  summarize(yr_max_RD1 = max(RD1cumsum),
+            yr_max_RD2 = max(RD2cumsum),
+            yr_max_RG1 = max(RG1cumsum),
+            yr_max_RG2 = max(RG2cumsum)) %>%
+  mutate(year = as.factor(year)) %>%
+  pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms')
+
+
+ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  ggtitle('Max annual cumulative sums')
+
+ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~flow_type, scales = 'free') +
+  ggtitle('Max annual cumulative sums')
+
+```
+
+### RD and RG by season
+
+```{r flow season, echo = F, fig.width = 12, fig.asp = 0.75, out.width = "100%"}
+
+#group by season and get max sums by season
+flow_season <- gw %>%
+  dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>%
+  mutate(month = month(date)) %>%
+  mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt',
+                            month %in% c(7,8,9,10) ~ 'monsoon',
+                            month %in% c(11,12,1,2) ~ 'baseflow')) %>%
+  group_by(source, year, season) %>%
+  summarize(yr_season_RD1 = max(RD1cumsum),
+            yr_season_RD2 = max(RD2cumsum),
+            yr_season_RG1 = max(RG1cumsum),
+            yr_season_RG2 = max(RG2cumsum)) %>%
+            pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'flow_cms')
+
+
+flow_season %>%
+  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~season, scales = 'free') +
+  ggtitle('Max annual season cumulative sums') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(text = element_text(size = 20))
+
+
+flow_season %>%
+  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~season + flow_type, scales = 'free') +
+  ggtitle('Max annual season cumulative sums') +
+  theme_bw() +
+  theme(text = element_text(size = 20))
+
+
+```
+
+# HRU results
+
+## Tmean difference
+
+2011-2020 average of daily station-grid Tmean
+
+```{r cumulative tmean for HRUs, echo = F}
+#grid first
+setwd(here("HRU_output/grid"))
+
+read_ages_grid <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'grid')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_grid)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_grids <- dataframes %>%
+  bind_rows()
+
+#statn next
+setwd(here("HRU_output/statn"))
+
+read_ages_statn <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'statn')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_statn)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_statn <- dataframes %>%
+  bind_rows()
+
+#get rid of a bunch of data
+hru_grid_tmean <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_t <- locations %>%
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel',
+                        'University Camp SNTL'))
+
+tm_shape(hrus_map_tmean) +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Tmax difference
+
+```{r tmax, echo = F}
+
+tmax_grid <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv'))%>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value',
+               values_to = 'tmax_grid') %>%
+  mutate(time = dmy(time)) %>%
+  group_by(value) %>%
+  summarize(Tmax_mean_grid = mean(tmax_grid))
+
+tmax_statn <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value',
+               values_to = 'tmax_statn') %>%
+  mutate(time = dmy(time)) %>%
+  group_by(value) %>%
+  summarize(Tmax_mean_statn = mean(tmax_statn))
+
+tmax_hrus <- left_join(tmax_grid, tmax_statn, by = c('value')) %>%
+  mutate(diff = Tmax_mean_statn - Tmax_mean_grid,
+         value = as.numeric(value))
+
+hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value')
+
+tmap_mode('view')
+
+tm_shape(hrus_map_tmax) +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Tmax monthly average
+
+```{r tmax month, echo = F}
+
+tmax_grid_mo <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv')) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value',
+               values_to = 'tmax_grid') %>%
+  mutate(time = dmy(time),
+         month = month(time)) %>%
+  filter(month %in% c(3:6)) %>%
+  group_by(value, month) %>%
+  summarize(avg_tmax_grid = mean(tmax_grid))
+
+tmax_statn_mo <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value',
+               values_to = 'tmax_statn') %>%
+  mutate(time = dmy(time),
+         month = month(time)) %>%
+  filter(month %in% c(3:6)) %>%
+  group_by(value, month) %>%
+  summarize(avg_tmax_statn = mean(tmax_statn))
+
+tmax_hrus_mo <- left_join(tmax_grid_mo, tmax_statn_mo, by = c('value', 'month')) %>%
+  mutate(mo_tmax_diff = avg_tmax_statn - avg_tmax_grid,
+         value = as.numeric(value))
+
+tmap_mode('plot')
+
+#march
+tmax_hrus_mar<- tmax_hrus_mo %>%
+  filter(month == 3)
+
+hrus_map_tmax_mar <- left_join(hrus, tmax_hrus_mar, by = 'value')
+
+mar_tmax <- tm_shape(hrus_map_tmax_mar) +
+  #tm_polygons('mo_tmax_diff', id = 'value') +
+  tm_fill('mo_tmax_diff', id = 'value',
+          breaks = c(-6,-4,-2,0,2,4,6)) +
+  tm_borders() +
+  tm_shape(locations_t) +
+  tm_symbols(col='blue', size = 0.25) +
+  tm_layout(title = 'March avg tmax',
+            legend.outside = T)
+
+
+#april
+tmax_hrus_apr<- tmax_hrus_mo %>%
+  filter(month == 4)
+
+hrus_map_tmax_apr <- left_join(hrus, tmax_hrus_apr, by = 'value')
+
+apr_tmax <- tm_shape(hrus_map_tmax_apr) +
+  tm_fill('mo_tmax_diff', id = 'value',
+          breaks = c(-6,-4,-2,0,2,4,6)) +
+  tm_borders() +
+  tm_shape(locations_t) +
+  tm_symbols(col='blue', size = 0.25) +
+  tm_layout(title = 'April avg tmax',
+            legend.outside = T)
+
+#may
+tmax_hrus_may<- tmax_hrus_mo %>%
+  filter(month == 5)
+
+hrus_map_tmax_may <- left_join(hrus, tmax_hrus_may, by = 'value')
+
+may_tmax <- tm_shape(hrus_map_tmax_may) +
+  tm_fill('mo_tmax_diff', id = 'value',
+         breaks = c(-6,-4,-2,0,2,4,6)) +
+  tm_borders() +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size = 0.25) +
+  tm_layout(title = 'May avg tmax',
+            legend.outside = T)
+
+#june
+tmax_hrus_jun<- tmax_hrus_mo %>%
+  filter(month == 6)
+
+hrus_map_tmax_jun <- left_join(hrus, tmax_hrus_jun, by = 'value')
+
+jun_tmax <- tm_shape(hrus_map_tmax_jun) +
+  tm_fill('mo_tmax_diff', id = 'value',
+         breaks = c(-6,-4,-2,0,2,4,6)) +
+  tm_borders() +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size = 0.25) +
+  tm_layout(title = 'June avg tmax',
+            legend.outside = T)
+
+tmap_arrange(mar_tmax, apr_tmax, may_tmax, jun_tmax)
+
+```
+
+## Tmin difference
+
+```{r tmin, echo = F}
+
+tmin_grid <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value',
+               values_to = 'tmin_grid') %>%
+  mutate(time = dmy(time)) %>%
+  group_by(value) %>%
+  summarize(Tmin_mean_grid = mean(tmin_grid))
+
+tmin_statn <- read_csv(here('HRU_output/reg_tminAll.csv')) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value',
+               values_to = 'tmin_statn') %>%
+  mutate(time = dmy(time)) %>%
+  group_by(value) %>%
+  summarize(Tmin_mean_statn = mean(tmin_statn))
+
+tmin_hrus <- left_join(tmin_grid, tmin_statn, by = c('value')) %>%
+  mutate(diff = Tmin_mean_statn - Tmin_mean_grid,
+         value = as.numeric(value))
+
+hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value')
+
+tmap_mode('view')
+
+tm_shape(hrus_map_tmin) +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Tmin monthly average
+
+```{r tmin month, echo = F}
+tmin_grid_mo <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value',
+               values_to = 'tmin_grid') %>%
+  mutate(time = dmy(time),
+         month = month(time)) %>%
+  filter(month %in% c(3:6)) %>%
+  group_by(value, month) %>%
+  summarize(avg_tmin_grid = mean(tmin_grid))
+
+tmin_statn_mo <- read_csv(here('HRU_output/reg_tminAll.csv')) %>%
+  pivot_longer(cols = `3`:`19`,
+               names_to = 'value',
+               values_to = 'tmin_statn') %>%
+  mutate(time = dmy(time),
+         month = month(time)) %>%
+  filter(month %in% c(3:6)) %>%
+  group_by(value, month) %>%
+  summarize(avg_tmin_statn = mean(tmin_statn))
+
+tmin_hrus_mo <- left_join(tmin_grid_mo, tmin_statn_mo, by = c('value', 'month')) %>%
+  mutate(mo_tmin_diff = avg_tmin_statn - avg_tmin_grid,
+         value = as.numeric(value))
+
+tmap_mode('plot')
+
+#march
+tmin_hrus_mar<- tmin_hrus_mo %>%
+  filter(month == 3)
+
+hrus_map_tmin_mar <- left_join(hrus, tmin_hrus_mar, by = 'value')
+
+mar_tmin <- tm_shape(hrus_map_tmin_mar) +
+  #tm_polygons('mo_tmin_diff', id = 'value') +
+  tm_fill('mo_tmin_diff', id = 'value',
+          breaks = c(-5,-2.5,0,2.5,5)) +
+  tm_borders() +
+  tm_shape(locations_t) +
+  tm_symbols(col='blue', size = 0.25) +
+  tm_layout(title = 'March avg tmin',
+            legend.outside = T)
+
+#april
+tmin_hrus_apr<- tmin_hrus_mo %>%
+  filter(month == 4)
+
+hrus_map_tmin_apr <- left_join(hrus, tmin_hrus_apr, by = 'value')
+
+apr_tmin <- tm_shape(hrus_map_tmin_apr) +
+  tm_fill('mo_tmin_diff', id = 'value',
+          breaks = c(-5,-2.5,0,2.5,5)) +
+  tm_borders() +
+  tm_shape(locations_t) +
+  tm_symbols(col='blue', size = 0.25) +
+  tm_layout(title = 'April avg tmin',
+            legend.outside = T)
+
+#may
+tmin_hrus_may<- tmin_hrus_mo %>%
+  filter(month == 5)
+
+hrus_map_tmin_may <- left_join(hrus, tmin_hrus_may, by = 'value')
+
+may_tmin <- tm_shape(hrus_map_tmin_may) +
+  tm_fill('mo_tmin_diff', id = 'value',
+         breaks = c(-5,-2.5,0,2.5,5)) +
+  tm_borders() +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size = 0.25) +
+  tm_layout(title = 'May avg tmin',
+            legend.outside = T)
+
+#june
+tmin_hrus_jun<- tmin_hrus_mo %>%
+  filter(month == 6)
+
+hrus_map_tmin_jun <- left_join(hrus, tmin_hrus_jun, by = 'value')
+
+jun_tmin <- tm_shape(hrus_map_tmin_jun) +
+  tm_fill('mo_tmin_diff', id = 'value',
+          breaks = c(-5,-2.5,0,2.5,5)) +
+  tm_borders() +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size = 0.25) +
+  tm_layout(title = 'June avg tmin',
+            legend.outside = T)
+
+tmap_arrange(mar_tmin, apr_tmin, may_tmin, jun_tmin)
+
+```
+
+## Cumulative Precip difference
+
+2011-2020 average of daily station-grid precip for DOY 365 (or 366)
+
+```{r cum precip, echo = F}
+#get rid of a bunch of data
+hru_grid_precip <- hru_grids %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_grid = precip)
+
+hru_statn_precip <- hru_statn %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_statn = precip)
+
+precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_p <- locations %>%
+  filter(type == 'precip')
+
+tm_shape(hrus_map_precip) +
+  tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
+tm_shape(locations_p) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Solar radiation difference
+
+2011-2020 average of daily station-grid solar rad
+
+```{r cum sol rad, echo = F}
+
+#get rid of a bunch of data
+hru_grid_solrad <- hru_grids %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_grid = solRad)  %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad <- hru_statn %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_statn = solRad) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_solrad <- locations %>%
+  dplyr::filter(name %in% c('Gordon_South',
+                        'Betasso', 'Niwot_Snotel'))
+
+tm_shape(hrus_map_solrad) +
+  tm_polygons('diff', midpoint = NA, palette = 'YlOrRd', id = 'value') +
+tm_shape(locations_solrad) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## RH difference
+
+```{r rh, echo = F}
+
+#get rid of a bunch of data
+hru_grid_rh <- hru_grids %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_grid = rhum)  %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh <- hru_statn %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_statn = rhum) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_rh <- locations %>%
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel'))
+
+tm_shape(hrus_map_rh) +
+  tm_polygons('diff', midpoint = NA, id = 'value') +
+tm_shape(locations_rh) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Average soil sat comparison
+
+```{r soilsat, echo = F}
+
+#get rid of a bunch of data
+hru_grid_soilsat <- hru_grids %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilsat_grid = soilSat)  %>%
+  group_by(ID) %>%
+  summarize(soilsat_all_grid = mean(soilsat_grid))
+
+hru_statn_soilsat <- hru_statn %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilsat_statn = soilSat) %>%
+  group_by(ID) %>%
+  summarize(soilsat_all_statn = mean(soilsat_statn))
+
+soilsat_hrus <- left_join(hru_grid_soilsat, hru_statn_soilsat, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_soilsat <- left_join(hrus, soilsat_hrus, by = 'value')
+
+tmap_mode('plot')
+
+soilavg_grid <- tm_shape(hrus_map_soilsat) +
+  tm_polygons('soilsat_all_grid', midpoint = NA, id = 'value',
+              breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average soil sat')
+
+soilavg_statn <- tm_shape(hrus_map_soilsat) +
+  tm_polygons('soilsat_all_statn', midpoint = NA, id = 'value',
+              breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(soilavg_grid, soilavg_statn)
+
+```
+
+## Average max soil sat comparison
+
+```{r max soilsat, echo = F}
+
+#get rid of a bunch of data
+hru_grid_soilsat_max <- hru_grids %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilsat_grid = soilSat)  %>%
+  mutate(year = year(time)) %>%
+  group_by(ID, year) %>%
+  summarize(soilsat_yrmax_grid = max(soilsat_grid)) %>%
+  summarize(avg_max_grid = mean(soilsat_yrmax_grid))
+
+hru_statn_soilsat_max <- hru_statn %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilsat_statn = soilSat) %>%
+  mutate(year = year(time)) %>%
+  group_by(ID, year) %>%
+  summarize(soilsat_yrmax_statn = max(soilsat_statn)) %>%
+  summarize(avg_max_statn = mean(soilsat_yrmax_statn))
+
+soilsat_hrus_max <- left_join(hru_grid_soilsat_max, hru_statn_soilsat_max, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_soilsat_max <- left_join(hrus, soilsat_hrus_max, by = 'value')
+
+tmap_mode('plot')
+
+soilavg_grid_max <- tm_shape(hrus_map_soilsat_max) +
+  tm_polygons('avg_max_grid', midpoint = NA, id = 'value',
+              breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average max soil sat',
+            title.position = c('left', 'top'))
+
+soilavg_statn_max <- tm_shape(hrus_map_soilsat_max) +
+  tm_polygons('avg_max_statn', midpoint = NA, id = 'value',
+              breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(soilavg_grid_max, soilavg_statn_max)
+
+```
+
+## Average ET comparison
+
+```{r et, echo = F}
+#get rid of a bunch of data
+hru_grid_ET <- hru_grids %>%
+  dplyr::select(c(time, ID, actET)) %>%
+  rename(ET_grid = actET)  %>%
+  group_by(ID) %>%
+  summarize(ET_all_grid = mean(ET_grid))
+
+hru_statn_ET <- hru_statn %>%
+  dplyr::select(c(time, ID, actET)) %>%
+  rename(ET_statn = actET) %>%
+  group_by(ID) %>%
+  summarize(ET_all_statn = mean(ET_statn))
+
+ET_hrus <- left_join(hru_grid_ET, hru_statn_ET, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_ET <- left_join(hrus, ET_hrus, by = 'value')
+
+tmap_mode('plot')
+
+ETavg_grid <- tm_shape(hrus_map_ET) +
+  tm_polygons('ET_all_grid', midpoint = NA, id = 'value',
+              breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average ET')
+
+ETavg_statn <- tm_shape(hrus_map_ET) +
+  tm_polygons('ET_all_statn', midpoint = NA, id = 'value',
+             breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(ETavg_grid, ETavg_statn)
+
+```
+
+## Average ET difference
+
+```{r et diff, echo = F}
+
+ET_hrus <- ET_hrus %>%
+  mutate(diff = ET_all_statn - ET_all_grid)
+
+hrus_map_et_diff <- left_join(hrus, ET_hrus, by = 'value')
+
+tmap_mode('plot')
+
+tm_shape(hrus_map_et_diff) +
+  tm_polygons('diff', midpoint = NA, id = 'value')  +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average ET difference')
+
+```
+
+## Average LAI comparison
+
+```{r lai, echo = F}
+
+#get rid of a bunch of data
+hru_grid_LAI <- hru_grids %>%
+  dplyr::select(c(time, ID, LAI)) %>%
+  rename(LAI_grid = LAI)  %>%
+  group_by(ID) %>%
+  summarize(LAI_all_grid = mean(LAI_grid))
+
+hru_statn_LAI <- hru_statn %>%
+  dplyr::select(c(time, ID, LAI)) %>%
+  rename(LAI_statn = LAI) %>%
+  group_by(ID) %>%
+  summarize(LAI_all_statn = mean(LAI_statn))
+
+LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value')
+
+tmap_mode('view')
+
+LAIavg_grid <- tm_shape(hrus_map_LAI) +
+  tm_polygons('LAI_all_grid', midpoint = NA, id = 'value',
+              breaks = c(1,2,3,4,5)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average LAI')
+
+LAIavg_statn <- tm_shape(hrus_map_LAI) +
+  tm_polygons('LAI_all_statn', midpoint = NA, id = 'value',
+              breaks = c(1,2,3,4,5)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(LAIavg_grid, LAIavg_statn)
+
+```
 
