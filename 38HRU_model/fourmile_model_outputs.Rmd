@@ -1064,175 +1064,175 @@ cumulative_plots
 
 <!-- ``` -->
 
-<!-- ## RD and RG -->
+# RD and RG
 
-<!-- ```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"} -->
+```{r rd and rg, echo = F, fig.width = 14, fig.asp = 1, out.width = "100%"}
 
-<!-- gw_grid <- read_csv(here('catchment_output/gridall_outlet.csv')) %>% -->
-<!--   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>% -->
-<!--   mutate(source = 'grid') -->
+gw_grid <- read_csv(here('catchment_output/gridall_outlet.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid')
 
-<!-- gw_statn <- read_csv(here('catchment_output/statnall_outlet.csv')) %>% -->
-<!--   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>% -->
-<!--   mutate(source = 'statn') -->
+gw_statn <- read_csv(here('catchment_output/statnall_outlet.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn')
 
-<!-- gw <- bind_rows(gw_grid, gw_statn) %>% -->
-<!--   mutate(year = year(time)) %>% -->
-<!--   rename(date = time) -->
+gw <- bind_rows(gw_grid, gw_statn) %>%
+  mutate(year = year(time)) %>%
+  rename(date = time)
 
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=catchmentRD1_w), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('RD1') + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRD1_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RD1') +
+  theme(text = element_text(size = 20))
 
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=catchmentRD2_w), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('RD2') + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRD2_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RD2') +
+  theme(text = element_text(size = 20))
 
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=catchmentRG1_w), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('RG1') + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRG1_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RG1') +
+  theme(text = element_text(size = 20))
 
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=catchmentRG2_w), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('RG2') + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRG2_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RG2') +
+  theme(text = element_text(size = 20))
 
-<!-- gw <- gw %>% -->
-<!--   group_by(year, source) %>% -->
-<!--   mutate(RD1cumsum = cumsum(catchmentRD1_w), -->
-<!--          RD2cumsum = cumsum(catchmentRD2_w), -->
-<!--          RG1cumsum = cumsum(catchmentRG1_w), -->
-<!--          RG2cumsum = cumsum(catchmentRG2_w)) -->
+gw <- gw %>%
+  group_by(year, source) %>%
+  mutate(RD1cumsum = cumsum(catchmentRD1_w),
+         RD2cumsum = cumsum(catchmentRD2_w),
+         RG1cumsum = cumsum(catchmentRG1_w),
+         RG2cumsum = cumsum(catchmentRG2_w))
 
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=RD1cumsum), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('Cumulative RD1') + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RD1cumsum), size =1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RD1') +
+  theme(text = element_text(size = 20))
 
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=RD2cumsum), size = 1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol=2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('Cumulative RD2') + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RD2cumsum), size = 1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RD2') +
+  theme(text = element_text(size = 20))
 
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=RG1cumsum), size  = 1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('Cumulative RG1') + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RG1cumsum), size  = 1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RG1') +
+  theme(text = element_text(size = 20))
 
-<!-- ggplot(gw, aes(x=date, color = source)) + -->
-<!--   geom_line(aes(y=RG2cumsum), size =1) + -->
-<!--   facet_wrap(~year, scales = 'free', ncol = 2) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   ggtitle('Cumulative RG2') + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RG2cumsum), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RG2') +
+  theme(text = element_text(size = 20))
 
-<!-- ``` -->
-
-
-<!-- ```{r rd and rg sums, echo = F, fig.width = 22, fig.asp = 1.5, out.width = "100%"} -->
-
-<!-- ################## -->
-<!-- # all 4 with facets -->
-
-<!-- ggplot(gw, aes(x=date)) + -->
-<!--   geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) + -->
-<!--   geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) + -->
-<!--   geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) + -->
-<!--   geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) + -->
-<!--   scale_x_date(labels = date_format("%b")) + -->
-<!--   facet_wrap(~year + source, scales = 'free_x', ncol=2) + -->
-<!--   ggtitle('Cumulative RD and RG') + -->
-<!--   theme(text = element_text(size = 24)) -->
-
-<!-- ``` -->
+```
 
 
-<!-- ```{r gw boxplot, echo = F} -->
+```{r rd and rg sums, echo = F, fig.width = 22, fig.asp = 1.5, out.width = "100%"}
 
-<!-- gw_maxcumsum <- gw %>% -->
-<!--   group_by(source, year) %>% -->
-<!--   summarize(yr_max_RD1 = max(RD1cumsum), -->
-<!--             yr_max_RD2 = max(RD2cumsum), -->
-<!--             yr_max_RG1 = max(RG1cumsum), -->
-<!--             yr_max_RG2 = max(RG2cumsum)) %>% -->
-<!--   mutate(year = as.factor(year)) %>% -->
-<!--   pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms') -->
+##################
+# all 4 with facets
 
+ggplot(gw, aes(x=date)) +
+  geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) +
+  geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) +
+  geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) +
+  geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) +
+  scale_x_date(labels = date_format("%b")) +
+  facet_wrap(~year + source, scales = 'free_x', ncol=2) +
+  ggtitle('Cumulative RD and RG') +
+  theme(text = element_text(size = 24))
 
-<!-- ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) + -->
-<!--   geom_boxplot(position = position_dodge(1)) + -->
-<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
-<!--   ggtitle('Max annual cumulative sums') -->
-
-<!-- ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) + -->
-<!--   geom_boxplot(position = position_dodge(1)) + -->
-<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
-<!--   #geom_point(aes(color = source)) + -->
-<!--   facet_wrap(~flow_type, scales = 'free') + -->
-<!--   ggtitle('Max annual cumulative sums') -->
-
-<!-- ``` -->
-
-<!-- ### RD and RG by season -->
-
-<!-- ```{r flow season, echo = F, fig.width = 12, fig.asp = 0.75, out.width = "100%"} -->
-
-<!-- #group by season and get max sums by season -->
-<!-- flow_season <- gw %>% -->
-<!--   dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>% -->
-<!--   mutate(month = month(date)) %>% -->
-<!--   mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt', -->
-<!--                             month %in% c(7,8,9,10) ~ 'monsoon', -->
-<!--                             month %in% c(11,12,1,2) ~ 'baseflow')) %>% -->
-<!--   group_by(source, year, season) %>% -->
-<!--   summarize(yr_season_RD1 = max(RD1cumsum), -->
-<!--             yr_season_RD2 = max(RD2cumsum), -->
-<!--             yr_season_RG1 = max(RG1cumsum), -->
-<!--             yr_season_RG2 = max(RG2cumsum)) %>% -->
-<!--             pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'flow_cms') -->
+```
 
 
-<!-- flow_season %>% -->
-<!--   ggplot(aes(x = flow_type, y = flow_cms, fill = source)) + -->
-<!--   geom_boxplot(position = position_dodge(1)) + -->
-<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
-<!--   #geom_point(aes(color = source)) + -->
-<!--   facet_wrap(~season, scales = 'free') + -->
-<!--   ggtitle('Max annual season cumulative sums') + -->
-<!--   theme_bw() + -->
-<!--   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + -->
-<!--   theme(text = element_text(size = 20)) -->
+```{r gw boxplot, echo = F}
+
+gw_maxcumsum <- gw %>%
+  group_by(source, year) %>%
+  summarize(yr_max_RD1 = max(RD1cumsum),
+            yr_max_RD2 = max(RD2cumsum),
+            yr_max_RG1 = max(RG1cumsum),
+            yr_max_RG2 = max(RG2cumsum)) %>%
+  mutate(year = as.factor(year)) %>%
+  pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms')
 
 
-<!-- flow_season %>% -->
-<!--   ggplot(aes(x = flow_type, y = flow_cms, fill = source)) + -->
-<!--   geom_boxplot(position = position_dodge(1)) + -->
-<!--   geom_point(position=position_jitterdodge(),alpha=0.3) + -->
-<!--   #geom_point(aes(color = source)) + -->
-<!--   facet_wrap(~season + flow_type, scales = 'free') + -->
-<!--   ggtitle('Max annual season cumulative sums') + -->
-<!--   theme_bw() + -->
-<!--   theme(text = element_text(size = 20)) -->
+ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  ggtitle('Max annual cumulative sums')
+
+ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~flow_type, scales = 'free') +
+  ggtitle('Max annual cumulative sums')
+
+```
+
+### RD and RG by season
+
+```{r flow season, echo = F, fig.width = 12, fig.asp = 0.75, out.width = "100%"}
+
+#group by season and get max sums by season
+flow_season <- gw %>%
+  dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>%
+  mutate(month = month(date)) %>%
+  mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt',
+                            month %in% c(7,8,9,10) ~ 'monsoon',
+                            month %in% c(11,12,1,2) ~ 'baseflow')) %>%
+  group_by(source, year, season) %>%
+  summarize(yr_season_RD1 = max(RD1cumsum),
+            yr_season_RD2 = max(RD2cumsum),
+            yr_season_RG1 = max(RG1cumsum),
+            yr_season_RG2 = max(RG2cumsum)) %>%
+            pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'flow_cms')
 
 
-<!-- ``` -->
+flow_season %>%
+  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~season, scales = 'free') +
+  ggtitle('Max annual season cumulative sums') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(text = element_text(size = 20))
+
+
+flow_season %>%
+  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~season + flow_type, scales = 'free') +
+  ggtitle('Max annual season cumulative sums') +
+  theme_bw() +
+  theme(text = element_text(size = 20))
+
+
+```
 
 <!-- # HRU results -->
 
