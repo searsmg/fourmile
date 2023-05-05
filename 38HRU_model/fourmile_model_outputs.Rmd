@@ -356,10 +356,16 @@ lapply(name2, plot_burnparams)
 The two burned HRU parameters were averaged together.
 
 ```{r}
-params <- params %>%
-  mutate(burn = 'no')
+params2 <- params %>%
+  mutate(burn = 'no') %>%
+  filter(param %in% c('a_rain',
+                        'a_snow',
+                        'soilMaxInfSummer',
+                        'soilMaxDPS',
+                        'lagSurfaceRunoff',
+                        'soilDistMPSLPS'))
 
-params_combo <- bind_rows(params,
+params_combo <- bind_rows(params2,
                           burn_params %>%
                             rename(param = params))
 
@@ -376,9 +382,9 @@ plot_params <- function(param_name) {
     theme_bw()
 }
 
-name <- levels(params_combo$param)
+#name <- levels(params_combo$param)
 
-lapply(name, plot_params)
+lapply(name2, plot_params)
 
 ```
 
