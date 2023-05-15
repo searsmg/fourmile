@@ -1234,650 +1234,472 @@ flow_season %>%
 
 ```
 
-<!-- # HRU results -->
+# HRU results
 
-<!-- ## Tmean difference -->
+## Tmean difference
 
-<!-- 2011-2020 average of daily station-grid Tmean -->
+2011-2020 average of daily station-grid Tmean
 
-<!-- ```{r cumulative tmean for HRUs, echo = F} -->
-<!-- #grid first -->
-<!-- setwd(here("HRU_output/grid")) -->
+```{r cumulative tmean for HRUs, echo = F}
+hrus <- st_read('/Users/megansears/Documents/Repos/fourmile/38HRU_model/hrus_final.shp')
 
-<!-- read_ages_grid <- function(dataframe){ -->
-<!--   read_csv(dataframe, skip = 3) %>% -->
-<!--   slice(3:n()) %>% -->
-<!--   dplyr::select(-starts_with('@'), -->
-<!--                 -1) %>% -->
-<!--   mutate(time = ymd(time)) %>% -->
-<!--   mutate_if(is.character, as.numeric) %>% -->
-<!--   mutate(source = 'grid') -->
-
-<!-- } -->
+locations <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_model/fourmile_sensors.csv')
 
-<!-- #pull in all filenames with HRU in the name -->
-<!-- filenames <- list.files(".", pattern="HRU", full.names=F) -->
+locations <- locations %>%
+  st_as_sf(., coords=c('y','x'), crs = 4326)
 
-<!-- #read all the csvs using read_ages function -->
-<!-- dataframes <- lapply(filenames, read_ages_grid) -->
+#grid first
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_model/HRU_output/grid_all")
 
-<!-- #name all the csvs based on first 6 characters -->
-<!-- names(dataframes) <- substr(filenames, 1, 6) -->
+read_ages_grid <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'grid')
 
-<!-- #bind all and make 1 df -->
-<!-- hru_grids <- dataframes %>% -->
-<!--   bind_rows() -->
+}
 
-<!-- #statn next -->
-<!-- setwd(here("HRU_output/statn")) -->
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
 
-<!-- read_ages_statn <- function(dataframe){ -->
-<!--   read_csv(dataframe, skip = 3) %>% -->
-<!--   slice(3:n()) %>% -->
-<!--   dplyr::select(-starts_with('@'), -->
-<!--                 -1) %>% -->
-<!--   mutate(time = ymd(time)) %>% -->
-<!--   mutate_if(is.character, as.numeric) %>% -->
-<!--   mutate(source = 'statn') -->
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_grid)
 
-<!-- } -->
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
 
-<!-- #pull in all filenames with HRU in the name -->
-<!-- filenames <- list.files(".", pattern="HRU", full.names=F) -->
-
-<!-- #read all the csvs using read_ages function -->
-<!-- dataframes <- lapply(filenames, read_ages_statn) -->
-
-<!-- #name all the csvs based on first 6 characters -->
-<!-- names(dataframes) <- substr(filenames, 1, 6) -->
-
-<!-- #bind all and make 1 df -->
-<!-- hru_statn <- dataframes %>% -->
-<!--   bind_rows() -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_tmean <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, tmean)) %>% -->
-<!--   rename(tmean_grid = tmean)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(tmean_all_grid = mean(tmean_grid)) -->
+#bind all and make 1 df
+hru_grids <- dataframes %>%
+  bind_rows()
 
-<!-- hru_statn_tmean <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, tmean)) %>% -->
-<!--   rename(tmean_statn = tmean) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(tmean_all_statn = mean(tmean_statn)) -->
-
-<!-- tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>% -->
-<!--   mutate(diff = tmean_all_statn - tmean_all_grid) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- locations_t <- locations %>% -->
-<!--   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North', -->
-<!--                         'Betasso', 'Niwot_Snotel', -->
-<!--                         'University Camp SNTL')) -->
-
-<!-- tm_shape(hrus_map_tmean) + -->
-<!--   tm_polygons('diff', id = 'value', -->
-<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Tmax difference -->
-
-<!-- ```{r tmax, echo = F} -->
-
-<!-- tmax_grid <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv'))%>% -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value', -->
-<!--                values_to = 'tmax_grid') %>% -->
-<!--   mutate(time = dmy(time)) %>% -->
-<!--   group_by(value) %>% -->
-<!--   summarize(Tmax_mean_grid = mean(tmax_grid)) -->
-
-<!-- tmax_statn <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>% -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value', -->
-<!--                values_to = 'tmax_statn') %>% -->
-<!--   mutate(time = dmy(time)) %>% -->
-<!--   group_by(value) %>% -->
-<!--   summarize(Tmax_mean_statn = mean(tmax_statn)) -->
-
-<!-- tmax_hrus <- left_join(tmax_grid, tmax_statn, by = c('value')) %>% -->
-<!--   mutate(diff = Tmax_mean_statn - Tmax_mean_grid, -->
-<!--          value = as.numeric(value)) -->
-
-<!-- hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- tm_shape(hrus_map_tmax) + -->
-<!--   tm_polygons('diff', id = 'value', -->
-<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Tmax monthly average -->
-
-<!-- ```{r tmax month, echo = F} -->
-
-<!-- tmax_grid_mo <- read_csv(here('HRU_output/reg_tmaxAll_prism.csv')) %>% -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value', -->
-<!--                values_to = 'tmax_grid') %>% -->
-<!--   mutate(time = dmy(time), -->
-<!--          month = month(time)) %>% -->
-<!--   filter(month %in% c(3:6)) %>% -->
-<!--   group_by(value, month) %>% -->
-<!--   summarize(avg_tmax_grid = mean(tmax_grid)) -->
-
-<!-- tmax_statn_mo <- read_csv(here('HRU_output/reg_tmaxAll.csv')) %>% -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value', -->
-<!--                values_to = 'tmax_statn') %>% -->
-<!--   mutate(time = dmy(time), -->
-<!--          month = month(time)) %>% -->
-<!--   filter(month %in% c(3:6)) %>% -->
-<!--   group_by(value, month) %>% -->
-<!--   summarize(avg_tmax_statn = mean(tmax_statn)) -->
-
-<!-- tmax_hrus_mo <- left_join(tmax_grid_mo, tmax_statn_mo, by = c('value', 'month')) %>% -->
-<!--   mutate(mo_tmax_diff = avg_tmax_statn - avg_tmax_grid, -->
-<!--          value = as.numeric(value)) -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- #march -->
-<!-- tmax_hrus_mar<- tmax_hrus_mo %>% -->
-<!--   filter(month == 3) -->
-
-<!-- hrus_map_tmax_mar <- left_join(hrus, tmax_hrus_mar, by = 'value') -->
-
-<!-- mar_tmax <- tm_shape(hrus_map_tmax_mar) + -->
-<!--   #tm_polygons('mo_tmax_diff', id = 'value') + -->
-<!--   tm_fill('mo_tmax_diff', id = 'value', -->
-<!--           breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!--   tm_borders() + -->
-<!--   tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'March avg tmax', -->
-<!--             legend.outside = T) -->
-
-
-<!-- #april -->
-<!-- tmax_hrus_apr<- tmax_hrus_mo %>% -->
-<!--   filter(month == 4) -->
-
-<!-- hrus_map_tmax_apr <- left_join(hrus, tmax_hrus_apr, by = 'value') -->
-
-<!-- apr_tmax <- tm_shape(hrus_map_tmax_apr) + -->
-<!--   tm_fill('mo_tmax_diff', id = 'value', -->
-<!--           breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!--   tm_borders() + -->
-<!--   tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'April avg tmax', -->
-<!--             legend.outside = T) -->
-
-<!-- #may -->
-<!-- tmax_hrus_may<- tmax_hrus_mo %>% -->
-<!--   filter(month == 5) -->
-
-<!-- hrus_map_tmax_may <- left_join(hrus, tmax_hrus_may, by = 'value') -->
-
-<!-- may_tmax <- tm_shape(hrus_map_tmax_may) + -->
-<!--   tm_fill('mo_tmax_diff', id = 'value', -->
-<!--          breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!--   tm_borders() + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'May avg tmax', -->
-<!--             legend.outside = T) -->
-
-<!-- #june -->
-<!-- tmax_hrus_jun<- tmax_hrus_mo %>% -->
-<!--   filter(month == 6) -->
-
-<!-- hrus_map_tmax_jun <- left_join(hrus, tmax_hrus_jun, by = 'value') -->
-
-<!-- jun_tmax <- tm_shape(hrus_map_tmax_jun) + -->
-<!--   tm_fill('mo_tmax_diff', id = 'value', -->
-<!--          breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!--   tm_borders() + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'June avg tmax', -->
-<!--             legend.outside = T) -->
-
-<!-- tmap_arrange(mar_tmax, apr_tmax, may_tmax, jun_tmax) -->
-
-<!-- ``` -->
-
-<!-- ## Tmin difference -->
-
-<!-- ```{r tmin, echo = F} -->
-
-<!-- tmin_grid <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>% -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value', -->
-<!--                values_to = 'tmin_grid') %>% -->
-<!--   mutate(time = dmy(time)) %>% -->
-<!--   group_by(value) %>% -->
-<!--   summarize(Tmin_mean_grid = mean(tmin_grid)) -->
-
-<!-- tmin_statn <- read_csv(here('HRU_output/reg_tminAll.csv')) %>% -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value', -->
-<!--                values_to = 'tmin_statn') %>% -->
-<!--   mutate(time = dmy(time)) %>% -->
-<!--   group_by(value) %>% -->
-<!--   summarize(Tmin_mean_statn = mean(tmin_statn)) -->
-
-<!-- tmin_hrus <- left_join(tmin_grid, tmin_statn, by = c('value')) %>% -->
-<!--   mutate(diff = Tmin_mean_statn - Tmin_mean_grid, -->
-<!--          value = as.numeric(value)) -->
-
-<!-- hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- tm_shape(hrus_map_tmin) + -->
-<!--   tm_polygons('diff', id = 'value', -->
-<!--               breaks = c(-6,-4,-2,0,2,4,6)) + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Tmin monthly average -->
-
-<!-- ```{r tmin month, echo = F} -->
-<!-- tmin_grid_mo <- read_csv(here('HRU_output/reg_tminAll_prism.csv')) %>% -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value', -->
-<!--                values_to = 'tmin_grid') %>% -->
-<!--   mutate(time = dmy(time), -->
-<!--          month = month(time)) %>% -->
-<!--   filter(month %in% c(3:6)) %>% -->
-<!--   group_by(value, month) %>% -->
-<!--   summarize(avg_tmin_grid = mean(tmin_grid)) -->
-
-<!-- tmin_statn_mo <- read_csv(here('HRU_output/reg_tminAll.csv')) %>% -->
-<!--   pivot_longer(cols = `3`:`19`, -->
-<!--                names_to = 'value', -->
-<!--                values_to = 'tmin_statn') %>% -->
-<!--   mutate(time = dmy(time), -->
-<!--          month = month(time)) %>% -->
-<!--   filter(month %in% c(3:6)) %>% -->
-<!--   group_by(value, month) %>% -->
-<!--   summarize(avg_tmin_statn = mean(tmin_statn)) -->
-
-<!-- tmin_hrus_mo <- left_join(tmin_grid_mo, tmin_statn_mo, by = c('value', 'month')) %>% -->
-<!--   mutate(mo_tmin_diff = avg_tmin_statn - avg_tmin_grid, -->
-<!--          value = as.numeric(value)) -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- #march -->
-<!-- tmin_hrus_mar<- tmin_hrus_mo %>% -->
-<!--   filter(month == 3) -->
-
-<!-- hrus_map_tmin_mar <- left_join(hrus, tmin_hrus_mar, by = 'value') -->
-
-<!-- mar_tmin <- tm_shape(hrus_map_tmin_mar) + -->
-<!--   #tm_polygons('mo_tmin_diff', id = 'value') + -->
-<!--   tm_fill('mo_tmin_diff', id = 'value', -->
-<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
-<!--   tm_borders() + -->
-<!--   tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'March avg tmin', -->
-<!--             legend.outside = T) -->
-
-<!-- #april -->
-<!-- tmin_hrus_apr<- tmin_hrus_mo %>% -->
-<!--   filter(month == 4) -->
-
-<!-- hrus_map_tmin_apr <- left_join(hrus, tmin_hrus_apr, by = 'value') -->
-
-<!-- apr_tmin <- tm_shape(hrus_map_tmin_apr) + -->
-<!--   tm_fill('mo_tmin_diff', id = 'value', -->
-<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
-<!--   tm_borders() + -->
-<!--   tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'April avg tmin', -->
-<!--             legend.outside = T) -->
-
-<!-- #may -->
-<!-- tmin_hrus_may<- tmin_hrus_mo %>% -->
-<!--   filter(month == 5) -->
-
-<!-- hrus_map_tmin_may <- left_join(hrus, tmin_hrus_may, by = 'value') -->
-
-<!-- may_tmin <- tm_shape(hrus_map_tmin_may) + -->
-<!--   tm_fill('mo_tmin_diff', id = 'value', -->
-<!--          breaks = c(-5,-2.5,0,2.5,5)) + -->
-<!--   tm_borders() + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'May avg tmin', -->
-<!--             legend.outside = T) -->
-
-<!-- #june -->
-<!-- tmin_hrus_jun<- tmin_hrus_mo %>% -->
-<!--   filter(month == 6) -->
-
-<!-- hrus_map_tmin_jun <- left_join(hrus, tmin_hrus_jun, by = 'value') -->
-
-<!-- jun_tmin <- tm_shape(hrus_map_tmin_jun) + -->
-<!--   tm_fill('mo_tmin_diff', id = 'value', -->
-<!--           breaks = c(-5,-2.5,0,2.5,5)) + -->
-<!--   tm_borders() + -->
-<!-- tm_shape(locations_t) + -->
-<!--   tm_symbols(col='blue', size = 0.25) + -->
-<!--   tm_layout(title = 'June avg tmin', -->
-<!--             legend.outside = T) -->
-
-<!-- tmap_arrange(mar_tmin, apr_tmin, may_tmin, jun_tmin) -->
-
-<!-- ``` -->
-
-<!-- ## Cumulative Precip difference -->
-
-<!-- 2011-2020 average of daily station-grid precip for DOY 365 (or 366) -->
-
-<!-- ```{r cum precip, echo = F} -->
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_precip <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, precip)) %>% -->
-<!--   rename(precip_grid = precip) -->
-
-<!-- hru_statn_precip <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, precip)) %>% -->
-<!--   rename(precip_statn = precip) -->
-
-<!-- precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>% -->
-<!--   mutate(diff = precip_statn - precip_grid, -->
-<!--          year = year(time)) %>% -->
-<!--   group_by(year, ID) %>% -->
-<!--   mutate(total_diff = cumsum(diff)) %>% -->
-<!--   filter(time == max(time)) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(precip_avg_cumdiff = mean(total_diff)) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- locations_p <- locations %>% -->
-<!--   filter(type == 'precip') -->
-
-<!-- tm_shape(hrus_map_precip) + -->
-<!--   tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') + -->
-<!-- tm_shape(locations_p) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Solar radiation difference -->
-
-<!-- 2011-2020 average of daily station-grid solar rad -->
-
-<!-- ```{r cum sol rad, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_solrad <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, solRad)) %>% -->
-<!--   rename(solrad_grid = solRad)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(solrad_all_grid = mean(solrad_grid)) -->
-
-<!-- hru_statn_solrad <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, solRad)) %>% -->
-<!--   rename(solrad_statn = solRad) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(solrad_all_statn = mean(solrad_statn)) -->
-
-<!-- solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>% -->
-<!--   mutate(diff = solrad_all_statn - solrad_all_grid) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- locations_solrad <- locations %>% -->
-<!--   dplyr::filter(name %in% c('Gordon_South', -->
-<!--                         'Betasso', 'Niwot_Snotel')) -->
-
-<!-- tm_shape(hrus_map_solrad) + -->
-<!--   tm_polygons('diff', midpoint = NA, palette = 'YlOrRd', id = 'value') + -->
-<!-- tm_shape(locations_solrad) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## RH difference -->
-
-<!-- ```{r rh, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_rh <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, rhum)) %>% -->
-<!--   rename(rh_grid = rhum)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(rh_all_grid = mean(rh_grid)) -->
-
-<!-- hru_statn_rh <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, rhum)) %>% -->
-<!--   rename(rh_statn = rhum) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(rh_all_statn = mean(rh_statn)) -->
-
-<!-- rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>% -->
-<!--   mutate(diff = rh_all_statn - rh_all_grid) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- locations_rh <- locations %>% -->
-<!--   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North', -->
-<!--                         'Betasso', 'Niwot_Snotel')) -->
-
-<!-- tm_shape(hrus_map_rh) + -->
-<!--   tm_polygons('diff', midpoint = NA, id = 'value') + -->
-<!-- tm_shape(locations_rh) + -->
-<!--   tm_symbols(col='blue', size=4) -->
-
-<!-- ``` -->
-
-<!-- ## Average soil sat comparison -->
-
-<!-- ```{r soilsat, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_soilsat <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
-<!--   rename(soilsat_grid = soilSat)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(soilsat_all_grid = mean(soilsat_grid)) -->
-
-<!-- hru_statn_soilsat <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
-<!--   rename(soilsat_statn = soilSat) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(soilsat_all_statn = mean(soilsat_statn)) -->
-
-<!-- soilsat_hrus <- left_join(hru_grid_soilsat, hru_statn_soilsat, by = c('ID')) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_soilsat <- left_join(hrus, soilsat_hrus, by = 'value') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- soilavg_grid <- tm_shape(hrus_map_soilsat) + -->
-<!--   tm_polygons('soilsat_all_grid', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average soil sat') -->
-
-<!-- soilavg_statn <- tm_shape(hrus_map_soilsat) + -->
-<!--   tm_polygons('soilsat_all_statn', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3)) + -->
-<!--   tm_legend(legend.outside = T) -->
-
-<!-- tmap_arrange(soilavg_grid, soilavg_statn) -->
-
-<!-- ``` -->
-
-<!-- ## Average max soil sat comparison -->
-
-<!-- ```{r max soilsat, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_soilsat_max <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
-<!--   rename(soilsat_grid = soilSat)  %>% -->
-<!--   mutate(year = year(time)) %>% -->
-<!--   group_by(ID, year) %>% -->
-<!--   summarize(soilsat_yrmax_grid = max(soilsat_grid)) %>% -->
-<!--   summarize(avg_max_grid = mean(soilsat_yrmax_grid)) -->
-
-<!-- hru_statn_soilsat_max <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, soilSat)) %>% -->
-<!--   rename(soilsat_statn = soilSat) %>% -->
-<!--   mutate(year = year(time)) %>% -->
-<!--   group_by(ID, year) %>% -->
-<!--   summarize(soilsat_yrmax_statn = max(soilsat_statn)) %>% -->
-<!--   summarize(avg_max_statn = mean(soilsat_yrmax_statn)) -->
-
-<!-- soilsat_hrus_max <- left_join(hru_grid_soilsat_max, hru_statn_soilsat_max, by = c('ID')) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_soilsat_max <- left_join(hrus, soilsat_hrus_max, by = 'value') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- soilavg_grid_max <- tm_shape(hrus_map_soilsat_max) + -->
-<!--   tm_polygons('avg_max_grid', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average max soil sat', -->
-<!--             title.position = c('left', 'top')) -->
-
-<!-- soilavg_statn_max <- tm_shape(hrus_map_soilsat_max) + -->
-<!--   tm_polygons('avg_max_statn', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7)) + -->
-<!--   tm_legend(legend.outside = T) -->
-
-<!-- tmap_arrange(soilavg_grid_max, soilavg_statn_max) -->
-
-<!-- ``` -->
-
-<!-- ## Average ET comparison -->
-
-<!-- ```{r et, echo = F} -->
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_ET <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, actET)) %>% -->
-<!--   rename(ET_grid = actET)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(ET_all_grid = mean(ET_grid)) -->
-
-<!-- hru_statn_ET <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, actET)) %>% -->
-<!--   rename(ET_statn = actET) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(ET_all_statn = mean(ET_statn)) -->
-
-<!-- ET_hrus <- left_join(hru_grid_ET, hru_statn_ET, by = c('ID')) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_ET <- left_join(hrus, ET_hrus, by = 'value') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- ETavg_grid <- tm_shape(hrus_map_ET) + -->
-<!--   tm_polygons('ET_all_grid', midpoint = NA, id = 'value', -->
-<!--               breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average ET') -->
-
-<!-- ETavg_statn <- tm_shape(hrus_map_ET) + -->
-<!--   tm_polygons('ET_all_statn', midpoint = NA, id = 'value', -->
-<!--              breaks = c(0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) + -->
-<!--   tm_legend(legend.outside = T) -->
-
-<!-- tmap_arrange(ETavg_grid, ETavg_statn) -->
-
-<!-- ``` -->
-
-<!-- ## Average ET difference -->
-
-<!-- ```{r et diff, echo = F} -->
-
-<!-- ET_hrus <- ET_hrus %>% -->
-<!--   mutate(diff = ET_all_statn - ET_all_grid) -->
-
-<!-- hrus_map_et_diff <- left_join(hrus, ET_hrus, by = 'value') -->
-
-<!-- tmap_mode('plot') -->
-
-<!-- tm_shape(hrus_map_et_diff) + -->
-<!--   tm_polygons('diff', midpoint = NA, id = 'value')  + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average ET difference') -->
-
-<!-- ``` -->
-
-<!-- ## Average LAI comparison -->
-
-<!-- ```{r lai, echo = F} -->
-
-<!-- #get rid of a bunch of data -->
-<!-- hru_grid_LAI <- hru_grids %>% -->
-<!--   dplyr::select(c(time, ID, LAI)) %>% -->
-<!--   rename(LAI_grid = LAI)  %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(LAI_all_grid = mean(LAI_grid)) -->
-
-<!-- hru_statn_LAI <- hru_statn %>% -->
-<!--   dplyr::select(c(time, ID, LAI)) %>% -->
-<!--   rename(LAI_statn = LAI) %>% -->
-<!--   group_by(ID) %>% -->
-<!--   summarize(LAI_all_statn = mean(LAI_statn)) -->
-
-<!-- LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>% -->
-<!--   rename(value = ID) -->
-
-<!-- hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value') -->
-
-<!-- tmap_mode('view') -->
-
-<!-- LAIavg_grid <- tm_shape(hrus_map_LAI) + -->
-<!--   tm_polygons('LAI_all_grid', midpoint = NA, id = 'value', -->
-<!--               breaks = c(1,2,3,4,5)) + -->
-<!--   tm_legend(legend.outside = T) + -->
-<!--   tm_layout(main.title = 'Average LAI') -->
-
-<!-- LAIavg_statn <- tm_shape(hrus_map_LAI) + -->
-<!--   tm_polygons('LAI_all_statn', midpoint = NA, id = 'value', -->
-<!--               breaks = c(1,2,3,4,5)) + -->
-<!--   tm_legend(legend.outside = T) -->
-
-<!-- tmap_arrange(LAIavg_grid, LAIavg_statn) -->
-
-<!-- ``` -->
+#statn next
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_model/HRU_output/statn_all")
+
+read_ages_statn <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'statn')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_statn)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_statn <- dataframes %>%
+  bind_rows()
+
+#get rid of a bunch of data
+hru_grid_tmean <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_t <- locations %>%
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel',
+                        'University Camp SNTL'))
+
+tm_shape(hrus_map_tmean) +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Tmax difference
+
+```{r tmax, echo = F}
+
+#get rid of a bunch of data
+hru_grid_tmax <- hru_grids %>%
+  dplyr::select(c(time, ID, tmax)) %>%
+  rename(tmax_grid = tmax)  %>%
+  group_by(ID) %>%
+  summarize(tmax_all_grid = mean(tmax_grid))
+
+hru_statn_tmax <- hru_statn %>%
+  dplyr::select(c(time, ID, tmax)) %>%
+  rename(tmax_statn = tmax) %>%
+  group_by(ID) %>%
+  summarize(tmax_all_statn = mean(tmax_statn))
+
+tmax_hrus <- left_join(hru_grid_tmax, hru_statn_tmax, by = c('ID')) %>%
+  mutate(diff = tmax_all_statn - tmax_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_t <- locations %>%
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel',
+                        'University Camp SNTL'))
+
+tm_shape(hrus_map_tmax) +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Tmin difference
+
+```{r tmin, echo = F}
+
+#get rid of a bunch of data
+hru_grid_tmin <- hru_grids %>%
+  dplyr::select(c(time, ID, tmin)) %>%
+  rename(tmin_grid = tmin)  %>%
+  group_by(ID) %>%
+  summarize(tmin_all_grid = mean(tmin_grid))
+
+hru_statn_tmin <- hru_statn %>%
+  dplyr::select(c(time, ID, tmin)) %>%
+  rename(tmin_statn = tmin) %>%
+  group_by(ID) %>%
+  summarize(tmin_all_statn = mean(tmin_statn))
+
+tmin_hrus <- left_join(hru_grid_tmin, hru_statn_tmin, by = c('ID')) %>%
+  mutate(diff = tmin_all_statn - tmin_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_t <- locations %>%
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel',
+                        'University Camp SNTL'))
+
+tm_shape(hrus_map_tmin) +
+  tm_polygons('diff', id = 'value',
+              breaks = c(-6,-4,-2,0,2,4,6)) +
+tm_shape(locations_t) +
+  tm_symbols(col='blue', size=4)
+
+
+```
+
+## Cumulative Precip difference
+
+2011-2020 average of daily station-grid precip for DOY 365 (or 366)
+
+```{r cum precip, echo = F}
+#get rid of a bunch of data
+hru_grid_precip <- hru_grids %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_grid = precip)
+
+hru_statn_precip <- hru_statn %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_statn = precip)
+
+precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_p <- locations %>%
+  filter(type == 'precip')
+
+tm_shape(hrus_map_precip) +
+  tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
+tm_shape(locations_p) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Solar radiation difference
+
+2011-2020 average of daily station-grid solar rad
+
+```{r cum sol rad, echo = F}
+
+#get rid of a bunch of data
+hru_grid_solrad <- hru_grids %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_grid = solRad)  %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad <- hru_statn %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_statn = solRad) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_solrad <- locations %>%
+  dplyr::filter(name %in% c('Gordon_South',
+                        'Betasso', 'Niwot_Snotel'))
+
+tm_shape(hrus_map_solrad) +
+  tm_polygons('diff', midpoint = NA, palette = 'YlOrRd', id = 'value') +
+tm_shape(locations_solrad) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## RH difference
+
+```{r rh, echo = F}
+
+#get rid of a bunch of data
+hru_grid_rh <- hru_grids %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_grid = rhum)  %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh <- hru_statn %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_statn = rhum) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value')
+
+tmap_mode('view')
+
+locations_rh <- locations %>%
+  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+                        'Betasso', 'Niwot_Snotel'))
+
+tm_shape(hrus_map_rh) +
+  tm_polygons('diff', midpoint = NA, id = 'value') +
+tm_shape(locations_rh) +
+  tm_symbols(col='blue', size=4)
+
+```
+
+## Average soil sat comparison
+
+```{r soilsat, echo = F}
+
+#get rid of a bunch of data
+hru_grid_soilsat <- hru_grids %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilsat_grid = soilSat)  %>%
+  group_by(ID) %>%
+  summarize(soilsat_all_grid = mean(soilsat_grid))
+
+hru_statn_soilsat <- hru_statn %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilsat_statn = soilSat) %>%
+  group_by(ID) %>%
+  summarize(soilsat_all_statn = mean(soilsat_statn))
+
+soilsat_hrus <- left_join(hru_grid_soilsat, hru_statn_soilsat, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_soilsat <- left_join(hrus, soilsat_hrus, by = 'value')
+
+tmap_mode('plot')
+
+soilavg_grid <- tm_shape(hrus_map_soilsat) +
+  tm_polygons('soilsat_all_grid', midpoint = NA, id = 'value',
+              breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average soil sat')
+
+soilavg_statn <- tm_shape(hrus_map_soilsat) +
+  tm_polygons('soilsat_all_statn', midpoint = NA, id = 'value',
+              breaks = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(soilavg_grid, soilavg_statn)
+
+```
+
+## Average max soil sat comparison
+
+```{r max soilsat, echo = F}
+
+#get rid of a bunch of data
+hru_grid_soilsat_max <- hru_grids %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilsat_grid = soilSat)  %>%
+  mutate(year = year(time)) %>%
+  group_by(ID, year) %>%
+  summarize(soilsat_yrmax_grid = max(soilsat_grid)) %>%
+  summarize(avg_max_grid = mean(soilsat_yrmax_grid))
+
+hru_statn_soilsat_max <- hru_statn %>%
+  dplyr::select(c(time, ID, soilSat)) %>%
+  rename(soilsat_statn = soilSat) %>%
+  mutate(year = year(time)) %>%
+  group_by(ID, year) %>%
+  summarize(soilsat_yrmax_statn = max(soilsat_statn)) %>%
+  summarize(avg_max_statn = mean(soilsat_yrmax_statn))
+
+soilsat_hrus_max <- left_join(hru_grid_soilsat_max, hru_statn_soilsat_max, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_soilsat_max <- left_join(hrus, soilsat_hrus_max, by = 'value')
+
+tmap_mode('plot')
+
+soilavg_grid_max <- tm_shape(hrus_map_soilsat_max) +
+  tm_polygons('avg_max_grid', midpoint = NA, id = 'value',
+              breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average max soil sat',
+            title.position = c('left', 'top'))
+
+soilavg_statn_max <- tm_shape(hrus_map_soilsat_max) +
+  tm_polygons('avg_max_statn', midpoint = NA, id = 'value',
+              breaks = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(soilavg_grid_max, soilavg_statn_max)
+
+```
+
+## Average ET comparison
+
+```{r et, echo = F}
+#get rid of a bunch of data
+hru_grid_ET <- hru_grids %>%
+  dplyr::select(c(time, ID, actET)) %>%
+  rename(ET_grid = actET)  %>%
+  group_by(ID) %>%
+  summarize(ET_all_grid = mean(ET_grid))
+
+hru_statn_ET <- hru_statn %>%
+  dplyr::select(c(time, ID, actET)) %>%
+  rename(ET_statn = actET) %>%
+  group_by(ID) %>%
+  summarize(ET_all_statn = mean(ET_statn))
+
+ET_hrus <- left_join(hru_grid_ET, hru_statn_ET, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_ET <- left_join(hrus, ET_hrus, by = 'value')
+
+tmap_mode('plot')
+
+ETavg_grid <- tm_shape(hrus_map_ET) +
+  tm_polygons('ET_all_grid', midpoint = NA, id = 'value',
+              breaks = c(0.0,0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average ET')
+
+ETavg_statn <- tm_shape(hrus_map_ET) +
+  tm_polygons('ET_all_statn', midpoint = NA, id = 'value',
+             breaks = c(0.0, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(ETavg_grid, ETavg_statn)
+
+```
+
+## Average ET difference
+
+```{r et diff, echo = F}
+
+ET_hrus <- ET_hrus %>%
+  mutate(diff = ET_all_statn - ET_all_grid)
+
+hrus_map_et_diff <- left_join(hrus, ET_hrus, by = 'value')
+
+tmap_mode('plot')
+
+tm_shape(hrus_map_et_diff) +
+  tm_polygons('diff', midpoint = NA, id = 'value')  +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average ET difference')
+
+```
+
+## Average LAI comparison
+
+```{r lai, echo = F}
+
+#get rid of a bunch of data
+hru_grid_LAI <- hru_grids %>%
+  dplyr::select(c(time, ID, LAI)) %>%
+  rename(LAI_grid = LAI)  %>%
+  group_by(ID) %>%
+  summarize(LAI_all_grid = mean(LAI_grid))
+
+hru_statn_LAI <- hru_statn %>%
+  dplyr::select(c(time, ID, LAI)) %>%
+  rename(LAI_statn = LAI) %>%
+  group_by(ID) %>%
+  summarize(LAI_all_statn = mean(LAI_statn))
+
+LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>%
+  rename(value = ID)
+
+hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value')
+
+tmap_mode('view')
+
+LAIavg_grid <- tm_shape(hrus_map_LAI) +
+  tm_polygons('LAI_all_grid', midpoint = NA, id = 'value',
+              breaks = c(1,2,3,4,5)) +
+  tm_legend(legend.outside = T) +
+  tm_layout(main.title = 'Average LAI')
+
+LAIavg_statn <- tm_shape(hrus_map_LAI) +
+  tm_polygons('LAI_all_statn', midpoint = NA, id = 'value',
+              breaks = c(1,2,3,4,5)) +
+  tm_legend(legend.outside = T)
+
+tmap_arrange(LAIavg_grid, LAIavg_statn)
+
+```
 
