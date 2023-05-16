@@ -386,6 +386,14 @@ plot_params <- function(param_name) {
 
 lapply(name2, plot_params)
 
+
+# boxplots of burned and unburned
+
+ggplot(params_combo, aes(x=burn, y=value, fill=input_data)) +
+  geom_boxplot() +
+  facet_wrap(~param, scales = 'free_y')
+
+
 ```
 
 # Outlet results
