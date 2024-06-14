@@ -42,7 +42,7 @@ library(readxl)
 
 
 ```{r loading data, include=FALSE}
-setwd('C:/Users/sears/Documents/Repos/fourmile/data')
+setwd('/Users/megansears/Documents/Repos/fourmile/data')
 
 #pull in all filenames with composite
 filenames <- list.files('.', pattern='.csv', full.names=F)
@@ -71,7 +71,7 @@ USGS2 and DS2 have the same coordinates. USGS1 and DS3 have the same coordinates
 #hrus <- st_read('hrus_final.shp')
 
 #save.image(file = 'spatial.RData')
-load('C:/Users/sears/Documents/Repos/fourmile/data/spatial.RData') ## need to update with new locations + fire boundary ***
+load('/Users/megansears/Documents/Repos/fourmile/data/GIS/spatial.Rdata') ## need to update with new locations + fire boundary ***
 
 locations <- locations %>%
 st_as_sf(., coords=c('y','x'), crs = 4326)
@@ -108,10 +108,21 @@ daily_q <- orun %>%
   mutate(q_m3s = as.numeric(q_m3s))
 
 hydro <- ggplot(daily_q, aes(x=date, y=q_m3s, color=site)) + geom_line() +
-  ylim(0,8) + theme_bw() + 
+  geom_point() +
+  ylim(0,8) + 
+  theme_bw() + 
   ggtitle('Daily streamflow (all)')
 
 ggplotly(hydro)
+
+daily_q_ds3 <- daily_q %>%
+  filter(site %in% c('ds3', 'usgs1')) %>%
+  mutate(year = year(date)) %>%
+  filter(year %in% c(2011:2015)) %>%
+  drop_na()
+
+
+
 
 #look at 2011-2013
 hydro_datelimit <- ggplot(daily_q, aes(x=date, y=q_m3s, color=site)) + geom_line() + 
