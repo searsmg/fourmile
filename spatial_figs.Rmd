@@ -1,0 +1,618 @@
+---
+title: "spatial_figures"
+author: "Megan Sears"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r open package, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(ggplot2)
+library(here)
+library(sf)
+library(mapview)
+library(raster)
+library(sf)
+library(terra)
+library(viridis)
+
+```
+
+# Figure 1a
+
+```{r}
+
+# update the HRUs
+hru_new <- vect('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp')
+plot(hru_new)
+
+hru_new <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp')
+
+mapview(hru_new)
+
+locations <- read_csv('/Users/megansears/Documents/Repos/fourmile/data/GIS/locations_all.csv')
+
+locations <- locations %>%
+  st_as_sf(., coords=c('lon','lat'), crs = 4326)
+
+mapview(locations) + mapview(hru_new)
+
+# Read the DEM raster file
+dem_raster <- raster('/Users/megansears/Documents/Repos/fourmile/data/GIS/USGS_13_n41w106_20230314 (1).tif')
+dem_raster2 <- raster('/Users/megansears/Documents/Repos/fourmile/data/GIS/USGS_13_n40w106_20230602.tif')
+
+dem_raster <- merge(dem_raster, dem_raster2)
+
+mapview(dem_raster) + mapview(hru_new) + mapview(locations)
+
+#######
+bbox <- st_bbox(locations)
+
+# # Bounding box cuts off some points so expand it
+xrange <- bbox$xmax - bbox$xmin # range of x values
+yrange <- bbox$ymax - bbox$ymin # range of y values
+# Expand the extent
+bbox[1] <- bbox[1] - (0.1 * xrange) # xmin - left
+bbox[3] <- bbox[3] + (0.1 * xrange) # xmax - right
+bbox[2] <- bbox[2] - (0.1 * yrange) # ymin - bottom
+bbox[4] <- bbox[4] + (0.1 * yrange) # ymax - top
+# 
+#######
+
+hru_new <- st_transform(hru_new, crs(dem_raster))
+
+dem_cropped <- crop(dem_raster, extent(bbox))
+
+mapview(dem_cropped) + mapview(hru_new) + mapview(locations)
+
+# Convert the raster to a data frame
+dem_df <- as.data.frame(dem_cropped, xy = TRUE)
+
+fire <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/co4005110538520100906_20100621_20110624_burn_bndy.shp')
+mapview(fire) + mapview(hru_new)
+
+fire <- st_transform(fire, crs(dem_raster))
+
+## inset data
+
+library(spData)
+data("us_states", package = "spData")
+
+# Extract the geometry of Colorado
+wus <- us_states[us_states$REGION == "West", ]
+
+point <- locations[locations$source == 'USGS1',]
+
+# Create a ggplot with western US states and the bounding box
+ggm1 <- ggplot() + 
+  geom_sf(data = wus, fill = "white") + 
+  geom_sf(data = point, shape = 8, size = 3, color = "red", fill = "red") +  # Add star point
+  theme_void()
+
+ggm1
+
+
+##
+
+library(ggspatial) 
+
+# Define custom shapes for each value of 'display_use'
+custom_shapes <- c("Daymet" = 15, "Prism" = 16, "Precip" = 17, "Multi-sensor" = 18, "Streamflow" = 7)  # Replace "Type1", "Type2", etc. with actual values
+
+terrain <- ggplot() +
+  geom_raster(data = dem_df, 
+              aes(x = x, y = y, fill = layer)) +  
+  scale_fill_gradientn(colors = terrain.colors(200),  
+    name = "Elevation (m)") +
+   geom_sf(data = fire, 
+          aes(color = "Fire"), 
+          fill = NA, 
+          lwd = 0.75) +
+  geom_sf(data = hru_new, 
+          aes(color = "HRU"), 
+          fill = NA, 
+          lwd = 0.5) +
+  geom_sf(data = locations, 
+          aes(shape = factor(display_use)), 
+          size = 4) + 
+  scale_shape_manual(values = custom_shapes) +
+   scale_color_manual(name = NULL,
+                      values = c(Fire = "red", HRU = "black"), 
+                     labels = c(Fire = "Fourmile Canyon fire", HRU = "HRUs")) + 
+  labs(shape = element_blank()) +
+  theme_bw(base_size = 25) +
+  theme(axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.spacing.y = unit(0.01, "cm"))
+
+terrain
+
+ggsave('./figures/fig1a.png', dpi=600)
+
+ggplot() +
+  geom_raster(data = dem_df, aes(x = x, y = y, fill = layer)) +
+  scale_fill_viridis_c(name = "Elevation (m)", 
+                       option = "viridis",direction=-1) +
+  geom_sf(data = fire, 
+          aes(color = "Fire"), 
+          fill = NA, 
+          lwd = 0.75) +
+  geom_sf(data = hru_new, 
+          aes(color = "HRU"), 
+          fill = NA, 
+          lwd = 0.5) +
+  geom_sf(data = locations, 
+          aes(shape = factor(display_use)), 
+          size = 4) + 
+  scale_shape_manual(values = custom_shapes) +
+   scale_color_manual(name = NULL,
+                      values = c(Fire = "red", HRU = "black"), 
+                     labels = c(Fire = "Fourmile Canyon fire", HRU = "HRUs")) + 
+  labs(shape = element_blank()) +
+  theme_bw(base_size = 25) +
+  theme(axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.spacing.y = unit(0.01, "cm"))
+
+ggsave('./figures/fig1a_2.png', dpi=600)
+
+###
+library(cowplot)
+
+ggdraw() +
+  draw_plot(terrain) +
+  draw_plot(ggm1, x = 0.042, y = 0.63, width = 0.16, height = 0.16)
+  #draw_plot(ggm1, x = 0.585, y = 0.56, width = 0.25, height = 0.25)
+
+ggsave('./figures/fig1a.png', dpi=600)
+
+```
+
+# Figure 1b-e
+
+```{r}
+grid <- read_csv("/Users/megansears/Documents/Repos/fourmile/38HRU_model/HRU_gridall.csv") %>%
+  mutate(date = mdy(time),
+         site = 'grid')
+
+statn <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_model/HRU_statnall.csv') %>%
+  mutate(date = mdy(time),
+         site = 'statn')
+
+all <- bind_rows(grid, statn) %>%
+  arrange(date)
+
+catchment_mo_mean <- all %>%
+  mutate(month = month(date)) %>%
+  group_by(site, month) %>%
+  summarise(across(precip:solRad, ~ mean(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month,
+                precip_mean = precip, tmean_mean = tmean, 
+                solrad_mean = solRad, rh_mean = rhum)
+
+catchment_mo_sd <- all %>%
+  mutate(month = month(date)) %>%
+  group_by(site, month) %>%
+  summarise(across(precip:solRad, ~ sd(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month,
+                precip_sd = precip, tmean_sd = tmean, 
+                solrad_sd = solRad, rh_sd = rhum)
+
+
+catchment_mo <- left_join(catchment_mo_mean, catchment_mo_sd, 
+                          by = c('month', 'site'))
+
+catchment_mo2 <- catchment_mo %>%
+  mutate(month_name = month.abb[month]) %>%
+  mutate(month_name = factor(month_name, 
+                             levels = c('Jan', 'Feb', 'Mar',
+                                        'Apr', 'May', 'Jun',
+                                        'Jul', 'Aug', 'Sep',
+                                        'Oct', 'Nov', 'Dec')))
+
+
+p_cols <- ggplot(catchment_mo2, aes(x = month_name, y = precip_mean,
+                                    color = site, fill = site)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = 0, ymax = precip_mean + precip_sd), 
+                position = position_dodge(width = 0.6), width = 0.2) +
+  scale_color_manual(values = c("blue", "orange"),
+                     labels = c("Gridded", "Observed")) +  # Rename color legend items
+  scale_fill_manual(values = c("blue", "orange"),
+                    labels = c("Gridded", "Observed")) +   # Rename fill legend items
+  theme_bw(base_size = 12) +
+  labs(y = 'Precipitation (mm)',
+       x = element_blank()) +
+  guides(color = guide_legend(title = NULL),
+         fill = guide_legend(title = NULL))
+
+
+p_cols
+
+ggsave("P.png", plot = p_cols, width = 8, height = 6, dpi = 300)
+
+# Temperature plot
+t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean, 
+                                      color = site, group = site)) +
+  geom_ribbon(aes(ymin = tmean_mean - tmean_sd, ymax = tmean_mean + tmean_sd, fill = site), alpha = 0.2) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("blue", "orange"),
+                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
+  scale_fill_manual(values = c("blue", "orange"),
+                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  theme_bw(base_size=12) +
+  labs(y = expression("Mean temperature " ( degree~C)),
+       x = element_blank()) +
+  labs(color = NULL, fill = NULL)
+
+# Solar radiation plot
+sol_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = solrad_mean, 
+                                         color = site, group = site)) +
+  geom_ribbon(aes(ymin = solrad_mean - solrad_sd, ymax = solrad_mean + solrad_sd, fill = site), alpha = 0.2) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("blue", "orange"),
+                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
+  scale_fill_manual(values = c("blue", "orange"),
+                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  theme_bw(base_size = 12) +
+  labs(y = expression("Solar radiation (MJ/m"^"2" * ")"),
+       x = element_blank()) +
+  labs(color = NULL, fill = NULL)
+
+# Relative humidity plot
+rh_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = rh_mean, 
+                                        color = site, group = site)) +
+  geom_ribbon(aes(ymin = rh_mean - rh_sd, ymax = rh_mean + rh_sd, fill = site), alpha = 0.2) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("blue", "orange"),
+                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
+  scale_fill_manual(values = c("blue", "orange"),
+                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  theme_bw(base_size = 12) +
+  labs(y = 'RH (%)', x= element_blank()) +
+  labs(color = NULL, fill = NULL)
+
+# Print the plots
+t_moplot
+sol_moplot
+rh_moplot
+
+
+# t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean, 
+#                                       color = site, group = site)) +
+#   geom_ribbon(aes(ymin = tmean_mean - tmean_sd, ymax = tmean_mean + tmean_sd, fill = site), alpha = 0.2) +
+#   geom_line() +
+#   geom_point() +
+#   theme_bw(base_size=14) +
+#   labs(y = expression("Mean temperature " ( degree~C)),
+#        x = element_blank())
+# 
+# t_moplot
+# 
+# sol_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = solrad_mean, 
+#                                       color = site, group = site)) +
+#   geom_ribbon(aes(ymin = solrad_mean - solrad_sd, ymax = solrad_mean + solrad_sd, fill = site), alpha = 0.2) +
+#   geom_line() +
+#   geom_point() +
+#   theme_bw(base_size = 14) +
+#   labs(y = expression("Solar radiation (MJ/m"^"2" * ")"),
+#        x = element_blank()) 
+# 
+# sol_moplot
+# 
+# 
+# rh_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = rh_mean, 
+#                                       color = site, group = site)) +
+#   geom_ribbon(aes(ymin = rh_mean - rh_sd, ymax = rh_mean + rh_sd, fill = site), alpha = 0.2) +
+#   geom_line() +
+#   geom_point() +
+#   theme_bw(base_size = 14) +
+#   labs(y = 'RH (%)', x= element_blank()) 
+# rh_moplot
+library(ggpubr)
+
+quad <- ggarrange(p_cols, 
+          t_moplot,
+          sol_moplot,
+          rh_moplot,
+          common.legend = T,
+          legend = 'bottom',
+          ncol=4) 
+          #nrow = 4)
+          #ncol= 0)
+quad
+
+ggsave("./figures/quad.png", plot = quad, dpi = 600)
+
+```
+
+# difference
+
+```{r}
+
+#grid first
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_model/HRU_output/grid_all")
+
+read_ages_grid <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'grid')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_grid)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_grids <- dataframes %>%
+  bind_rows()
+
+#statn next
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_model/HRU_output/statn_all")
+
+read_ages_statn <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'statn')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_statn)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_statn <- dataframes %>%
+  bind_rows()
+
+#get rid of a bunch of data
+hru_grid_tmean <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean <- left_join(hru_new, tmean_hrus, by = 'value')
+
+
+
+
+# T max
+#get rid of a bunch of data
+hru_grid_tmax <- hru_grids %>%
+  dplyr::select(c(time, ID, tmax)) %>%
+  rename(tmax_grid = tmax)  %>%
+  group_by(ID) %>%
+  summarize(tmax_all_grid = mean(tmax_grid))
+
+hru_statn_tmax <- hru_statn %>%
+  dplyr::select(c(time, ID, tmax)) %>%
+  rename(tmax_statn = tmax) %>%
+  group_by(ID) %>%
+  summarize(tmax_all_statn = mean(tmax_statn))
+
+tmax_hrus <- left_join(hru_grid_tmax, hru_statn_tmax, by = c('ID')) %>%
+  mutate(diff = tmax_all_statn - tmax_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmax <- left_join(hru_new, tmax_hrus, by = 'value')
+
+
+
+# Tmin
+#get rid of a bunch of data
+hru_grid_tmin <- hru_grids %>%
+  dplyr::select(c(time, ID, tmin)) %>%
+  rename(tmin_grid = tmin)  %>%
+  group_by(ID) %>%
+  summarize(tmin_all_grid = mean(tmin_grid))
+
+hru_statn_tmin <- hru_statn %>%
+  dplyr::select(c(time, ID, tmin)) %>%
+  rename(tmin_statn = tmin) %>%
+  group_by(ID) %>%
+  summarize(tmin_all_statn = mean(tmin_statn))
+
+tmin_hrus <- left_join(hru_grid_tmin, hru_statn_tmin, by = c('ID')) %>%
+  mutate(diff = tmin_all_statn - tmin_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmin <- left_join(hru_new, tmin_hrus, by = 'value')
+
+
+
+# Cumulative p
+hru_grid_precip <- hru_grids %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_grid = precip)
+
+hru_statn_precip <- hru_statn %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_statn = precip)
+
+precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip <- left_join(hru_new, precip_hrus, by = 'value')
+
+
+# solar rad
+hru_grid_solrad <- hru_grids %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_grid = solRad)  %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad <- hru_statn %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_statn = solRad) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad <- left_join(hru_new, solrad_hrus, by = 'value')
+
+
+# RH
+#get rid of a bunch of data
+hru_grid_rh <- hru_grids %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_grid = rhum)  %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh <- hru_statn %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_statn = rhum) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh <- left_join(hru_new, rh_hrus, by = 'value')
+
+rh <- ggplot() +
+  geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "viridis", name = "RH difference (%)") +
+  theme_bw(base_size=13.5) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+
+rh
+
+sr <- ggplot() +
+  geom_sf(data = hrus_map_solrad, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "cividis", name = expression("Solar rad difference (MJ/m"^"2" * ")")) +
+  theme_bw(base_size=13.5) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  guides(
+    fill = guide_colorbar(
+      label.theme = element_text(size = 10)))
+
+
+sr
+
+precip <- ggplot() +
+  geom_sf(data = hrus_map_precip, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)") +
+  theme_bw(base_size=13.5) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+
+precip
+
+tmean <- ggplot() +
+  geom_sf(data = hrus_map_tmean, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmean difference (°C)") +
+  theme_bw(base_size=13.5) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+
+tmin <- ggplot() +
+  geom_sf(data = hrus_map_tmin, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "mako", name = "Tmin difference (°C)") +
+  theme_bw(base_size=13.5) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+
+tmax <- ggplot() +
+  geom_sf(data = hrus_map_tmax, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "inferno", name = "Tmax difference (°C)") +
+  theme_bw(base_size=13.5) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+
+
+
+lots <- ggarrange(precip,
+                  sr,
+                  rh,
+                  tmean,
+                  tmax,
+                  tmin) 
+          #nrow = 4)
+          #ncol= 0)
+lots
+
+
+ggsave("./figures/diff.png", plot = lots, dpi = 600)
+
+```
+
+
+
