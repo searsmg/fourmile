@@ -1191,16 +1191,16 @@ gw_statn2020 <- read_csv(here('catchment_output/statn2020_outlet.csv')) %>%
 
 gw <- bind_rows(
   gw_gridall, gw_statnall,
-  gw_grid2011, gw_grid2012,
-  gw_grid2013, gw_grid2014,
-  gw_grid2015, gw_grid2016,
-  gw_grid2017, gw_grid2018,
-  gw_grid2019, gw_grid2020,
-  gw_statn2011, gw_statn2012,
-  gw_statn2013, gw_statn2014,
-  gw_statn2015, gw_statn2016,
-  gw_statn2017, gw_statn2018,
-  gw_statn2019, gw_statn2020
+  # gw_grid2011, gw_grid2012,
+  # gw_grid2013, gw_grid2014,
+  # gw_grid2015, gw_grid2016,
+  # gw_grid2017, gw_grid2018,
+  # gw_grid2019, gw_grid2020,
+  # gw_statn2011, gw_statn2012,
+  # gw_statn2013, gw_statn2014,
+  # gw_statn2015, gw_statn2016,
+  # gw_statn2017, gw_statn2018,
+  # gw_statn2019, gw_statn2020
 ) %>%
   mutate(date = mdy(time),
          year = year(date))
