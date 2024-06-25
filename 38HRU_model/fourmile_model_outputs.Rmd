@@ -418,7 +418,21 @@ ggplot(params_combo, aes(x=burn, y=value, fill=input_data)) +
   geom_boxplot() +
   facet_wrap(~param, scales = 'free_y')
 
+# add area weights to params combo
+params_weighted <- params_combo %>%
+  mutate(area = if_else(burn == 'no', 48243400,
+                        18823000)) %>%
+  group_by(param, cal) %>%
+  summarize(numerator = sum(value * area),
+    denominator = sum(area)) %>%
+  mutate(area_weighted_average = numerator / denominator) %>%
+  dplyr::select(-c(numerator, denominator))
+  
 
+write_csv(params_weighted, './params_weighted.csv')
+  
+
+  
 ```
 
 # Outlet results
@@ -1191,16 +1205,16 @@ gw_statn2020 <- read_csv(here('catchment_output/statn2020_outlet.csv')) %>%
 
 gw <- bind_rows(
   gw_gridall, gw_statnall,
-  # gw_grid2011, gw_grid2012,
-  # gw_grid2013, gw_grid2014,
-  # gw_grid2015, gw_grid2016,
-  # gw_grid2017, gw_grid2018,
-  # gw_grid2019, gw_grid2020,
-  # gw_statn2011, gw_statn2012,
-  # gw_statn2013, gw_statn2014,
-  # gw_statn2015, gw_statn2016,
-  # gw_statn2017, gw_statn2018,
-  # gw_statn2019, gw_statn2020
+  gw_grid2011, gw_grid2012,
+  gw_grid2013, gw_grid2014,
+  gw_grid2015, gw_grid2016,
+  gw_grid2017, gw_grid2018,
+  gw_grid2019, gw_grid2020,
+  gw_statn2011, gw_statn2012,
+  gw_statn2013, gw_statn2014,
+  gw_statn2015, gw_statn2016,
+  gw_statn2017, gw_statn2018,
+  gw_statn2019, gw_statn2020
 ) %>%
   mutate(date = mdy(time),
          year = year(date))
@@ -1841,9 +1855,19 @@ params1 <- params %>%
   rename(input_data = cal) %>%
   dplyr::select(-c(year_missing))
 
+#
+params_weighted1 <- params_weighted %>%
+  rename(input_data = cal) %>%
+  pivot_wider(names_from = 'param',
+              values_from = 'area_weighted_average') %>%
+  rename_with(~ paste0(., '_weighted'), 2:7)
+
+
 join <- left_join(join, params1, by = c('input_data')) %>%
   pivot_wider(., names_from='param', values_from='value') %>%
   pivot_wider(., names_from = 'flow_type', values_from = 'flow_cms')
+
+join <- left_join(join, params_weighted1, by = 'input_data')
 
 write_csv(join, 'flow_params.csv')
 
