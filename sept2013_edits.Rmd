@@ -24,6 +24,7 @@ library(knitr)
 library(kableExtra)
 library(hydroGOF)
 library(here)
+library(viridis)
 
 ```
 
@@ -310,6 +311,45 @@ kable(flow_kge_all) %>%
 
 ```
 
+## Q KGE by year
+
+```{r, echo = F}
+
+flow_year <- flow %>%
+  drop_na() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_allNA = KGE(grid_allNA, obs),
+            grid_all25 = KGE(grid_all25, obs),
+            gridall = KGE(grid_all, obs),
+            statn_all25 = KGE(statn_all25, obs),
+            statn_allNA = KGE(statn_allNA, obs),
+            statnall = KGE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_kge <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  pivot_wider(names_from = 'year', values_from = 'kge')
+
+flow_kge %>%
+  kable(.) %>%
+  kable_styling()
+
+data_long <- pivot_longer(flow_kge, cols = -model_run, names_to = "year", values_to = "kge")
+
+ggplot(data_long, aes(x = model_run, y = year, fill = kge)) +
+  geom_tile(color = "white") +
+  scale_fill_viridis_c(option = "viridis", name = "KGE", direction = -1) +
+  geom_text(aes(label = round(kge, 2)), color = "grey", size = 4) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(y = "Year")
+
+
+```
+
 ## Q percent bias
 
 ```{r, echo = F}
@@ -332,6 +372,45 @@ flow_pbias_all <- flow_pbias_all %>%
 
 kable(flow_pbias_all) %>%
   kable_styling(full_width = F)
+
+```
+
+## Pbias by year
+
+```{r, echo = F}
+
+flow_year <- flow %>%
+  drop_na() %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(grid_allNA = pbias(grid_allNA, obs),
+            grid_all25 = pbias(grid_all25, obs),
+            gridall = pbias(grid_all, obs),
+            statn_all25 = pbias(statn_all25, obs),
+            statn_allNA = pbias(statn_allNA, obs),
+            statnall = pbias(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_pbias <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'pbias') %>%
+  pivot_wider(names_from = 'year', values_from = 'pbias')
+
+flow_pbias %>%
+  kable(.) %>%
+  kable_styling()
+
+data_long <- pivot_longer(flow_pbias, cols = -model_run, names_to = "year", values_to = "Pbias")
+
+ggplot(data_long, aes(x = model_run, y = year, fill = Pbias)) +
+  geom_tile(color = "white") +
+ scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, name = "Pbias") +
+  geom_text(aes(label = round(Pbias, 2)), color = "black", size = 4) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(y = "Year")
+
 
 ```
 
