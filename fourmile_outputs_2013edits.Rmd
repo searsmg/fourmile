@@ -418,7 +418,8 @@ ggplot(params_combo, aes(x=burn, y=value, fill=input_data)) +
   geom_boxplot() +
   facet_wrap(~param, scales = 'free_y')
 
-  
+write_csv(params_combo, '/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/params_burn_unburn.csv')
+
 ```
 
 ## Parameters area weighted
@@ -1264,98 +1265,98 @@ gw_statnall <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_all.
   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
   mutate(source = 'statn_all')
 
-# gw_grid2011 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2011.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2011')
-# 
-# gw_grid2012 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2012.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2012')
-# 
-# gw_grid2013 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2013.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2013')
-# 
-# gw_grid2014 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2014.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2014')
-# 
-# gw_grid2015 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2015.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2015')
-# 
-# gw_grid2016 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2016.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2016')
-# 
-# gw_grid2017 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2017.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2017')
-# 
-# gw_grid2018 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2018.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2018')
-# 
-# gw_grid2019 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2019.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2019')
-# 
-# gw_grid2020 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2020.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'grid_2020')
-# 
-# gw_statn2011 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2011.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2011')
-# 
-# gw_statn2012 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2012.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2012')
-# 
-# gw_statn2013 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2013.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2013')
-# 
-# gw_statn2014 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2014.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2014')
-# 
-# gw_statn2015 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2015.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2015')
-# 
-# gw_statn2016 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2016.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2016')
-# 
-# gw_statn2017 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2017.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2017')
-# 
-# gw_statn2018 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2018.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2018')
-# 
-# gw_statn2019 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2019.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2019')
-# 
-# gw_statn2020 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2020.csv')) %>%
-#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
-#   mutate(source = 'statn_2020')
+gw_grid2011 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2011.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2011')
+
+gw_grid2012 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2012.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2012')
+
+gw_grid2013 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2013.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2013')
+
+gw_grid2014 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2014.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2014')
+
+gw_grid2015 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2015.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2015')
+
+gw_grid2016 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2016.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2016')
+
+gw_grid2017 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2017.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2017')
+
+gw_grid2018 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2018.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2018')
+
+gw_grid2019 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2019.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2019')
+
+gw_grid2020 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2020.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_2020')
+
+gw_statn2011 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2011.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2011')
+
+gw_statn2012 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2012.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2012')
+
+gw_statn2013 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2013.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2013')
+
+gw_statn2014 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2014.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2014')
+
+gw_statn2015 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2015.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2015')
+
+gw_statn2016 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2016.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2016')
+
+gw_statn2017 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2017.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2017')
+
+gw_statn2018 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2018.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2018')
+
+gw_statn2019 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2019.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2019')
+
+gw_statn2020 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2020.csv')) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_2020')
 
 gw <- bind_rows(
-  gw_gridall, gw_statnall
-  # gw_grid2011, gw_grid2012,
-  # gw_grid2013, gw_grid2014,
-  # gw_grid2015, gw_grid2016,
-  # gw_grid2017, gw_grid2018,
-  # gw_grid2019, gw_grid2020,
-  # gw_statn2011, gw_statn2012,
-  # gw_statn2013, gw_statn2014,
-  # gw_statn2015, gw_statn2016,
-  # gw_statn2017, gw_statn2018,
-  # gw_statn2019, gw_statn2020
+  gw_gridall, gw_statnall,
+  gw_grid2011, gw_grid2012,
+  gw_grid2013, gw_grid2014,
+  gw_grid2015, gw_grid2016,
+  gw_grid2017, gw_grid2018,
+  gw_grid2019, gw_grid2020,
+  gw_statn2011, gw_statn2012,
+  gw_statn2013, gw_statn2014,
+  gw_statn2015, gw_statn2016,
+  gw_statn2017, gw_statn2018,
+  gw_statn2019, gw_statn2020
 ) %>%
   mutate(date = mdy(time),
          year = year(date))
@@ -2214,33 +2215,34 @@ tmap_arrange(LAIavg_grid, LAIavg_statn)
 
 ```
 
-<!-- # Join param & RD/RG -->
+# Join param & RD/RG
 
-<!-- ```{r} -->
+```{r}
 
-<!-- join <- gw_maxcumsum %>% -->
-<!--   rename(input_data = source) -->
+join <- gw_maxcumsum %>%
+  rename(input_data = source)
 
-<!-- params1 <- params %>% -->
-<!--   dplyr::select(-input_data) %>% -->
-<!--   rename(input_data = cal) %>% -->
-<!--   dplyr::select(-c(year_missing)) -->
+params1 <- params %>%
+  dplyr::select(-input_data) %>%
+  rename(input_data = cal) %>%
+  dplyr::select(-c(year_missing))
 
-<!-- # -->
-<!-- params_weighted1 <- params_weighted %>% -->
-<!--   rename(input_data = cal) %>% -->
-<!--   pivot_wider(names_from = 'param', -->
-<!--               values_from = 'area_weighted_average') %>% -->
-<!--   rename_with(~ paste0(., '_weighted'), 2:7) -->
+#
+params_weighted1 <- params_weighted %>%
+  mutate(input_data = paste(source, year_missing, sep = "_")) %>% 
+  pivot_wider(names_from = 'param',
+              values_from = 'area_weighted_average') %>%
+  rename_with(~ paste0(., '_weighted'), 4:9) %>%
+  dplyr::select(-c(year_missing, source))
 
 
-<!-- join <- left_join(join, params1, by = c('input_data')) %>% -->
-<!--   pivot_wider(., names_from='param', values_from='value') %>% -->
-<!--   pivot_wider(., names_from = 'flow_type', values_from = 'flow_cms') -->
+join <- left_join(join, params1, by = c('input_data')) %>%
+  pivot_wider(., names_from='param', values_from='value') %>%
+  pivot_wider(., names_from = 'flow_type', values_from = 'flow_cms')
 
-<!-- join <- left_join(join, params_weighted1, by = 'input_data') -->
+join <- left_join(join, params_weighted1, by = 'input_data')
 
-<!-- write_csv(join, 'flow_params.csv') -->
+write_csv(join, '/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/flow_params.csv')
 
-<!-- ``` -->
+```
 
