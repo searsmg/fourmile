@@ -1517,12 +1517,10 @@ flow_season %>%
 
 # HRU results
 
-## Tmean difference
-
-2011-2020 average of daily station-grid Tmean
-
 ```{r cumulative tmean for HRUs, echo = F}
 hrus <- st_read('/Users/megansears/Documents/Repos/fourmile/38HRU_model/hrus_final.shp')
+
+mapview(hrus)
 
 locations <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_model/fourmile_sensors.csv')
 
@@ -1583,6 +1581,45 @@ names(dataframes) <- substr(filenames, 1, 6)
 hru_statn <- dataframes %>%
   bind_rows()
 
+# #get rid of a bunch of data
+# hru_grid_tmean <- hru_grids %>%
+#   dplyr::select(c(time, ID, tmean)) %>%
+#   rename(tmean_grid = tmean)  %>%
+#   group_by(ID) %>%
+#   summarize(tmean_all_grid = mean(tmean_grid))
+# 
+# hru_statn_tmean <- hru_statn %>%
+#   dplyr::select(c(time, ID, tmean)) %>%
+#   rename(tmean_statn = tmean) %>%
+#   group_by(ID) %>%
+#   summarize(tmean_all_statn = mean(tmean_statn))
+# 
+# tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
+#   mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+#   rename(value = ID)
+# 
+# hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value')
+# 
+# tmap_mode('view')
+# 
+# locations_t <- locations %>%
+#   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+#                         'Betasso', 'Niwot_Snotel',
+#                         'University Camp SNTL'))
+# 
+# tm_shape(hrus_map_tmean) +
+#   tm_polygons('diff', id = 'value',
+#               breaks = c(-6,-4,-2,0,2,4,6)) +
+# tm_shape(locations_t) +
+#   tm_symbols(col='blue', size=4)
+
+```
+
+## Tmean difference
+Station - grid
+
+```{r}
+
 #get rid of a bunch of data
 hru_grid_tmean <- hru_grids %>%
   dplyr::select(c(time, ID, tmean)) %>%
@@ -1602,18 +1639,20 @@ tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
 
 hrus_map_tmean <- left_join(hrus, tmean_hrus, by = 'value')
 
-tmap_mode('view')
+tmean <- ggplot() +
+  geom_sf(data = hrus_map_tmean, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmean difference (°C)",
+                       limits = c(-5, 2)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) 
 
-locations_t <- locations %>%
-  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
-                        'Betasso', 'Niwot_Snotel',
-                        'University Camp SNTL'))
-
-tm_shape(hrus_map_tmean) +
-  tm_polygons('diff', id = 'value',
-              breaks = c(-6,-4,-2,0,2,4,6)) +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size=4)
+tmean
 
 ```
 
@@ -1621,6 +1660,39 @@ tm_shape(locations_t) +
 
 ```{r tmax, echo = F}
 
+# #get rid of a bunch of data
+# hru_grid_tmax <- hru_grids %>%
+#   dplyr::select(c(time, ID, tmax)) %>%
+#   rename(tmax_grid = tmax)  %>%
+#   group_by(ID) %>%
+#   summarize(tmax_all_grid = mean(tmax_grid))
+# 
+# hru_statn_tmax <- hru_statn %>%
+#   dplyr::select(c(time, ID, tmax)) %>%
+#   rename(tmax_statn = tmax) %>%
+#   group_by(ID) %>%
+#   summarize(tmax_all_statn = mean(tmax_statn))
+# 
+# tmax_hrus <- left_join(hru_grid_tmax, hru_statn_tmax, by = c('ID')) %>%
+#   mutate(diff = tmax_all_statn - tmax_all_grid) %>%
+#   rename(value = ID)
+# 
+# hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value')
+# 
+# tmap_mode('view')
+# 
+# locations_t <- locations %>%
+#   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+#                         'Betasso', 'Niwot_Snotel',
+#                         'University Camp SNTL'))
+# 
+# tm_shape(hrus_map_tmax) +
+#   tm_polygons('diff', id = 'value',
+#               breaks = c(-6,-4,-2,0,2,4,6)) +
+# tm_shape(locations_t) +
+#   tm_symbols(col='blue', size=4)
+
+# T max
 #get rid of a bunch of data
 hru_grid_tmax <- hru_grids %>%
   dplyr::select(c(time, ID, tmax)) %>%
@@ -1640,18 +1712,21 @@ tmax_hrus <- left_join(hru_grid_tmax, hru_statn_tmax, by = c('ID')) %>%
 
 hrus_map_tmax <- left_join(hrus, tmax_hrus, by = 'value')
 
-tmap_mode('view')
+tmax <- ggplot() +
+  geom_sf(data = hrus_map_tmax, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmax difference (°C)",
+                       limits = c(-5, 2)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) 
+  
 
-locations_t <- locations %>%
-  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
-                        'Betasso', 'Niwot_Snotel',
-                        'University Camp SNTL'))
-
-tm_shape(hrus_map_tmax) +
-  tm_polygons('diff', id = 'value',
-              breaks = c(-6,-4,-2,0,2,4,6)) +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size=4)
+tmax
 
 ```
 
@@ -1659,6 +1734,39 @@ tm_shape(locations_t) +
 
 ```{r tmin, echo = F}
 
+# #get rid of a bunch of data
+# hru_grid_tmin <- hru_grids %>%
+#   dplyr::select(c(time, ID, tmin)) %>%
+#   rename(tmin_grid = tmin)  %>%
+#   group_by(ID) %>%
+#   summarize(tmin_all_grid = mean(tmin_grid))
+# 
+# hru_statn_tmin <- hru_statn %>%
+#   dplyr::select(c(time, ID, tmin)) %>%
+#   rename(tmin_statn = tmin) %>%
+#   group_by(ID) %>%
+#   summarize(tmin_all_statn = mean(tmin_statn))
+# 
+# tmin_hrus <- left_join(hru_grid_tmin, hru_statn_tmin, by = c('ID')) %>%
+#   mutate(diff = tmin_all_statn - tmin_all_grid) %>%
+#   rename(value = ID)
+# 
+# hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value')
+# 
+# tmap_mode('view')
+# 
+# locations_t <- locations %>%
+#   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+#                         'Betasso', 'Niwot_Snotel',
+#                         'University Camp SNTL'))
+# 
+# tm_shape(hrus_map_tmin) +
+#   tm_polygons('diff', id = 'value',
+#               breaks = c(-6,-4,-2,0,2,4,6)) +
+# tm_shape(locations_t) +
+#   tm_symbols(col='blue', size=4)
+
+# Tmin
 #get rid of a bunch of data
 hru_grid_tmin <- hru_grids %>%
   dplyr::select(c(time, ID, tmin)) %>%
@@ -1678,19 +1786,20 @@ tmin_hrus <- left_join(hru_grid_tmin, hru_statn_tmin, by = c('ID')) %>%
 
 hrus_map_tmin <- left_join(hrus, tmin_hrus, by = 'value')
 
-tmap_mode('view')
+tmin <- ggplot() +
+  geom_sf(data = hrus_map_tmin, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmin difference (°C)",
+                       limits = c(-5, 2)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) 
 
-locations_t <- locations %>%
-  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
-                        'Betasso', 'Niwot_Snotel',
-                        'University Camp SNTL'))
-
-tm_shape(hrus_map_tmin) +
-  tm_polygons('diff', id = 'value',
-              breaks = c(-6,-4,-2,0,2,4,6)) +
-tm_shape(locations_t) +
-  tm_symbols(col='blue', size=4)
-
+tmin
 
 ```
 
@@ -1699,7 +1808,38 @@ tm_shape(locations_t) +
 2011-2020 average of daily station-grid precip for DOY 365 (or 366)
 
 ```{r cum precip, echo = F}
-#get rid of a bunch of data
+# #get rid of a bunch of data
+# hru_grid_precip <- hru_grids %>%
+#   dplyr::select(c(time, ID, precip)) %>%
+#   rename(precip_grid = precip)
+# 
+# hru_statn_precip <- hru_statn %>%
+#   dplyr::select(c(time, ID, precip)) %>%
+#   rename(precip_statn = precip)
+# 
+# precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+#   mutate(diff = precip_statn - precip_grid,
+#          year = year(time)) %>%
+#   group_by(year, ID) %>%
+#   mutate(total_diff = cumsum(diff)) %>%
+#   filter(time == max(time)) %>%
+#   group_by(ID) %>%
+#   summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+#   rename(value = ID)
+# 
+# hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value')
+# 
+# tmap_mode('view')
+# 
+# locations_p <- locations %>%
+#   filter(type == 'precip')
+# 
+# tm_shape(hrus_map_precip) +
+#   tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
+# tm_shape(locations_p) +
+#   tm_symbols(col='blue', size=4)
+
+# Cumulative p
 hru_grid_precip <- hru_grids %>%
   dplyr::select(c(time, ID, precip)) %>%
   rename(precip_grid = precip)
@@ -1720,15 +1860,19 @@ precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')
 
 hrus_map_precip <- left_join(hrus, precip_hrus, by = 'value')
 
-tmap_mode('view')
+precip <- ggplot() +
+  geom_sf(data = hrus_map_precip, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)") +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
 
-locations_p <- locations %>%
-  filter(type == 'precip')
-
-tm_shape(hrus_map_precip) +
-  tm_polygons('precip_avg_cumdiff', midpoint = NA, palette = 'YlGnBu', id = 'value') +
-tm_shape(locations_p) +
-  tm_symbols(col='blue', size=4)
+precip
 
 ```
 
@@ -1738,7 +1882,37 @@ tm_shape(locations_p) +
 
 ```{r cum sol rad, echo = F}
 
-#get rid of a bunch of data
+# #get rid of a bunch of data
+# hru_grid_solrad <- hru_grids %>%
+#   dplyr::select(c(time, ID, solRad)) %>%
+#   rename(solrad_grid = solRad)  %>%
+#   group_by(ID) %>%
+#   summarize(solrad_all_grid = mean(solrad_grid))
+# 
+# hru_statn_solrad <- hru_statn %>%
+#   dplyr::select(c(time, ID, solRad)) %>%
+#   rename(solrad_statn = solRad) %>%
+#   group_by(ID) %>%
+#   summarize(solrad_all_statn = mean(solrad_statn))
+# 
+# solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
+#   mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+#   rename(value = ID)
+# 
+# hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value')
+# 
+# tmap_mode('view')
+# 
+# locations_solrad <- locations %>%
+#   dplyr::filter(name %in% c('Gordon_South',
+#                         'Betasso', 'Niwot_Snotel'))
+# 
+# tm_shape(hrus_map_solrad) +
+#   tm_polygons('diff', midpoint = NA, palette = 'YlOrRd', id = 'value') +
+# tm_shape(locations_solrad) +
+#   tm_symbols(col='blue', size=4)
+
+# solar rad
 hru_grid_solrad <- hru_grids %>%
   dplyr::select(c(time, ID, solRad)) %>%
   rename(solrad_grid = solRad)  %>%
@@ -1757,16 +1931,23 @@ solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
 
 hrus_map_solrad <- left_join(hrus, solrad_hrus, by = 'value')
 
-tmap_mode('view')
+sr <- ggplot() +
+  geom_sf(data = hrus_map_solrad, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "cividis", name = expression("Solar rad difference (MJ/m"^"2" * ")")) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  guides(
+    fill = guide_colorbar(
+      label.theme = element_text(size = 10))) 
 
-locations_solrad <- locations %>%
-  dplyr::filter(name %in% c('Gordon_South',
-                        'Betasso', 'Niwot_Snotel'))
 
-tm_shape(hrus_map_solrad) +
-  tm_polygons('diff', midpoint = NA, palette = 'YlOrRd', id = 'value') +
-tm_shape(locations_solrad) +
-  tm_symbols(col='blue', size=4)
+sr
 
 ```
 
@@ -1774,6 +1955,37 @@ tm_shape(locations_solrad) +
 
 ```{r rh, echo = F}
 
+# #get rid of a bunch of data
+# hru_grid_rh <- hru_grids %>%
+#   dplyr::select(c(time, ID, rhum)) %>%
+#   rename(rh_grid = rhum)  %>%
+#   group_by(ID) %>%
+#   summarize(rh_all_grid = mean(rh_grid))
+# 
+# hru_statn_rh <- hru_statn %>%
+#   dplyr::select(c(time, ID, rhum)) %>%
+#   rename(rh_statn = rhum) %>%
+#   group_by(ID) %>%
+#   summarize(rh_all_statn = mean(rh_statn))
+# 
+# rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
+#   mutate(diff = rh_all_statn - rh_all_grid) %>%
+#   rename(value = ID)
+# 
+# hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value')
+# 
+# tmap_mode('view')
+# 
+# locations_rh <- locations %>%
+#   dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
+#                         'Betasso', 'Niwot_Snotel'))
+# 
+# tm_shape(hrus_map_rh) +
+#   tm_polygons('diff', midpoint = NA, id = 'value') +
+# tm_shape(locations_rh) +
+#   tm_symbols(col='blue', size=4)
+
+# RH
 #get rid of a bunch of data
 hru_grid_rh <- hru_grids %>%
   dplyr::select(c(time, ID, rhum)) %>%
@@ -1793,18 +2005,36 @@ rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
 
 hrus_map_rh <- left_join(hrus, rh_hrus, by = 'value')
 
-tmap_mode('view')
+rh <- ggplot() +
+  geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "viridis", name = "RH difference (%)") +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
 
-locations_rh <- locations %>%
-  dplyr::filter(name %in% c('Gordon_South', 'Gordon_North',
-                        'Betasso', 'Niwot_Snotel'))
-
-tm_shape(hrus_map_rh) +
-  tm_polygons('diff', midpoint = NA, id = 'value') +
-tm_shape(locations_rh) +
-  tm_symbols(col='blue', size=4)
+rh
 
 ```
+
+```{r}
+
+# lots <- ggarrange(precip,
+#                   sr,
+#                   rh,
+#                   tmean,
+#                   tmax,
+#                   tmin) 
+#           #nrow = 4)
+#           #ncol= 0)
+# lots
+
+```
+
 
 ## Average soil sat comparison
 
@@ -1967,7 +2197,7 @@ LAI_hrus <- left_join(hru_grid_LAI, hru_statn_LAI, by = c('ID')) %>%
 
 hrus_map_LAI <- left_join(hrus, LAI_hrus, by = 'value')
 
-tmap_mode('view')
+tmap_mode('plot')
 
 LAIavg_grid <- tm_shape(hrus_map_LAI) +
   tm_polygons('LAI_all_grid', midpoint = NA, id = 'value',
