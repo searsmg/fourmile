@@ -29,12 +29,13 @@ library(viridis)
 ```{r}
 
 # update the HRUs
-hru_new <- vect('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp')
+hru_new <- vect('/Users/megansears/Documents/Repos/fourmile/38HRU_model/hrus_final.shp')
 plot(hru_new)
 
-hru_new <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp') %>%
+hru_new <- st_read('/Users/megansears/Documents/Repos/fourmile/38HRU_model/hrus_final.shp')
 
-mapview(hru_new)
+mapview(hru_new) + mapview(hru_test)
+mapview(hru_test)
 
 locations <- read_csv('/Users/megansears/Documents/Repos/fourmile/data/GIS/locations_all.csv')
 
@@ -352,7 +353,7 @@ ggsave("./figures/quad.png", plot = quad, dpi = 600)
 ```{r}
 
 #grid first
-setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_model/HRU_output/grid_all")
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/HRU_output/grid")
 
 read_ages_grid <- function(dataframe){
   read_csv(dataframe, skip = 3) %>%
@@ -379,7 +380,7 @@ hru_grids <- dataframes %>%
   bind_rows()
 
 #statn next
-setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_model/HRU_output/statn_all")
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/HRU_output/statn")
 
 read_ages_statn <- function(dataframe){
   read_csv(dataframe, skip = 3) %>%
