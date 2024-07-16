@@ -174,7 +174,7 @@ ggsave('./figures/fig1a.png', dpi=600)
 
 ```
 
-# Figure 1b-e -- NEED TO REDO WITH WHOLE CATCHMENT DATA
+# Figure 1b-e -- NEED TO REDO WITH WHOLE CATCHMENT DATA and UPDATED MODELS
 
 ```{r}
 grid <- read_csv("/Users/megansears/Documents/Repos/fourmile/38HRU_model/output/4milecreek38HRUs-gridall_#1/out/Catchment.csv",

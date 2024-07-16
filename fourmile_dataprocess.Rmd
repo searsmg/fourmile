@@ -125,7 +125,7 @@ daily_q_ds3 <- daily_q %>%
 
 
 #look at 2011-2013
-hydro_datelimit <- ggplot(daily_q, aes(x=date, y=q_m3s, color=site)) + geom_line() + 
+hydro_datelimit <- ggplot(daily_q_ds3, aes(x=date, y=q_m3s, color=site)) + geom_point() + 
   theme_bw() + 
   scale_x_date(limits = as.Date(c('2011-01-01', '2014-01-01'))) +
   ylim(0,4) +
