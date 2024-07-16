@@ -2215,34 +2215,34 @@ tmap_arrange(LAIavg_grid, LAIavg_statn)
 
 ```
 
-# Join param & RD/RG
+<!-- # Join param & RD/RG -->
 
-```{r}
+<!-- ```{r} -->
 
-join <- gw_maxcumsum %>%
-  rename(input_data = source)
+<!-- join <- gw_maxcumsum %>% -->
+<!--   rename(input_data = source) -->
 
-params1 <- params %>%
-  dplyr::select(-input_data) %>%
-  rename(input_data = cal) %>%
-  dplyr::select(-c(year_missing))
+<!-- params1 <- params %>% -->
+<!--   dplyr::select(-input_data) %>% -->
+<!--   rename(input_data = cal) %>% -->
+<!--   dplyr::select(-c(year_missing)) -->
 
-#
-params_weighted1 <- params_weighted %>%
-  mutate(input_data = paste(source, year_missing, sep = "_")) %>% 
-  pivot_wider(names_from = 'param',
-              values_from = 'area_weighted_average') %>%
-  rename_with(~ paste0(., '_weighted'), 4:9) %>%
-  dplyr::select(-c(year_missing, source))
+<!-- # -->
+<!-- params_weighted1 <- params_weighted %>% -->
+<!--   mutate(input_data = paste(source, year_missing, sep = "_")) %>%  -->
+<!--   pivot_wider(names_from = 'param', -->
+<!--               values_from = 'area_weighted_average') %>% -->
+<!--   rename_with(~ paste0(., '_weighted'), 4:9) %>% -->
+<!--   dplyr::select(-c(year_missing, source)) -->
 
 
-join <- left_join(join, params1, by = c('input_data')) %>%
-  pivot_wider(., names_from='param', values_from='value') %>%
-  pivot_wider(., names_from = 'flow_type', values_from = 'flow_cms')
+<!-- join <- left_join(join, params1, by = c('input_data')) %>% -->
+<!--   pivot_wider(., names_from='param', values_from='value') %>% -->
+<!--   pivot_wider(., names_from = 'flow_type', values_from = 'flow_cms') -->
 
-join <- left_join(join, params_weighted1, by = 'input_data')
+<!-- join <- left_join(join, params_weighted1, by = 'input_data') -->
 
-write_csv(join, '/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/flow_params.csv')
+<!-- write_csv(join, '/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/flow_params.csv') -->
 
-```
+<!-- ``` -->
 
