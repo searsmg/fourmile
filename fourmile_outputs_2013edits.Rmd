@@ -656,7 +656,15 @@ flow_plot <- flow_year %>%
   pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
   mutate(year = as.factor(year))
 
-ggplot(flow_plot, aes(x = model_run, y = year, fill = kge)) +
+# add all to the plot below
+kge_all <- flow_kge_all %>%
+  mutate(year = 'all years') %>%
+  rename(model_run = name,
+         kge = value)
+
+flow_plot_updated <- bind_rows(flow_plot, kge_all)
+
+ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = kge)) +
   geom_tile(color = "white") +
   scale_fill_viridis_c(option = "viridis", name = "KGE", direction = -1) +
   geom_text(aes(label = round(kge, 2)), color = "grey", size = 2.5) +
@@ -772,12 +780,19 @@ flow_pbias %>%
   kable(.) %>%
   kable_styling()
 
-
 flow_plot <- flow_year %>%
   pivot_longer(!year, names_to = 'model_run', values_to = 'pbias') %>%
   mutate(year = as.factor(year))
 
-ggplot(flow_plot, aes(x = model_run, y = year, fill = pbias)) +
+# add all to the plot below
+pbias_all <- flow_pbias_all %>%
+  mutate(year = 'all years') %>%
+  rename(model_run = name,
+         pbias = value)
+
+flow_plot_updated <- bind_rows(flow_plot, pbias_all)
+
+ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = pbias)) +
   geom_tile(color = "white") +
    scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, name = "Ppias") +
   geom_text(aes(label = round(pbias, 2)), color = "black", size = 2.5) +
@@ -1461,18 +1476,26 @@ gw_maxcumsum <- gw %>%
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
   geom_point(position=position_jitterdodge(),alpha=0.3) +
-  ggtitle('Max annual cumulative sums')
+  ggtitle('Annual sum') +
+  labs(y = 'Total volume (m3)')
 
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
   geom_point(position=position_jitterdodge(),alpha=0.3) +
   #geom_point(aes(color = source)) +
   facet_wrap(~flow_type, scales = 'free') +
-  ggtitle('Max annual cumulative sums')
+  ggtitle('Annual sum') +
+  labs(y = 'Total volume (m3)')
 
 ```
 
 ### RD and RG by season
+
+- January-February = baseflow_winter
+- March-June = snowmelt
+- July-August = Monsoon
+- September-December = Baseflow_fall
+
 
 ```{r flow season, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 12, fig.asp = 0.75, out.width = "100%"}
 
@@ -1481,8 +1504,9 @@ flow_season <- gw %>%
   dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>%
   mutate(month = month(date)) %>%
   mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt',
-                            month %in% c(7,8,9,10) ~ 'monsoon',
-                            month %in% c(11,12,1,2) ~ 'baseflow')) %>%
+                            month %in% c(7,8) ~ 'monsoon',
+                            month %in% c(9,10,11,12) ~ 'baseflow_fall',
+                            month %in% c(1,2) ~ 'baseflow_winter')) %>%
   group_by(source, year, season) %>%
   summarize(yr_season_RD1 = max(RD1cumsum),
             yr_season_RD2 = max(RD2cumsum),
@@ -1494,13 +1518,14 @@ flow_season <- gw %>%
 flow_season %>%
   ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
-  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(position=position_jitterdodge(),alpha=0.3) +
   #geom_point(aes(color = source)) +
-  facet_wrap(~season, scales = 'free') +
-  ggtitle('Max annual season cumulative sums') +
+  facet_wrap(~season) +
+  ggtitle('RD/RG annual sums') +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20)) +
+  labs(y = 'Total flow (m3)')
 
 
 flow_season %>%
@@ -1509,10 +1534,10 @@ flow_season %>%
   geom_point(position=position_jitterdodge(),alpha=0.3) +
   #geom_point(aes(color = source)) +
   facet_wrap(~season + flow_type, scales = 'free') +
-  ggtitle('Max annual season cumulative sums') +
+  ggtitle('Seasonal sums') +
   theme_bw() +
-  theme(text = element_text(size = 20))
-
+  theme(text = element_text(size = 20)) +
+  labs(y = 'Total flow (m3)')
 
 ```
 
