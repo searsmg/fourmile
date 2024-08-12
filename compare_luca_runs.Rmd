@@ -78,7 +78,6 @@ rm(dataframes) #remove dataframes list
 ```
 
 ```{r, fig.width = 10}
-
 # function to read files, remove top rows, paste site name
 read_cals <- function(df, name){
     df <- df %>%
@@ -150,7 +149,11 @@ plot_params <- function(param_name) {
 name <- levels(params$param)
 
 lapply(name, plot_params)
+```
 
+## Box plots
+
+```{r, fig.width = 10}
 # boxplots
 plot_params <- function(param_name) {
   # Filter the data for the specific parameter and calculate the standard deviation
@@ -256,7 +259,6 @@ burn_params <- bind_rows(statn_all1, statn_all2, statn_all3, statn_all4, statn_a
 ## Burned scatter plots
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10}
-
 plot_burnparams <- function(param_name) {
   burn_params %>%
     filter(params == param_name) %>%
@@ -270,7 +272,11 @@ plot_burnparams <- function(param_name) {
 name2 <- levels(burn_params$params)
 
 lapply(name2, plot_burnparams)
+```
 
+## Burned box plots
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10}
 # boxplots
 plot_burnparams <- function(param_name) {
   # Filter the data for the specific parameter and calculate the standard deviation

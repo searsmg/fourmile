@@ -506,7 +506,7 @@ ggplotly(q)
 
 ```
 
-## Cumulative Q
+## Cumulative volume 
 
 ```{r cumq, echo = FALSE, message = FALSE, warning = FALSE}
 
@@ -515,8 +515,9 @@ flow_cumq <- flow_pivot %>%
   filter(month %in% c(4:9)) %>%
   dplyr::select(-month) %>%
   #pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(vol_m3 = q_m3s * 86400) %>% 
   group_by(cal_run, year(date)) %>%
-  mutate(cumsum = cumsum(replace_na(q_m3s, 0))) %>%
+  mutate(cumsum = cumsum(replace_na(vol_m3, 0))) %>%
   #rename(year = 4) %>%
   mutate(year = as.factor(year)) %>%
   ungroup()
@@ -554,7 +555,7 @@ scale_color_manual(name="cal_run", values=c('obs' = 'black',
                                             'statn_all' = 'red')) +
     ggtitle(calyear) +
     theme_bw() +
-    labs(y = 'cumulative Q (m3s)')} %>%
+    labs(y = 'Volume (m^3)')} %>%
     ggplotly()
 }
 
@@ -1270,6 +1271,9 @@ lapply(name, plot_pbias)
 
 # RD and RG
 
+- **Different units than streamflow (cms) and volume (m3)** 
+- **All in mm**
+
 ```{r rd and rg, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 14, fig.asp = 1, out.width = "100%"}
 
 gw_gridall <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_all.csv')) %>%
@@ -1381,28 +1385,32 @@ ggplot(gw, aes(x=date, color = source)) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('RD1') +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20)) +
+  labs(y = 'RD1 (mm)')
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=catchmentRD2_w), size =1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('RD2') +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20))+
+  labs(y = 'RD2 (mm)')
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=catchmentRG1_w), size =1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('RG1') +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20)) +
+  labs(y = 'RG1 (mm)')
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=catchmentRG2_w), size =1) +
   facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('RG2') +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20))+
+  labs(y = 'RG2 (mm)')
 
 gw <- gw %>%
   arrange(date) %>%
@@ -1416,28 +1424,28 @@ ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RD1cumsum), size =1) +
   facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RD1') +
+  ggtitle('Cumulative RD1 (mm)') +
   theme(text = element_text(size = 20))
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RD2cumsum), size = 1) +
   facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RD2') +
+  ggtitle('Cumulative RD2 (mm)') +
   theme(text = element_text(size = 20))
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RG1cumsum), size  = 1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RG1') +
+  ggtitle('Cumulative RG1 (mm)') +
   theme(text = element_text(size = 20))
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RG2cumsum), size =1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RG2') +
+  ggtitle('Cumulative RG2 (mm)') +
   theme(text = element_text(size = 20))
 
 ```
@@ -1455,7 +1463,7 @@ ggplot(gw, aes(x=date)) +
   geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) +
   scale_x_date(labels = date_format("%b")) +
   facet_wrap(~year + source, scales = 'free_x', ncol=2) +
-  ggtitle('Cumulative RD and RG') +
+  ggtitle('Cumulative RD and RG (mm)') +
   theme(text = element_text(size = 24))
 
 ```
@@ -1477,7 +1485,7 @@ ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
   geom_point(position=position_jitterdodge(),alpha=0.3) +
   ggtitle('Annual sum') +
-  labs(y = 'Total volume (m3)')
+  labs(y = 'mm of water')
 
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
@@ -1485,7 +1493,7 @@ ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   #geom_point(aes(color = source)) +
   facet_wrap(~flow_type, scales = 'free') +
   ggtitle('Annual sum') +
-  labs(y = 'Total volume (m3)')
+  labs(y = 'mm of water')
 
 ```
 
@@ -1501,35 +1509,39 @@ ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
 
 #group by season and get max sums by season
 flow_season <- gw %>%
-  dplyr::select(RD1cumsum, RD2cumsum, RG1cumsum, RG2cumsum, date, year, source) %>%
+  dplyr::select(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w, date, year, source) %>%
   mutate(month = month(date)) %>%
   mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt',
                             month %in% c(7,8) ~ 'monsoon',
                             month %in% c(9,10,11,12) ~ 'baseflow_fall',
                             month %in% c(1,2) ~ 'baseflow_winter')) %>%
   group_by(source, year, season) %>%
-  summarize(yr_season_RD1 = max(RD1cumsum),
-            yr_season_RD2 = max(RD2cumsum),
-            yr_season_RG1 = max(RG1cumsum),
-            yr_season_RG2 = max(RG2cumsum)) %>%
-            pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'flow_cms')
+  mutate(yr_season_RD1 = cumsum(catchmentRD1_w),
+            yr_season_RD2 = cumsum(catchmentRD2_w),
+            yr_season_RG1 = cumsum(catchmentRG1_w),
+            yr_season_RG2 = cumsum(catchmentRG2_w)) %>%
+  summarize(sumRD1 = max(yr_season_RD1),
+            sumRD2 = max(yr_season_RD2),
+            sumRG1 = max(yr_season_RG1),
+            sumRG2 = max(yr_season_RG2)) %>%
+            pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'mm_water')
 
 
 flow_season %>%
-  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
+  ggplot(aes(x = flow_type, y = mm_water, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
   #geom_point(position=position_jitterdodge(),alpha=0.3) +
   #geom_point(aes(color = source)) +
   facet_wrap(~season) +
-  ggtitle('RD/RG annual sums') +
+  ggtitle('RD/RG sums (mm)') +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   theme(text = element_text(size = 20)) +
-  labs(y = 'Total flow (m3)')
+  labs(y = 'RD/RG sums (mm)')
 
 
 flow_season %>%
-  ggplot(aes(x = flow_type, y = flow_cms, fill = source)) +
+  ggplot(aes(x = flow_type, y = mm_water, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
   geom_point(position=position_jitterdodge(),alpha=0.3) +
   #geom_point(aes(color = source)) +
@@ -1537,7 +1549,7 @@ flow_season %>%
   ggtitle('Seasonal sums') +
   theme_bw() +
   theme(text = element_text(size = 20)) +
-  labs(y = 'Total flow (m3)')
+  labs(y = 'RD/RG seasonal sums (mm)')
 
 ```
 
