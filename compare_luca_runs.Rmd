@@ -48,13 +48,14 @@ library(stringr)
 
 ```{r}
 
-kge <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/cals/compare_luca_runs/kge_compare.csv')
+kge <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/cals/compare_luca_runs/kge_compare.csv') %>%
+  filter(!cal == 'statn_all1')
 
 ggplot(kge, aes(as.character(run), kge)) + geom_point() + labs(x='Station all run')
 
 ```
 
-# Parameters
+# Unburned parameters
 
 ## Scatter plots
 
@@ -90,7 +91,7 @@ read_cals <- function(df, name){
 
 }
 
-statn_all1 <- read_cals(statn_all1., name = 'statn_all1')
+#statn_all1 <- read_cals(statn_all1., name = 'statn_all1')
 statn_all2 <- read_cals(statn_all2., name = 'statn_all2')
 statn_all3 <- read_cals(statn_all3., name = 'statn_all3')
 statn_all4 <- read_cals(statn_all4., name = 'statn_all4')
@@ -103,7 +104,8 @@ statn_all10 <- read_cals(statn_all10, name = 'statn_all10')
 statn_all11 <- read_cals(statn_all11, name = 'statn_all11')
 statn_all12 <- read_cals(statn_all12, name = 'statn_all12')
 
-statn <- bind_rows(statn_all1, statn_all2, statn_all3, statn_all4, statn_all5,
+statn <- bind_rows(#statn_all1, 
+                   statn_all2, statn_all3, statn_all4, statn_all5,
                   statn_all6, statn_all7, statn_all8, statn_all9, statn_all10,
                   statn_all11, statn_all12) %>%
   # mutate(input_data = 'grid') %>%
@@ -134,21 +136,29 @@ params <- statn %>%
     mutate(value = as.numeric(value),
          param = as.factor(param))
 
+limits <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/cals/param_limits.csv')
+
+params_limits <- left_join(params, limits, by = 'param') %>%
+  mutate(param = as.factor(param))
+
 
 #function to plot all params
 plot_params <- function(param_name) {
-  params %>%
+  params_limits %>%
     filter(param == param_name) %>%
     ggplot(aes(x = cal,
                y = value)) + 
+    geom_hline(aes(yintercept = lower), color = 'red') +
+    geom_hline(aes(yintercept = upper), color = 'red') + 
     geom_point(size = 3) + 
     ggtitle(param_name) +
     theme_bw()
 }
 
-name <- levels(params$param)
+name <- levels(params_limits$param)
 
 lapply(name, plot_params)
+
 ```
 
 ## Box plots
@@ -180,6 +190,25 @@ name <- levels(params$param)
 lapply(name, plot_params)
 
 ```
+
+## Metrics
+
+```{r}
+
+params_summary <- params %>%
+  group_by(param) %>%
+  summarize(mean = mean(value),
+            sd = sd(value),
+            cv = sd(value)/mean(value),
+            min = min(value),
+            max = max(value))
+
+
+kable(params_summary, digits = 2) %>%
+  kable_styling(full_width = F)
+
+```
+
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE, include = F}
 
@@ -222,7 +251,7 @@ read_cals_burn <- function(df, name){
       mutate(cal = name)
 }
 
-statn_all1 <- read_cals_burn(statn_all1., name = 'statn_all1')
+#statn_all1 <- read_cals_burn(statn_all1., name = 'statn_all1')
 statn_all2 <- read_cals_burn(statn_all2., name = 'statn_all2')
 statn_all3 <- read_cals_burn(statn_all3., name = 'statn_all3')
 statn_all4 <- read_cals_burn(statn_all4., name = 'statn_all4')
@@ -236,8 +265,8 @@ statn_all11 <- read_cals_burn(statn_all11, name = 'statn_all11')
 statn_all12 <- read_cals_burn(statn_all12, name = 'statn_all12')
 
 
-
-burn_params <- bind_rows(statn_all1, statn_all2, statn_all3, statn_all4, statn_all5,
+burn_params <- bind_rows(#statn_all1, 
+                         statn_all2, statn_all3, statn_all4, statn_all5,
                   statn_all6, statn_all7, statn_all8, statn_all9, statn_all10,
                   statn_all11, statn_all12) %>%
   ungroup() %>%
@@ -256,22 +285,34 @@ burn_params <- bind_rows(statn_all1, statn_all2, statn_all3, statn_all4, statn_a
 
 ```
 
+# Burned parameters
+
 ## Burned scatter plots
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10}
+
+burn_limits <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/cals/burn_param_limits.csv')
+
+burn_params_limits <- left_join(burn_params, burn_limits, by = 'params') %>%
+  mutate(params = as.factor(params))
+
+
 plot_burnparams <- function(param_name) {
-  burn_params %>%
+  burn_params_limits %>%
     filter(params == param_name) %>%
     ggplot(aes(y = value,
                x = cal)) +
+    geom_hline(aes(yintercept = lower), color = 'red') +
+    geom_hline(aes(yintercept = upper), color = 'red') + 
     geom_point(size = 3) +
     ggtitle(param_name) +
     theme_bw()
 }
 
-name2 <- levels(burn_params$params)
+name2 <- levels(burn_params_limits$params)
 
 lapply(name2, plot_burnparams)
+
 ```
 
 ## Burned box plots
@@ -304,3 +345,23 @@ name2 <- levels(burn_params$params)
 lapply(name2, plot_burnparams)
 
 ```
+
+## Burned metrics
+
+```{r}
+
+burn_params_summary <- burn_params %>%
+  group_by(params) %>%
+  summarize(mean = mean(value),
+            sd = sd(value),
+            cv = sd(value)/mean(value),
+            min = min(value),
+            max = max(value))
+
+
+kable(burn_params_summary, digits = 2) %>%
+  kable_styling(full_width = F)
+
+```
+
+
