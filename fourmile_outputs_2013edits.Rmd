@@ -469,7 +469,7 @@ setwd('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates')
 flow <- read_csv('discharge_all.csv') %>%
   replace(.==-9999, NA) %>%
   rename(date = time) %>%
-  mutate(date = mdy(date))
+  mutate(date = mdy(date)) 
 
 
 flow_pivot <- flow %>%
@@ -2298,6 +2298,97 @@ LAIavg_statn <- tm_shape(hrus_map_LAI) +
 tmap_arrange(LAIavg_grid, LAIavg_statn)
 
 ```
+
+# HRU RD/RG
+
+```{r}
+
+elev <- read_csv('./38HRU_sept2013_updates/hru_elev.csv')
+
+
+rd1_grid <- hru_grids %>%
+  dplyr::select(time, outRD1, ID) %>%
+  mutate(source = 'grid') %>%
+  left_join(., elev, by = 'ID') %>%
+  arrange(time) %>%
+  mutate(year = year(time)) %>%
+  mutate(elevation_group = ntile(elevation, 4)) %>% 
+  group_by(year, elevation_group) %>%
+  mutate(rd1_summed = cumsum(outRD1))
+  
+
+rd1_statn <- hru_statn %>%
+  dplyr::select(time, outRD1, ID) %>%
+  mutate(source = 'statn') %>% 
+  left_join(., elev, by = 'ID') %>%
+  arrange(time) %>%
+  mutate(year = year(time)) %>%
+  mutate(elevation_group = ntile(elevation, 4)) %>% 
+  group_by(year, elevation_group) %>%
+  mutate(rd1_summed = cumsum(outRD1))
+  
+
+
+#rd1_hru <- bind_rows(rd1_grid, rd1_statn)
+
+library(viridis)
+
+rd1_grid_plot <- ggplot(rd1_grid, aes(x=time, y=rd1_summed, color=elevation_group)) + 
+  geom_line() +
+  scale_color_viridis_c() +  # Use a continuous viridis color palette
+  theme_bw()
+
+ggplotly(rd1_grid_plot)
+
+rd1_statn_plot <- ggplot(rd1_statn, aes(x=time, y=rd1_summed, color=elevation_group)) + 
+  geom_line() +
+  scale_color_viridis_c() +
+  theme_bw()
+
+ggplotly(rd1_statn_plot)
+
+###########################
+
+rd2_grid <- hru_grids %>%
+  dplyr::select(time, outRD2, ID) %>%
+  mutate(source = 'grid') %>%
+  left_join(., elev, by = 'ID') %>%
+  arrange(time) %>%
+  mutate(year = year(time)) %>%
+  mutate(elevation_group = ntile(elevation, 4)) %>% 
+  group_by(year, elevation_group) %>%
+  mutate(rd2_summed = cumsum(outRD2))
+
+rd2_statn <- hru_statn %>%
+  dplyr::select(time, outRD2, ID) %>%
+  mutate(source = 'statn') %>% 
+  left_join(., elev, by = 'ID') %>%
+  arrange(time) %>%
+  mutate(year = year(time)) %>%
+  mutate(elevation_group = ntile(elevation, 4)) %>% 
+  group_by(year, elevation_group) %>%
+  mutate(rd2_summed = cumsum(outRD2))
+
+rd2_grid_plot <- ggplot(rd2_grid, aes(x=time, y=rd2_summed, color=elevation_group)) + 
+  geom_line() +
+  scale_color_viridis_c() +  # Use a continuous viridis color palette
+  theme_bw()
+
+ggplotly(rd2_grid_plot)
+
+rd2_statn_plot <- ggplot(rd2_statn, aes(x=time, y=rd2_summed, color=elevation)) + 
+  geom_line() +
+  scale_color_viridis_c(option = 'mako') +
+  theme_bw()
+
+ggplotly(rd2_statn_plot)
+
+
+```
+
+
+
+
 
 <!-- # Join param & RD/RG -->
 
