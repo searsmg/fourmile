@@ -178,7 +178,7 @@ ggsave('./figures/fig1a.png', dpi=600)
 # Figure 1b-e -- NEED TO REDO WITH WHOLE CATCHMENT DATA and UPDATED MODELS
 
 ```{r}
-grid <- read_csv("/Users/megansears/Documents/Repos/fourmile/38HRU_model/output/4milecreek38HRUs-gridall_#1/out/Catchment.csv",
+grid <- read_csv("/Users/megansears/Documents/ages-data-fourmile_creek/output/4milecreek38HRUs-gridallNA_#1/out/Catchment.csv",
                  skip=3) %>%
    slice(3:n()) %>%
   dplyr::select(-starts_with('@'),
@@ -188,7 +188,7 @@ grid <- read_csv("/Users/megansears/Documents/Repos/fourmile/38HRU_model/output/
   mutate_if(is.character, as.numeric) %>% 
   mutate(site = 'grid')
 
-statn <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_model/output/4milecreek38HRUs-statnall_#1/out/Catchment.csv',
+statn <- read_csv('/Users/megansears/Documents/ages-data-fourmile_creek/output/4milecreek38HRUs-statnall_na_#1/out/Catchment.csv',
                  skip=3) %>%
    slice(3:n()) %>%
   dplyr::select(-starts_with('@'),
@@ -672,6 +672,35 @@ p_comp <- ggplot(catchment_p, aes(x=statn, y=grid)) + geom_point(size = 3) +
 p_comp
 ggsave("./figures/p_compare.png", plot = p_comp, dpi = 600)
 
+
+```
+
+# Obs hydrograph
+
+```{r}
+
+setwd('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates')
+
+flow <- read_csv('discharge_all.csv') %>%
+  replace(.==-9999, NA) %>%
+  rename(date = time) %>%
+  mutate(date = mdy(date)) %>%
+  dplyr::select(date, obs) %>%
+  mutate(year = year(date),
+         DOY = yday(date)) %>%
+  drop_na(obs)
+
+library(viridis)
+
+ggplot(flow, aes(x = DOY, y = obs, color = as.factor(year))) + 
+  geom_line(size = 1.1) +
+  theme_bw(base_size = 20) +
+  labs(y = 'Discharge (cms)', color = 'Year') +
+  scale_color_viridis_d(option = "turbo")
+
+ggsave("./figures/flow_obs_plot.png", dpi = 600)
+
+summary(flow)
 
 ```
 
