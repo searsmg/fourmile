@@ -1739,6 +1739,175 @@ tmean <- ggplot() +
 
 tmean
 
+############################
+### look at month
+#get rid of a bunch of data
+hru_grid_tmean_jan <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(12,1,2,3)) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean_jan <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(12,1,2,3)) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus_jan <- left_join(hru_grid_tmean_jan, hru_statn_tmean_jan, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean_jan <- left_join(hrus, tmean_hrus_jan, by = 'value')
+
+tmean_jan <- ggplot() +
+  geom_sf(data = hrus_map_tmean_jan, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmean difference (°C)",
+                       limits = c(-5, 3)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Winter')
+
+#tmean_jan
+
+## 
+hru_grid_tmean_apr <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(4,5,6)) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean_apr <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(4,5,6)) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus_apr <- left_join(hru_grid_tmean_apr, hru_statn_tmean_apr, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean_apr <- left_join(hrus, tmean_hrus_apr, by = 'value')
+
+tmean_apr <- ggplot() +
+  geom_sf(data = hrus_map_tmean_apr, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmean difference (°C)",
+                       limits = c(-5, 3)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Snowmelt')
+
+#tmean_apr
+
+#### 
+hru_grid_tmean_jul <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(7,8)) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean_jul <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(7,8)) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus_jul <- left_join(hru_grid_tmean_jul, hru_statn_tmean_jul, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean_jul <- left_join(hrus, tmean_hrus_jul, by = 'value')
+
+tmean_jul <- ggplot() +
+  geom_sf(data = hrus_map_tmean_jul, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmean difference (°C)",
+                            limits = c(-5, 3)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Monsoon')
+
+#tmean_jul
+
+##
+
+hru_grid_tmean_sep <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(9,10,11)) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean_sep <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(9,10,11)) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus_sep <- left_join(hru_grid_tmean_sep, hru_statn_tmean_sep, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean_sep <- left_join(hrus, tmean_hrus_sep, by = 'value')
+
+tmean_sep <- ggplot() +
+  geom_sf(data = hrus_map_tmean_sep, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmean difference (°C)",
+                       limits = c(-5, 3)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Fall')
+
+#tmean_sep
+###
+
+lots <- ggarrange(tmean_jan,
+                  tmean_apr,
+                  tmean_jul,
+                  tmean_sep) 
+          #nrow = 4)
+          #ncol= 0)
+lots
+
+
 ```
 
 ## Tmax difference
@@ -1959,6 +2128,139 @@ precip <- ggplot() +
 
 precip
 
+#################
+# winter p
+hru_grid_precip <- hru_grids %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_grid = precip)
+
+hru_statn_precip <- hru_statn %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_statn = precip)
+
+precip_hrus_jan <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(1,2,3)) %>% 
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip_jan <- left_join(hrus, precip_hrus_jan, by = 'value')
+
+precip_jan <- ggplot() +
+  geom_sf(data = hrus_map_precip_jan, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)",
+                       limits = c(-51, 7.5)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Winter')
+
+##
+precip_hrus_apr <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(4,5,6)) %>% 
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip_apr <- left_join(hrus, precip_hrus_apr, by = 'value')
+
+precip_apr <- ggplot() +
+  geom_sf(data = hrus_map_precip_apr, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)",
+                       limits = c(-51, 7.5)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Snowmelt')
+##
+
+precip_hrus_jul <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(7,8)) %>% 
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip_jul <- left_join(hrus, precip_hrus_jul, by = 'value')
+
+precip_jul <- ggplot() +
+  geom_sf(data = hrus_map_precip_jul, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)",
+                       limits = c(-51, 7.5)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Monsoon')
+
+## 
+precip_hrus_sep <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(9,10,11)) %>% 
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip_sep <- left_join(hrus, precip_hrus_sep, by = 'value')
+
+precip_sep <- ggplot() +
+  geom_sf(data = hrus_map_precip_sep, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)",
+                       limits = c(-51, 7.5)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Fall')
+
+lots <- ggarrange(precip_jan,
+                  precip_apr,
+                  precip_jul,
+                  precip_sep) 
+          #nrow = 4)
+          #ncol= 0)
+lots
+
 ```
 
 ## Solar radiation difference
@@ -2034,6 +2336,166 @@ sr <- ggplot() +
 
 sr
 
+##########
+### look at month
+#get rid of a bunch of data
+hru_grid_solrad_jan <- hru_grids %>%
+  dplyr::select(c(time, ID, solrad_grid=solRad)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(12,1,2,3)) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad_jan <- hru_statn %>%
+  dplyr::select(c(time, ID, solrad_statn=solRad)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(12,1,2,3)) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus_jan <- left_join(hru_grid_solrad_jan, hru_statn_solrad_jan, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad_jan <- left_join(hrus, solrad_hrus_jan, by = 'value')
+
+solrad_jan <- ggplot() +
+  geom_sf(data = hrus_map_solrad_jan, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "cividis", name = expression("Solar rad difference (MJ/m"^"2" * ")"),
+                       limits = c(-8.5, 1.5)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Winter')
+
+#solrad_jan
+
+## 
+hru_grid_solrad_apr <- hru_grids %>%
+  dplyr::select(c(time, ID, solrad_grid=solRad)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(4,5,6)) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad_apr <- hru_statn %>%
+  dplyr::select(c(time, ID, solrad_statn=solRad)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(4,5,6)) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus_apr <- left_join(hru_grid_solrad_apr, hru_statn_solrad_apr, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad_apr <- left_join(hrus, solrad_hrus_apr, by = 'value')
+
+solrad_apr <- ggplot() +
+  geom_sf(data = hrus_map_solrad_apr, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "cividis", name = expression("Solar rad difference (MJ/m"^"2" * ")"),
+                       limits = c(-8.5, 1.5)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Snowmelt')
+
+#solrad_apr
+
+#### 
+hru_grid_solrad_jul <- hru_grids %>%
+  dplyr::select(c(time, ID, solrad_grid=solRad)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(7,8)) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad_jul <- hru_statn %>%
+  dplyr::select(c(time, ID, solrad_statn=solRad)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(7,8)) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus_jul <- left_join(hru_grid_solrad_jul, hru_statn_solrad_jul, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad_jul <- left_join(hrus, solrad_hrus_jul, by = 'value')
+
+solrad_jul <- ggplot() +
+  geom_sf(data = hrus_map_solrad_jul, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "cividis", name = expression("Solar rad difference (MJ/m"^"2" * ")"),
+                       limits = c(-8.5, 1.5)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Monsoon')
+
+#solrad_jul
+
+##
+hru_grid_solrad_sep <- hru_grids %>%
+  dplyr::select(c(time, ID, solrad_grid=solRad)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(9,10,11)) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad_sep <- hru_statn %>%
+  dplyr::select(c(time, ID, solrad_statn=solRad)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(9,10,11)) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus_sep <- left_join(hru_grid_solrad_sep, hru_statn_solrad_sep, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad_sep <- left_join(hrus, solrad_hrus_sep, by = 'value')
+
+solrad_sep <- ggplot() +
+  geom_sf(data = hrus_map_solrad_sep, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "cividis", name = expression("Solar rad difference (MJ/m"^"2" * ")"),
+                       limits = c(-8.5, 1.5)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Fall')
+
+
+
+###
+
+lots <- ggarrange(solrad_jan,
+                  solrad_apr,
+                  solrad_jul,
+                  solrad_sep) 
+          #nrow = 4)
+          #ncol= 0)
+lots
+
 ```
 
 ## RH difference
@@ -2103,6 +2565,154 @@ rh <- ggplot() +
     axis.title.y = element_blank())
 
 rh
+#####
+
+hru_grid_rh_jan <- hru_grids %>%
+  dplyr::select(c(time, ID, rh_grid=rhum)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(12,1,2,3)) %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh_jan <- hru_statn %>%
+  dplyr::select(c(time, ID, rh_statn=rhum)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(12,1,2,3)) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus_jan <- left_join(hru_grid_rh_jan, hru_statn_rh_jan, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh_jan <- left_join(hrus, rh_hrus_jan, by = 'value')
+
+rh_jan <- ggplot() +
+  geom_sf(data = hrus_map_rh_jan, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "viridis", name = "RH difference (%)",
+                       limits = c(-3, 10)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Winter')
+
+##
+hru_grid_rh_apr <- hru_grids %>%
+  dplyr::select(c(time, ID, rh_grid=rhum)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(4,5,6)) %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh_apr <- hru_statn %>%
+  dplyr::select(c(time, ID, rh_statn=rhum)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(4,5,6)) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus_apr <- left_join(hru_grid_rh_apr, hru_statn_rh_apr, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh_apr <- left_join(hrus, rh_hrus_apr, by = 'value')
+
+rh_apr <- ggplot() +
+  geom_sf(data = hrus_map_rh_apr, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "viridis", name = "RH difference (%)",
+                       limits = c(-3, 10)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Snowmelt')
+
+##
+hru_grid_rh_jul <- hru_grids %>%
+  dplyr::select(c(time, ID, rh_grid=rhum)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(7,8)) %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh_jul <- hru_statn %>%
+  dplyr::select(c(time, ID, rh_statn=rhum)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(7,8)) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus_jul <- left_join(hru_grid_rh_jul, hru_statn_rh_jul, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh_jul <- left_join(hrus, rh_hrus_jul, by = 'value')
+
+rh_jul <- ggplot() +
+  geom_sf(data = hrus_map_rh_jul, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "viridis", name = "RH difference (%)",
+                       limits = c(-3,10)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Monsoon')
+
+##
+hru_grid_rh_sep <- hru_grids %>%
+  dplyr::select(c(time, ID, rh_grid=rhum)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(9,10,10)) %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh_sep <- hru_statn %>%
+  dplyr::select(c(time, ID, rh_statn=rhum)) %>%
+  mutate(month = month(time)) %>%
+  filter(month %in% c(9,10,10)) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus_sep <- left_join(hru_grid_rh_sep, hru_statn_rh_sep, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh_sep <- left_join(hrus, rh_hrus_sep, by = 'value')
+
+rh_sep <- ggplot() +
+  geom_sf(data = hrus_map_rh_sep, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "viridis", name = "RH difference (%)",
+                       limits = c(-3,10)) +
+  theme_bw(base_size=13.5) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()) +
+  ggtitle('Fall')
+
+lots <- ggarrange(rh_jan,
+                  rh_apr,
+                  rh_jul,
+                  rh_sep) 
+          #nrow = 4)
+          #ncol= 0)
+lots
 
 ```
 
@@ -2301,10 +2911,14 @@ tmap_arrange(LAIavg_grid, LAIavg_statn)
 
 # HRU RD/RG
 
+Group 1 is lowest elevation, 4 is highest elevation
+
 ```{r}
 
-elev <- read_csv('./38HRU_sept2013_updates/hru_elev.csv')
+setwd("~/Documents/Repos/fourmile")
 
+elev <- read_csv('./38HRU_sept2013_updates/hru_elev.csv') %>%
+  mutate(elevation_group = ntile(elevation, 4))
 
 rd1_grid <- hru_grids %>%
   dplyr::select(time, outRD1, ID) %>%
@@ -2312,9 +2926,11 @@ rd1_grid <- hru_grids %>%
   left_join(., elev, by = 'ID') %>%
   arrange(time) %>%
   mutate(year = year(time)) %>%
-  mutate(elevation_group = ntile(elevation, 4)) %>% 
   group_by(year, elevation_group) %>%
-  mutate(rd1_summed = cumsum(outRD1))
+  mutate(rd1_summed = cumsum(outRD1)) %>%
+  group_by(year, elevation_group) %>%
+  summarise(max_rd1_summed = max(rd1_summed)) %>%
+  mutate(type = 'grid')
   
 
 rd1_statn <- hru_statn %>%
@@ -2323,29 +2939,34 @@ rd1_statn <- hru_statn %>%
   left_join(., elev, by = 'ID') %>%
   arrange(time) %>%
   mutate(year = year(time)) %>%
-  mutate(elevation_group = ntile(elevation, 4)) %>% 
   group_by(year, elevation_group) %>%
-  mutate(rd1_summed = cumsum(outRD1))
+  mutate(rd1_summed = cumsum(outRD1)) %>%
+  group_by(year, elevation_group) %>%
+  summarise(max_rd1_summed = max(rd1_summed)) %>%
+  mutate(type = 'statn')
   
+rd1_hru <- bind_rows(rd1_grid, rd1_statn)
 
+# elevation group area
+elev_area <- elev %>%
+  group_by(elevation_group) %>%
+  summarize(group_area = sum(area))
 
-#rd1_hru <- bind_rows(rd1_grid, rd1_statn)
+rd1_hru <- left_join(rd1_hru, elev_area, by = 'elevation_group') %>%
+  mutate(RD1_mm_year = (max_rd1_summed/group_area)*1000)
 
 library(viridis)
 
-rd1_grid_plot <- ggplot(rd1_grid, aes(x=time, y=rd1_summed, color=elevation_group)) + 
-  geom_line() +
-  scale_color_viridis_c() +  # Use a continuous viridis color palette
-  theme_bw()
+rd1_plot <- ggplot(rd1_hru, aes(x=as.factor(year), y=RD1_mm_year, 
+                                      color=as.factor(elevation_group),
+                                      shape = type)) + 
+  geom_point(size = 3) +
+  #scale_color_viridis_d() +
+  theme_bw() +
+  labs(x = 'Year',
+       y = 'Total RD1 (mm/year)')
 
-ggplotly(rd1_grid_plot)
-
-rd1_statn_plot <- ggplot(rd1_statn, aes(x=time, y=rd1_summed, color=elevation_group)) + 
-  geom_line() +
-  scale_color_viridis_c() +
-  theme_bw()
-
-ggplotly(rd1_statn_plot)
+ggplotly(rd1_plot)
 
 ###########################
 
@@ -2355,9 +2976,12 @@ rd2_grid <- hru_grids %>%
   left_join(., elev, by = 'ID') %>%
   arrange(time) %>%
   mutate(year = year(time)) %>%
-  mutate(elevation_group = ntile(elevation, 4)) %>% 
   group_by(year, elevation_group) %>%
-  mutate(rd2_summed = cumsum(outRD2))
+  mutate(rd2_summed = cumsum(outRD2)) %>%
+  group_by(year, elevation_group) %>%
+  summarise(max_rd2_summed = max(rd2_summed)) %>%
+  mutate(type = 'grid')
+  
 
 rd2_statn <- hru_statn %>%
   dplyr::select(time, outRD2, ID) %>%
@@ -2365,24 +2989,119 @@ rd2_statn <- hru_statn %>%
   left_join(., elev, by = 'ID') %>%
   arrange(time) %>%
   mutate(year = year(time)) %>%
-  mutate(elevation_group = ntile(elevation, 4)) %>% 
   group_by(year, elevation_group) %>%
-  mutate(rd2_summed = cumsum(outRD2))
+  mutate(rd2_summed = cumsum(outRD2)) %>%
+  group_by(year, elevation_group) %>%
+  summarise(max_rd2_summed = max(rd2_summed)) %>%
+  mutate(type = 'statn')
+  
+rd2_hru <- bind_rows(rd2_grid, rd2_statn)
 
-rd2_grid_plot <- ggplot(rd2_grid, aes(x=time, y=rd2_summed, color=elevation_group)) + 
-  geom_line() +
-  scale_color_viridis_c() +  # Use a continuous viridis color palette
-  theme_bw()
+rd2_hru <- left_join(rd2_hru, elev_area, by = 'elevation_group') %>%
+  mutate(rd2_mm_year = (max_rd2_summed/group_area)*1000)
 
-ggplotly(rd2_grid_plot)
 
-rd2_statn_plot <- ggplot(rd2_statn, aes(x=time, y=rd2_summed, color=elevation)) + 
-  geom_line() +
-  scale_color_viridis_c(option = 'mako') +
-  theme_bw()
+rd2_plot <- ggplot(rd2_hru, aes(x=as.factor(year), y=rd2_mm_year, 
+                                      color=as.factor(elevation_group),
+                                      shape = type)) + 
+  geom_point(size = 3) +
+  #scale_color_viridis_d() +
+  theme_bw() +
+  labs(x = 'Year',
+       y = 'Total RD2 (mm/year)')
 
-ggplotly(rd2_statn_plot)
+ggplotly(rd2_plot)
 
+
+###########
+
+# RG1
+rg1_grid <- hru_grids %>%
+  dplyr::select(time, outRG1, ID) %>%
+  mutate(source = 'grid') %>%
+  left_join(., elev, by = 'ID') %>%
+  arrange(time) %>%
+  mutate(year = year(time)) %>%
+  group_by(year, elevation_group) %>%
+  mutate(rg1_summed = cumsum(outRG1)) %>%
+  group_by(year, elevation_group) %>%
+  summarise(max_rg1_summed = max(rg1_summed)) %>%
+  mutate(type = 'grid')
+  
+
+rg1_statn <- hru_statn %>%
+  dplyr::select(time, outRG1, ID) %>%
+  mutate(source = 'statn') %>% 
+  left_join(., elev, by = 'ID') %>%
+  arrange(time) %>%
+  mutate(year = year(time)) %>%
+  group_by(year, elevation_group) %>%
+  mutate(rg1_summed = cumsum(outRG1)) %>%
+  group_by(year, elevation_group) %>%
+  summarise(max_rg1_summed = max(rg1_summed)) %>%
+  mutate(type = 'statn')
+  
+rg1_hru <- bind_rows(rg1_grid, rg1_statn)
+
+rg1_hru <- left_join(rg1_hru, elev_area, by = 'elevation_group') %>%
+  mutate(rg1_mm_year = (max_rg1_summed/group_area)*1000)
+
+
+rg1_plot <- ggplot(rg1_hru, aes(x=as.factor(year), y=rg1_mm_year, 
+                                      color=as.factor(elevation_group),
+                                      shape = type)) + 
+  geom_point(size = 3) +
+  #scale_color_viridis_d() +
+  theme_bw() +
+  labs(x = 'Year',
+       y = 'Total RG1 (mm/year)')
+
+ggplotly(rg1_plot)
+
+#######
+
+# rg2
+rg2_grid <- hru_grids %>%
+  dplyr::select(time, outRG2, ID) %>%
+  mutate(source = 'grid') %>%
+  left_join(., elev, by = 'ID') %>%
+  arrange(time) %>%
+  mutate(year = year(time)) %>%
+  group_by(year, elevation_group) %>%
+  mutate(rg2_summed = cumsum(outRG2)) %>%
+  group_by(year, elevation_group) %>%
+  summarise(max_rg2_summed = max(rg2_summed)) %>%
+  mutate(type = 'grid')
+  
+
+rg2_statn <- hru_statn %>%
+  dplyr::select(time, outRG2, ID) %>%
+  mutate(source = 'statn') %>% 
+  left_join(., elev, by = 'ID') %>%
+  arrange(time) %>%
+  mutate(year = year(time)) %>%
+  group_by(year, elevation_group) %>%
+  mutate(rg2_summed = cumsum(outRG2)) %>%
+  group_by(year, elevation_group) %>%
+  summarise(max_rg2_summed = max(rg2_summed)) %>%
+  mutate(type = 'statn')
+  
+rg2_hru <- bind_rows(rg2_grid, rg2_statn)
+
+rg2_hru <- left_join(rg2_hru, elev_area, by = 'elevation_group') %>%
+  mutate(rg2_mm_year = (max_rg2_summed/group_area)*1000)
+
+
+rg2_plot <- ggplot(rg2_hru, aes(x=as.factor(year), y=rg2_mm_year, 
+                                      color=as.factor(elevation_group),
+                                      shape = type)) + 
+  geom_point(size = 3) +
+  #scale_color_viridis_d() +
+  theme_bw() +
+  labs(x = 'Year',
+       y = 'Total RG2 (mm/year)')
+
+ggplotly(rg2_plot)
 
 ```
 
