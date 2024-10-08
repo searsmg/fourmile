@@ -2522,7 +2522,7 @@ hrus_map_precip_jan <- left_join(hrus, precip_hrus_jan, by = 'value')
 precip_jan <- ggplot() +
   geom_sf(data = hrus_map_precip_jan, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
   scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)",
-                       limits = c(-51, 7.5)) +
+                       limits = c(-51, 9.5)) +
   theme_bw(base_size=13.5) +
   theme_void() +
   theme(
@@ -2551,7 +2551,7 @@ hrus_map_precip_apr <- left_join(hrus, precip_hrus_apr, by = 'value')
 precip_apr <- ggplot() +
   geom_sf(data = hrus_map_precip_apr, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
   scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)",
-                       limits = c(-51, 7.5)) +
+                       limits = c(-51, 9.5)) +
   theme_bw(base_size=13.5) +
   theme_void() +
   theme(
@@ -2580,7 +2580,7 @@ hrus_map_precip_jul <- left_join(hrus, precip_hrus_jul, by = 'value')
 precip_jul <- ggplot() +
   geom_sf(data = hrus_map_precip_jul, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
   scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)",
-                       limits = c(-51, 7.5)) +
+                       limits = c(-51, 9.5)) +
   theme_bw(base_size=13.5) +
   theme_void() +
   theme(
@@ -2609,7 +2609,7 @@ hrus_map_precip_sep <- left_join(hrus, precip_hrus_sep, by = 'value')
 precip_sep <- ggplot() +
   geom_sf(data = hrus_map_precip_sep, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
   scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)",
-                       limits = c(-51, 7.5)) +
+                       limits = c(-51, 9.5)) +
   theme_bw(base_size=13.5) +
   theme_void() +
   theme(
