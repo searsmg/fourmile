@@ -21,6 +21,7 @@ library(raster)
 library(sf)
 library(terra)
 library(viridis)
+library(ggpubr)
 
 ```
 
@@ -29,13 +30,13 @@ library(viridis)
 ```{r}
 
 # update the HRUs
-hru_new <- vect('/Users/megansears/Documents/Repos/fourmile/38HRU_model/hrus_final.shp')
+hru_new <- vect('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp')
 plot(hru_new)
 
-hru_new <- st_read('/Users/megansears/Documents/Repos/fourmile/38HRU_model/hrus_final.shp')
+hru_new <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp')
 
-mapview(hru_new) + mapview(hru_test)
-mapview(hru_test)
+mapview(hru_new) 
+#mapview(hru_test)
 
 locations <- read_csv('/Users/megansears/Documents/Repos/fourmile/data/GIS/locations_all.csv')
 
@@ -133,8 +134,48 @@ terrain <- ggplot() +
     legend.spacing.y = unit(0.01, "cm"))
 
 terrain
-
 ggsave('./figures/fig1a.png', dpi=600)
+##
+
+reference_location <- data.frame(
+  x = -105.2705,  # Longitude for Boulder
+  y = 40.0150,    # Latitude for Boulder
+  name = "Boulder, CO"
+)
+
+# Your existing terrain plot
+terrain2 <- ggplot() +
+  geom_raster(data = dem_df, 
+              aes(x = x, y = y, fill = layer)) +  
+  scale_fill_gradientn(colors = terrain.colors(200),  
+                       name = "Elevation (m)") +
+  geom_sf(data = fire, 
+          aes(color = "Fire"), 
+          fill = NA, 
+          lwd = 0.75) +
+  geom_sf(data = hru_new, 
+          aes(color = "HRU"), 
+          fill = NA, 
+          lwd = 0.5) +
+  geom_sf(data = locations, 
+          aes(shape = factor(display_use)), 
+          size = 4) + 
+  scale_shape_manual(values = custom_shapes) +
+  scale_color_manual(name = NULL,
+                     values = c(Fire = "red", HRU = "black"), 
+                     labels = c(Fire = "Fourmile Canyon fire", HRU = "HRUs")) + 
+  labs(shape = element_blank()) +
+  theme_bw(base_size = 25) +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        legend.spacing.y = unit(0.01, "cm")) +
+  geom_point(data = reference_location, aes(x = x, y = y), color = "blue", size = 4, shape = 21, fill = "yellow") + # Reference marker
+  geom_text(data = reference_location, aes(x = x, y = y, label = name), vjust = -1, color = "blue") # Reference label
+
+terrain2
+``##
+
+
 
 ggplot() +
   geom_raster(data = dem_df, aes(x = x, y = y, fill = layer)) +
@@ -178,7 +219,7 @@ ggsave('./figures/fig1a.png', dpi=600)
 # Figure 1b-e -- NEED TO REDO WITH WHOLE CATCHMENT DATA and UPDATED MODELS
 
 ```{r}
-grid <- read_csv("/Users/megansears/Documents/ages-data-fourmile_creek/output/4milecreek38HRUs-gridallNA_#1/out/Catchment.csv",
+grid <- read_csv("/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/grid_all_Catchment.csv",
                  skip=3) %>%
    slice(3:n()) %>%
   dplyr::select(-starts_with('@'),
@@ -188,7 +229,7 @@ grid <- read_csv("/Users/megansears/Documents/ages-data-fourmile_creek/output/4m
   mutate_if(is.character, as.numeric) %>% 
   mutate(site = 'grid')
 
-statn <- read_csv('/Users/megansears/Documents/ages-data-fourmile_creek/output/4milecreek38HRUs-statnall_na_#1/out/Catchment.csv',
+statn <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/statn_all_Catchment.csv',
                  skip=3) %>%
    slice(3:n()) %>%
   dplyr::select(-starts_with('@'),
@@ -339,12 +380,20 @@ quad <- ggarrange(p_cols,
           rh_moplot,
           common.legend = T,
           legend = 'bottom',
-          ncol=4) 
+          ncol=2,
+          nrow=2) 
           #nrow = 4)
           #ncol= 0)
 quad
 
 ggsave("./figures/quad.png", plot = quad, dpi = 600)
+
+quad_plus <- ggarrange(flow_plot,quad,
+                       nrow=2)
+quad_plus
+
+ggsave("./figures/quad_plus.png", plot = quad_plus, dpi = 600)
+
 
 ```
 
@@ -530,110 +579,89 @@ rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
 
 hrus_map_rh <- left_join(hru_new, rh_hrus, by = 'value')
 
+####
 rh <- ggplot() +
   geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
-  scale_fill_viridis_c(option = "viridis", name = "RH difference (%)") +
-  theme_bw(base_size=13.5) +
-  theme_void() +
-  theme(
-    legend.position = "bottom",
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
+  scale_fill_viridis_c(option = "viridis", name = "RH (%)") +
+  theme_bw(base_size=15.5) +
+  theme_void() + top_theme
 
 rh
 
 sr <- ggplot() +
   geom_sf(data = hrus_map_solrad, aes(fill = diff), color = "black", lwd = 0.2) +
-  scale_fill_viridis_c(option = "cividis", name = expression("Solar rad difference (MJ/m"^"2" * ")")) +
-  theme_bw(base_size=13.5) +
-  theme_void() +
-  theme(
-    legend.position = "bottom",
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) +
-  guides(
-    fill = guide_colorbar(
-      label.theme = element_text(size = 10))) 
+  scale_fill_viridis_c(option = "cividis", name = expression("Srad (MJ/m"^"2" * ")")) +
+  theme_bw(base_size=15.5) +
+  theme_void() + top_theme
 
 
 sr
 
 precip <- ggplot() +
   geom_sf(data = hrus_map_precip, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
-  scale_fill_viridis_c(option = "mako", name = "Cumulative P Difference (mm)") +
-  theme_bw(base_size=13.5) +
-  theme_void() +
-  theme(
-    legend.position = "bottom",
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P (mm)") +
+  theme_bw(base_size=15.5) +
+  theme_void() + top_theme
 
 precip
 
 tmean <- ggplot() +
   geom_sf(data = hrus_map_tmean, aes(fill = diff), color = "black", lwd = 0.2) +
-  scale_fill_viridis_c(option = "plasma", name = "Tmean difference (°C)",
+  scale_fill_viridis_c(option = "plasma", name = "Tmean (°C)",
                        limits = c(-5, 2)) +
-  theme_bw(base_size=13.5) +
-  theme_void() +
-  theme(
-    legend.position = "bottom",
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
 
 tmean
 
+
 tmin <- ggplot() +
   geom_sf(data = hrus_map_tmin, aes(fill = diff), color = "black", lwd = 0.2) +
-  scale_fill_viridis_c(option = "plasma", name = "Tmin difference (°C)",
+  scale_fill_viridis_c(option = "plasma", name = "Tmin (°C)",
                        limits = c(-5, 2)) +
-  theme_bw(base_size=13.5) +
-  theme_void() +
-  theme(
-    legend.position = "bottom",
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
 
 tmin
 
 tmax <- ggplot() +
   geom_sf(data = hrus_map_tmax, aes(fill = diff), color = "black", lwd = 0.2) +
-  scale_fill_viridis_c(option = "plasma", name = "Tmax difference (°C)",
+  scale_fill_viridis_c(option = "plasma", name = "Tmax (°C)",
                        limits = c(-5, 2)) +
-  theme_bw(base_size=13.5) +
-  theme_void() +
-  theme(
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
+  
+tmax
+
+bottom_theme <-   theme(
     legend.position = "bottom",
     panel.grid.major = element_blank(),
+    legend.key.width = unit(.75, "cm"),
     panel.grid.minor = element_blank(),
     axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-  
+    axis.title.y = element_blank(),
+    plot.margin = unit(c(-6, 0, 0, 0), "cm"), 
+    panel.spacing = unit(0, "lines"))
 
-tmin
+top_theme <-   theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.margin = unit(c(0, 0, -6, 0), "cm"), 
+    panel.spacing = unit(0, "lines"))
 
-lots <- ggarrange(precip,
-                  sr,
-                  rh,
-                  tmean,
-                  tmax,
-                  tmin) 
-          #nrow = 4)
-          #ncol= 0)
+
+lots <- ggarrange(
+  precip, sr, rh, tmean, tmax, tmin,
+  heights=)
+
+
 lots
 
-
-ggsave("./figures/diff.png", plot = lots, dpi = 600)
+ggsave("./figures/diff_update.png", plot = lots, dpi = 600)
 
 ```
 
@@ -692,11 +720,13 @@ flow <- read_csv('discharge_all.csv') %>%
 
 library(viridis)
 
-ggplot(flow, aes(x = DOY, y = obs, color = as.factor(year))) + 
+flow_plot <- ggplot(flow, aes(x = DOY, y = obs, color = as.factor(year))) + 
   geom_line(size = 1.1) +
   theme_bw(base_size = 20) +
   labs(y = 'Discharge (cms)', color = 'Year') +
   scale_color_viridis_d(option = "turbo")
+
+flow_plot
 
 ggsave("./figures/flow_obs_plot.png", dpi = 600)
 
