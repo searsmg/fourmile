@@ -2494,7 +2494,16 @@ precip <- ggplot() +
     axis.title.y = element_blank())
 
 precip
+```
 
+### P season
+
+- Dec-Mar: Winter
+- Apr-Jun: Snowmelt/spring
+- Jul-Aug: Monsoon
+- Sep-Nov: Baseflow/fall
+
+```{r cum precip season, echo = F}
 #################
 # winter p
 hru_grid_precip <- hru_grids %>%
@@ -2635,7 +2644,6 @@ lots
 2011-2020 average of daily station-grid solar rad
 
 ```{r cum sol rad, echo = F}
-
 # #get rid of a bunch of data
 # hru_grid_solrad <- hru_grids %>%
 #   dplyr::select(c(time, ID, solRad)) %>%
@@ -2702,7 +2710,16 @@ sr <- ggplot() +
 
 
 sr
+```
 
+### Solar rad season
+
+- Dec-Mar: Winter
+- Apr-Jun: Snowmelt/spring
+- Jul-Aug: Monsoon
+- Sep-Nov: Baseflow/fall
+
+```{r cum sol rad season, echo = F}
 ##########
 ### look at month
 #get rid of a bunch of data
@@ -2868,7 +2885,6 @@ lots
 ## RH difference
 
 ```{r rh, echo = F}
-
 # #get rid of a bunch of data
 # hru_grid_rh <- hru_grids %>%
 #   dplyr::select(c(time, ID, rhum)) %>%
@@ -2933,7 +2949,16 @@ rh <- ggplot() +
 
 rh
 #####
+```
 
+### RH season
+
+- Dec-Mar: Winter
+- Apr-Jun: Snowmelt/spring
+- Jul-Aug: Monsoon
+- Sep-Nov: Baseflow/fall
+
+```{r rh season, echo = F}
 hru_grid_rh_jan <- hru_grids %>%
   dplyr::select(c(time, ID, rh_grid=rhum)) %>%
   mutate(month = month(time)) %>%
