@@ -1,0 +1,993 @@
+---
+title: "Fourmile state variables"
+author: "Megan Sears"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: journal
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = F,
+  message = F, 
+  warning  = F)
+
+library(tidyverse)
+library(ggplot2); theme_set(theme_bw(base_size = 20))
+library(plotly)
+library(knitr)
+library(kableExtra)
+
+```
+
+```{r, include = F}
+
+statn <- read_csv('./38HRU_sept2013_updates/catchment_output/Catchment_statnall.csv') %>%
+  mutate(date = mdy(time),
+         source = 'statn') %>%
+  select(-time)
+
+grid <- read_csv('./38HRU_sept2013_updates/catchment_output/Catchment_gridall.csv') %>%
+  mutate(date = mdy(time),
+         source = 'grid') %>%
+  select(-time)
+
+both <- bind_rows(statn, grid)  
+  
+```
+
+# Catchment
+
+## Inputs
+
+```{r}
+
+temp <- ggplot(both, 
+               aes(date, 
+                   tmean,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(temp)
+
+tmean_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_tmean = mean(tmean))
+  
+ggplot(tmean_avg, aes(x=month, y=mean_tmean,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean tmean (C)')
+
+
+precip <- ggplot(both, 
+               aes(date, 
+                   precip,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(precip)
+
+precip_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month, year) %>%
+  summarize(sum_mo = sum(precip)) %>%
+  ungroup() %>% 
+  group_by(source, month) %>%
+  summarize(mean_p = mean(sum_mo))
+  
+ggplot(precip_avg, aes(x=month, y=mean_p,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean precip (mm)')
+
+solrad_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_solrad = mean(solRad))
+  
+ggplot(solrad_avg, aes(x=month, y=mean_solrad,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean solrad')
+
+
+```
+
+## Interception
+- Average interception: grid > statn
+- Monthly average: Statn > grid 1:4 and 10:12, grid > statn 5:9
+- During the summer rain interception is greater from grid
+- In the winter snow interception is greater from statn
+
+```{r}
+int_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_interception = mean(interception))
+  
+ggplot(int_avg, aes(x=month, y=mean_interception,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean interception')
+
+
+interception <- ggplot(both, 
+               aes(date, 
+                   interception,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(interception)
+
+```
+
+## ET 
+
+- Average ET: grid > statn
+- Monthly average ET: grid > statn 1:6 and 9:12, statn > grid 7:8
+
+```{r}
+
+et_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_et = mean(actET...21))
+
+ggplot(et_avg, aes(x=month, y=mean_et,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean ET (mm)')
+
+et <- ggplot(both, 
+               aes(date, 
+                   actET...21,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='ET (mm)')
+
+ggplotly(et)
+
+```
+
+## SWE 
+
+- Grid > Statn
+- SWE starts accumulating faster in Sept for statn than grid
+- But grid > statn all other months
+
+```{r}
+
+swe_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_swe = mean(snowTotSWE))
+
+ggplot(swe_avg, aes(x=month, y=mean_swe,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean SWE (l/day)')
+
+snowTotSWE <- ggplot(both, 
+                     aes(date, 
+                         snowTotSWE,
+                         color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='SWE (l/day)')
+
+ggplotly(snowTotSWE)
+
+```
+
+## Soil sat (whole profile)
+
+- Statn > grid all months
+
+```{r}
+
+soil_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_soil = mean(soilSat))
+
+ggplot(soil_avg, aes(x=month, y=mean_soil,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean soil sat')
+
+soil <- ggplot(both, 
+               aes(date, 
+                   soilSat,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(soil)
+
+```
+
+## Surface runoff
+
+- RG1: when there is surface runoff, statn is slightly higher
+- Except for September (Sep 2013 flood heavily influences this avg)
+- Many of the surface runoff events are happening Mar-May and Jul
+
+```{r}
+
+rd1_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rd1 = mean(outRD1))
+
+ggplot(rd1_avg, aes(x=month, y=mean_rd1,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean surface runoff (l)')
+
+rd1 <- ggplot(both, 
+               aes(date, 
+                   outRD1,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='Surface runoff (l)')
+
+ggplotly(rd1)
+
+```
+
+## Interflow
+
+- Statn > grid Jan to Apr
+- Grid > statn May, Jun, Oct
+- Other months are similar
+
+```{r}
+
+rd2_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rd2 = mean(outRD2))
+
+ggplot(rd2_avg, aes(x=month, y=mean_rd2,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean interflow (l)')
+
+rd2 <- ggplot(both, 
+               aes(date, 
+                   outRD2,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='Interflow (l)')
+
+ggplotly(rd2)
+
+```
+
+## Groundwater
+
+- RG1 = shallow groundwater
+- RG1: during snowmelt runoff to fall baseflow grid > statn
+- RG1: statn > grid during winter
+
+- RG2 = groundwater baseflow
+- RG2: Very small relative to RG1
+- RG2: Grid > statn
+
+```{r}
+gw1_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rg1 = mean(outRG1))
+
+ggplot(gw1_avg, aes(x=month, y=mean_rg1,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean RG1 (unit?)')
+
+gw1 <- ggplot(both, 
+               aes(date, 
+                   outRG1,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(gw1)
+
+################################################################
+gw2_avg <- both %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rg2 = mean(outRG2))
+
+ggplot(gw2_avg, aes(x=month, y=mean_rg2,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean RG2 (unit?)')
+
+gw2 <- ggplot(both, 
+               aes(date, 
+                   outRG2,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(gw2)
+
+```
+
+# High elevation HRU
+
+HRU18
+
+```{r}
+
+statn_hi <- read_csv('./38HRU_sept2013_updates/HRU_18_statn.csv') %>% 
+  mutate(date = mdy(time),
+         source = 'statn') %>%
+  select(-time)
+
+grid_hi <- read_csv('./38HRU_sept2013_updates/HRU_18_grid.csv') %>%
+  mutate(date = mdy(time),
+         source = 'grid') %>%
+  select(-time)
+
+both_hi <- bind_rows(statn_hi, grid_hi)  
+
+```
+
+## Inputs
+
+```{r}
+
+tmean_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_tmean = mean(tmean))
+  
+ggplot(tmean_avg, aes(x=month, y=mean_tmean,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean tmean (C)')
+
+temp <- ggplot(both_hi, 
+               aes(date, 
+                   tmean,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(temp)
+############
+precip_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month, year) %>%
+  summarize(sum_mo = sum(precip)) %>%
+  ungroup() %>% 
+  group_by(source, month) %>%
+  summarize(mean_p = mean(sum_mo))
+  
+ggplot(precip_avg, aes(x=month, y=mean_p,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean precip (mm)')
+
+precip <- ggplot(both_hi, 
+               aes(date, 
+                   precip,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(precip)
+#################
+
+solrad_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_solrad = mean(solRad))
+  
+ggplot(solrad_avg, aes(x=month, y=mean_solrad,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean solrad (MJ/m2/day)')
+
+```
+
+## Interception
+
+- Station > grid except for Jul
+
+```{r}
+int_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_interception = mean(interception))
+  
+ggplot(int_avg, aes(x=month, y=mean_interception,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean interception')
+
+
+interception <- ggplot(both_hi, 
+               aes(date, 
+                   interception,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(interception)
+
+```
+
+## ET 
+
+- Grid > statn except for Mar
+
+```{r}
+
+et_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_et = mean(actET))
+
+ggplot(et_avg, aes(x=month, y=mean_et,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean ET (mm)')
+
+et <- ggplot(both_hi, 
+               aes(date, 
+                   actET,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='ET (mm)')
+
+ggplotly(et)
+
+```
+
+## SWE 
+
+- Grid > statn
+
+```{r}
+
+swe_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_swe = mean(snowTotSWE))
+
+ggplot(swe_avg, aes(x=month, y=mean_swe,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean SWE (l/day)')
+
+snowTotSWE <- ggplot(both_hi, 
+                     aes(date, 
+                         snowTotSWE,
+                         color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='SWE (l/day)')
+
+ggplotly(snowTotSWE)
+
+```
+
+## Soil sat (whole profile)
+
+- Statn > grid
+
+```{r}
+
+soil_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_soil = mean(soilSat))
+
+ggplot(soil_avg, aes(x=month, y=mean_soil,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean soil sat')
+
+soil <- ggplot(both_hi, 
+               aes(date, 
+                   soilSat,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(soil)
+
+```
+
+## Surface runoff
+
+- No surface runoff
+
+```{r}
+
+rd1_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rd1 = mean(outRD1))
+
+ggplot(rd1_avg, aes(x=month, y=mean_rd1,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean surface runoff (l)')
+
+rd1 <- ggplot(both_hi, 
+               aes(date, 
+                   outRD1,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='Surface runoff (l)')
+
+ggplotly(rd1)
+
+```
+
+## Interflow
+
+- Statn > grid Jan to Apr
+- Grid > statn May to Jun
+- Other months are similar
+
+```{r}
+
+rd2_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rd2 = mean(outRD2))
+
+ggplot(rd2_avg, aes(x=month, y=mean_rd2,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean interflow (l)')
+
+rd2 <- ggplot(both_hi, 
+               aes(date, 
+                   outRD2,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='Interflow (l)')
+
+ggplotly(rd2)
+
+```
+
+## Groundwater
+
+- RG1 = shallow groundwater
+- RG1: Jan to May statn > grid
+- RG1: grid > statn Jun, Jul, Oct
+- RG1: similar rest of year 
+
+- RG2 = groundwater baseflow
+- RG2: Very small relative to RG1
+- RG2: Grid > statn
+
+```{r}
+gw1_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rg1 = mean(outRG1))
+
+ggplot(gw1_avg, aes(x=month, y=mean_rg1,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean RG1 (unit?)')
+
+gw1 <- ggplot(both_hi, 
+               aes(date, 
+                   outRG1,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(gw1)
+
+################################################################
+gw2_avg <- both_hi %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rg2 = mean(outRG2))
+
+ggplot(gw2_avg, aes(x=month, y=mean_rg2,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean RG2 (unit?)')
+
+gw2 <- ggplot(both_hi, 
+               aes(date, 
+                   outRG2,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(gw2)
+
+```
+
+# Low elevation HRU
+
+HRU19
+
+```{r}
+
+statn_lo <- read_csv('./38HRU_sept2013_updates/HRU_19_statn.csv') %>% 
+  mutate(date = mdy(time),
+         source = 'statn') %>%
+  select(-time)
+
+grid_lo <- read_csv('./38HRU_sept2013_updates/HRU_19_grid.csv') %>%
+  mutate(date = mdy(time),
+         source = 'grid') %>%
+  select(-time)
+
+both_lo <- bind_rows(statn_lo, grid_lo)  
+
+```
+
+## Inputs
+
+```{r}
+
+tmean_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_tmean = mean(tmean))
+  
+ggplot(tmean_avg, aes(x=month, y=mean_tmean,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean tmean (C)')
+
+temp <- ggplot(both_lo, 
+               aes(date, 
+                   tmean,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(temp)
+############
+precip_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month, year) %>%
+  summarize(sum_mo = sum(precip)) %>%
+  ungroup() %>% 
+  group_by(source, month) %>%
+  summarize(mean_p = mean(sum_mo))
+  
+ggplot(precip_avg, aes(x=month, y=mean_p,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean precip (mm)')
+
+precip <- ggplot(both_lo, 
+               aes(date, 
+                   precip,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(precip)
+#################
+
+solrad_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_solrad = mean(solRad))
+  
+ggplot(solrad_avg, aes(x=month, y=mean_solrad,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean solrad (MJ/m2/day)')
+
+```
+
+## Interception
+
+- Statn > grid Oct to Apr
+- Grid > statn May to Sep
+
+```{r}
+int_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_interception = mean(interception))
+  
+ggplot(int_avg, aes(x=month, y=mean_interception,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean interception')
+
+
+interception <- ggplot(both_lo, 
+               aes(date, 
+                   interception,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(interception)
+
+```
+
+## ET 
+
+- Grid > statn Sep to May
+
+```{r}
+
+et_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_et = mean(actET))
+
+ggplot(et_avg, aes(x=month, y=mean_et,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean ET (mm)')
+
+et <- ggplot(both_lo, 
+               aes(date, 
+                   actET,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='ET (mm)')
+
+ggplotly(et)
+
+```
+
+## SWE 
+
+- Grid > statn Oct to Feb
+- Statn > grid Mar to Apr and Sep
+
+```{r}
+
+swe_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_swe = mean(snowTotSWE))
+
+ggplot(swe_avg, aes(x=month, y=mean_swe,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean SWE (l/day)')
+
+snowTotSWE <- ggplot(both_lo, 
+                     aes(date, 
+                         snowTotSWE,
+                         color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='SWE (l/day)')
+
+ggplotly(snowTotSWE)
+
+```
+
+## Soil sat (whole profile)
+
+- Statn > grid
+
+```{r}
+
+soil_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_soil = mean(soilSat))
+
+ggplot(soil_avg, aes(x=month, y=mean_soil,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean soil sat')
+
+soil <- ggplot(both_lo, 
+               aes(date, 
+                   soilSat,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(soil)
+
+```
+
+## Surface runoff
+
+- Very little except for Sep 2013 (grid > statn)
+
+```{r}
+
+rd1_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rd1 = mean(outRD1))
+
+ggplot(rd1_avg, aes(x=month, y=mean_rd1,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean surface runoff (l)')
+
+rd1 <- ggplot(both_lo, 
+               aes(date, 
+                   outRD1,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='Surface runoff (l)')
+
+ggplotly(rd1)
+
+```
+
+## Interflow
+
+- Statn > grid Jan, May, June, July, Sep
+
+```{r}
+
+rd2_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rd2 = mean(outRD2))
+
+ggplot(rd2_avg, aes(x=month, y=mean_rd2,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean interflow (l)')
+
+rd2 <- ggplot(both_lo, 
+               aes(date, 
+                   outRD2,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y='Interflow (l)')
+
+ggplotly(rd2)
+
+```
+
+## Groundwater
+
+- RG1 = shallow groundwater
+- RG1: Jan, Feb, May, Aug, Sep, Dec statn > grid
+
+- RG2 = groundwater baseflow
+- RG2: Very small relative to RG1
+- RG2: Grid > statn
+
+```{r}
+gw1_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rg1 = mean(outRG1))
+
+ggplot(gw1_avg, aes(x=month, y=mean_rg1,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean RG1 (unit?)')
+
+gw1 <- ggplot(both_lo, 
+               aes(date, 
+                   outRG1,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(gw1)
+
+################################################################
+gw2_avg <- both_lo %>%
+  mutate(month = month(date),
+         year = year(date)) %>% 
+  group_by(source, month) %>%
+  summarize(mean_rg2 = mean(outRG2))
+
+ggplot(gw2_avg, aes(x=month, y=mean_rg2,
+                 color=source)) +
+  geom_point(size=3) +
+  scale_color_manual(values = c("orange", "blue")) +
+  labs(y= 'Monthly mean RG2 (unit?)')
+
+gw2 <- ggplot(both_lo, 
+               aes(date, 
+                   outRG2,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("orange", "blue"))
+
+ggplotly(gw2)
+
+```
+
