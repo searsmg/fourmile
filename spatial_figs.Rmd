@@ -173,7 +173,7 @@ terrain2 <- ggplot() +
   geom_text(data = reference_location, aes(x = x, y = y, label = name), vjust = -1, color = "blue") # Reference label
 
 terrain2
-``##
+##
 
 
 
@@ -584,7 +584,7 @@ rh <- ggplot() +
   geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
   scale_fill_viridis_c(option = "viridis", name = "RH (%)") +
   theme_bw(base_size=15.5) +
-  theme_void() + top_theme
+  theme_void() + bottom_theme
 
 rh
 
@@ -655,13 +655,13 @@ top_theme <-   theme(
 
 
 lots <- ggarrange(
-  precip, sr, rh, tmean, tmax, tmin,
-  heights=)
+  precip, sr, rh, tmean,
+  heights = 1)
 
 
 lots
 
-ggsave("./figures/diff_update.png", plot = lots, dpi = 600)
+ggsave("./figures/diff_update2.png", plot = lots, dpi = 600)
 
 ```
 
