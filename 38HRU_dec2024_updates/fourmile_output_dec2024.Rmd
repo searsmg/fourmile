@@ -227,7 +227,7 @@ lapply(name, plot_params)
 
 ```
 
-## Density plots
+
 
 ```{r density plots, echo = FALSE, message = FALSE, warning = FALSE}
 
