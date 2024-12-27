@@ -1,0 +1,1207 @@
+---
+title: "Fourmile Calibrations and Output"
+author: "Megan Sears"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: journal
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = F,
+  message = F, 
+  warning  = F)
+
+library(tidyverse)
+library(plotly)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+library(dataRetrieval)
+library(hydroGOF)
+library(sp)
+library(raster)
+library(sf)
+library(mapview)
+library(here)
+library(scales)
+library(dataRetrieval)
+library(tmap)
+library(ggpubr)
+library(gridExtra)
+library(stringr)
+
+```
+
+```{r load in files, include = F}
+
+setwd('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates')
+
+#kge <- read_csv('calruns_KGE.csv') # skip for now - come back if needed
+
+```
+
+
+```{r look at kge, echo = F}
+
+# kge_plot <- ggplot(kge, aes(year_missing, KGE, shape = input_data, color = input_data)) + geom_point(size = 3) +
+#   theme_bw()
+# 
+# ggplotly(kge_plot)
+
+```
+
+# Parameters
+
+## Scatter plots
+
+```{r read in params, echo = FALSE, message = FALSE, warning = FALSE, include = F}
+
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/cals")
+
+#pull in all filenames with composite
+filenames <- list.files('.', pattern=".csv", full.names=F)
+
+#read all the csvs
+dataframes <- lapply(filenames, read_csv)
+
+#name all the csv
+names(dataframes) <- substr(filenames, 1, 10)
+
+#extract csvs from list to global env
+lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
+rm(dataframes) #remove dataframes list
+
+```
+
+
+```{r params, echo = FALSE, message = FALSE, warning = FALSE}
+
+# function to read files, remove top rows, paste site name
+read_cals <- function(df, name){
+    df <- df %>%
+      slice(-c(1:9, 146:277)) %>%
+      separate(Parameter, c("Parameter", "value"), sep = ",") %>%
+      drop_na() %>%
+      dplyr::select(-1) %>% 
+      mutate(cal = name)
+    
+
+}
+
+# grid_2011 <- read_cals(grid_2011., name = 'grid_2011')
+# grid_2012 <- read_cals(grid_2012., name = 'grid_2012')
+# grid_2013 <- read_cals(grid_2013., name = 'grid_2013')
+# grid_2014 <- read_cals(grid_2014., name = 'grid_2014')
+# grid_2015 <- read_cals(grid_2015., name = 'grid_2015')
+# grid_2016 <- read_cals(grid_2016., name = 'grid_2016')
+# grid_2017 <- read_cals(grid_2017., name = 'grid_2017')
+# grid_2018 <- read_cals(grid_2018., name = 'grid_2018')
+# grid_2019 <- read_cals(grid_2019., name = 'grid_2019')
+# grid_2020 <- read_cals(grid_2020., name = 'grid_2020')
+grid_all <- read_cals(grid_all.c, name = 'grid_all')
+
+# grid <- bind_rows(grid_2011, grid_2012, grid_2013, grid_2014, grid_2015,
+#                   grid_2016, grid_2017, grid_2018, grid_2019, grid_2020,
+#                   grid_all) %>%
+#   mutate(input_data = 'grid') %>%
+#   mutate(year_missing_almost = gsub('grid_', '', cal)) %>%
+#   mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+#   dplyr::select(-c(year_missing_almost)) %>%
+#   rename(param = Parameter) %>%
+#   filter(!param == 'locGrw',
+#          !param == 'tempRes')
+
+grid <- grid_all %>%
+  mutate(input_data = 'grid') %>%
+  mutate(year_missing_almost = gsub('grid_', '', cal)) %>%
+  mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+  dplyr::select(-c(year_missing_almost)) %>%
+  rename(param = Parameter) %>%
+  filter(!param == 'locGrw',
+         !param == 'tempRes')
+
+# statn_2011 <- read_cals(statn_2011, name = 'statn_2011')
+# statn_2012 <- read_cals(statn_2012, name = 'statn_2012')
+# statn_2013 <- read_cals(statn_2013, name = 'statn_2013')
+# statn_2014 <- read_cals(statn_2014, name = 'statn_2014')
+# statn_2015 <- read_cals(statn_2015, name = 'statn_2015')
+# statn_2016 <- read_cals(statn_2016, name = 'statn_2016')
+# statn_2017 <- read_cals(statn_2017, name = 'statn_2017')
+# statn_2018 <- read_cals(statn_2018, name = 'statn_2018')
+# statn_2019 <- read_cals(statn_2019, name = 'statn_2019')
+# statn_2020 <- read_cals(statn_2020, name = 'statn_2020')
+statn_all <- read_cals(statn_all., name = 'statn_all')
+
+# statn <- bind_rows(statn_2011, statn_2012, statn_2013, statn_2014, statn_2015,
+#                   statn_2016, statn_2017, statn_2018, statn_2019, statn_2020,
+#                   statn_all) %>%
+#   mutate(input_data = 'statn') %>%
+#   mutate(year_missing_almost = gsub('statn_', '', cal)) %>%
+#   mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+#   dplyr::select(-c(year_missing_almost)) %>%
+#   rename(param = Parameter) %>%
+#   filter(!param == 'locGrw',
+#          !param == 'tempRes')
+
+statn <- statn_all %>%
+  mutate(input_data = 'statn') %>%
+  mutate(year_missing_almost = gsub('statn_', '', cal)) %>%
+  mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+  dplyr::select(-c(year_missing_almost)) %>%
+  rename(param = Parameter) %>%
+  filter(!param == 'locGrw',
+         !param == 'tempRes')
+
+params <- bind_rows(statn, grid)
+
+params <- params %>%
+  filter(!param %in% c('angstrom_a', 'angstrom_b', 
+                      'Beta_min', 
+                      'Beta_rsd', "Beta_trans", 'clat', 
+                      'delayNitrification',
+                      'denitrificationRateCoefficient', 
+                      'denitrificationSoilSaturationThreshold',
+                      'deposition_factor', 'drrad', 
+                      'drspac', 'initLPS', 'initRG1',
+                      'initRG2', 'Ksink', 'LExCoef', 
+                      'longTZ', 'N_concRG1', 'N_concRG2', 'N_delay_RG1',
+                      'N_delay_RG2', 
+                      'nitrificationSoilTemperatureThreshold', 
+                      'nitrificationSurfaceTemperatureThreshold',
+                      'opti', 'piadin', 'rootfactor', 'sceno', 
+                      'soilImpGT80', 'soilImpLT80',
+                      'soilLinRed', 'soilMaxPerc', 'temp_lag')) %>%
+    mutate(value = as.numeric(value),
+         param = as.factor(param))
+
+
+#function to plot all params
+plot_params <- function(param_name) {
+  params %>%
+    filter(param == param_name) %>%
+    ggplot(aes(x = year_missing,
+               y = value,
+               shape = input_data, 
+               color = input_data)) + 
+    geom_point(size = 3) + 
+    ggtitle(param_name) +
+    theme_bw()
+}
+
+name <- levels(params$param)
+
+lapply(name, plot_params)
+
+#write.csv(params, 'params.csv')
+
+# find min and max of grid and statn param for sensitivity analysis
+# grid_minmax <- grid %>%
+#   group_by(param) %>%
+#   summarize(min = as.numeric(min(value)),
+#             max = as.numeric(max(value))) %>%
+#   mutate(input = 'grid_unburn')
+# 
+# statn_minmax <- statn %>%
+#   group_by(param) %>%
+#   summarize(min = as.numeric(min(value)),
+#             max = as.numeric(max(value))) %>%
+#   mutate(input = 'statn_unburn')
+# 
+# minmax_burn <- burn_params %>%
+#   group_by(params, input_data) %>%
+#   summarize(min = min(value),
+#             max = max(value)) %>%
+#   mutate(input = paste(input_data, '_burn')) %>%
+#   dplyr::select(-input_data) %>%
+#   rename(param = params) %>%
+#   mutate(param = as.character(param))
+# 
+# minmax_params <- bind_rows(grid_minmax, statn_minmax, minmax_burn)
+# write.csv(minmax_params, 'min_max_params.csv')
+
+```
+
+
+
+```{r density plots, echo = FALSE, message = FALSE, warning = FALSE}
+
+# mean_params <- params %>%
+#   group_by(param, input_data) %>%
+#   summarize(mean = mean(value))
+# 
+# plotdens_params <- function(param_name) {
+#   params %>%
+#     filter(param == param_name) %>%
+#     ggplot(aes(x = value,
+#                fill = input_data, 
+#                color = input_data)) + 
+#     geom_density(alpha=0.5) +
+#     geom_vline(data=filter(mean_params, param == param_name), 
+#                aes(xintercept=mean, color=input_data),
+#              linetype="dashed", linewidth=0.75) +
+#     ggtitle(param_name) +
+#     theme_bw()
+# }
+# 
+# name <- levels(params$param)
+# 
+# lapply(name, plotdens_params)
+
+```
+
+## Burn parameters
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, include = F}
+
+# rm(statn_2011, statn_2012, statn_2013, statn_2014, statn_2015,
+#                   statn_2016, statn_2017, statn_2018, statn_2019, statn_2020,
+#                   statn_all., statn_all)
+
+rm(statn_all)
+
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/cals")
+
+#pull in all filenames with composite
+filenames <- list.files('.', pattern=".csv", full.names=F)
+
+#read all the csvs
+dataframes <- lapply(filenames, read_csv)
+
+#name all the csv
+names(dataframes) <- substr(filenames, 1, 10)
+
+#extract csvs from list to global env
+lapply(names(dataframes), function(x) assign(x, dataframes[[x]], envir = .GlobalEnv))
+rm(dataframes) #remove dataframes list
+
+```
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+
+# read in all the grid burn params
+read_cals_burn <- function(df, name){
+    df <- df %>%
+      slice(-c(1:274)) %>%
+      separate_wider_delim(Parameter, 
+                       delim = ',',
+                       names = c('soilID',
+                                 'luca_a_rain',
+                                 'luca_a_snow',
+                                 'luca_soilMaxInfSummer',
+                                 'luca_soilMaxDPS',
+                                 'luca_lagSurfaceRunoff',
+                                 'luca_soilDistMPSLPS')) %>%
+      slice(-1) %>%
+      dplyr::select(-1) %>% 
+      mutate(cal = name)
+}
+
+# grid_2011_burn <- read_cals_burn(grid_2011., name = 'grid_2011')
+# grid_2012_burn <- read_cals_burn(grid_2012., name = 'grid_2012')
+# grid_2013_burn <- read_cals_burn(grid_2013., name = 'grid_2013')
+# grid_2014_burn <- read_cals_burn(grid_2014., name = 'grid_2014')
+# grid_2015_burn <- read_cals_burn(grid_2015., name = 'grid_2015')
+# grid_2016_burn <- read_cals_burn(grid_2016., name = 'grid_2016')
+# grid_2017_burn <- read_cals_burn(grid_2017., name = 'grid_2017')
+# grid_2018_burn <- read_cals_burn(grid_2018., name = 'grid_2018')
+# grid_2019_burn <- read_cals_burn(grid_2019., name = 'grid_2019')
+# grid_2020_burn <- read_cals_burn(grid_2020., name = 'grid_2020')
+grid_all_burn <- read_cals_burn(grid_all.c, name = 'grid_all')
+
+# grid_burn <- bind_rows(grid_2011_burn, 
+#                   grid_2012_burn, 
+#                   grid_2013_burn, 
+#                   grid_2014_burn, 
+#                   grid_2015_burn,
+#                   grid_2016_burn, 
+#                   grid_2017_burn, 
+#                   grid_2018_burn, 
+#                   grid_2019_burn, 
+#                   grid_2020_burn,
+#                   grid_all_burn) %>%
+#   mutate(input_data = 'grid') %>%
+#   mutate(year_missing_almost = gsub('grid_', '', cal)) %>%
+#   mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+#   dplyr::select(-c(year_missing_almost))
+
+grid_burn <- grid_all_burn %>%
+  mutate(input_data = 'grid') %>%
+  mutate(year_missing_almost = gsub('grid_', '', cal)) %>%
+  mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+  dplyr::select(-c(year_missing_almost))
+
+# now do statn burn params
+# statn_2011_burn <- read_cals_burn(statn_2011, name = 'statn_2011')
+# statn_2012_burn <- read_cals_burn(statn_2012, name = 'statn_2012')
+# statn_2013_burn <- read_cals_burn(statn_2013, name = 'statn_2013')
+# statn_2014_burn <- read_cals_burn(statn_2014, name = 'statn_2014')
+# statn_2015_burn <- read_cals_burn(statn_2015, name = 'statn_2015')
+# statn_2016_burn <- read_cals_burn(statn_2016, name = 'statn_2016')
+# statn_2017_burn <- read_cals_burn(statn_2017, name = 'statn_2017')
+# statn_2018_burn <- read_cals_burn(statn_2018, name = 'statn_2018')
+# statn_2019_burn <- read_cals_burn(statn_2019, name = 'statn_2019')
+# statn_2020_burn <- read_cals_burn(statn_2020, name = 'statn_2020')
+statn_all_burn <- read_cals_burn(statn_all., name = 'statn_all')
+
+# statn_burn <- bind_rows(statn_2011_burn, 
+#                   statn_2012_burn, 
+#                   statn_2013_burn, 
+#                   statn_2014_burn, 
+#                   statn_2015_burn,
+#                   statn_2016_burn, 
+#                   statn_2017_burn, 
+#                   statn_2018_burn, 
+#                   statn_2019_burn, 
+#                   statn_2020_burn,
+#                   statn_all_burn) %>%
+#   mutate(input_data = 'statn') %>%
+#   mutate(year_missing_almost = gsub('statn_', '', cal)) %>%
+#   mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+#   dplyr::select(-c(year_missing_almost))
+
+statn_burn <- statn_all_burn %>%
+  mutate(input_data = 'statn') %>%
+  mutate(year_missing_almost = gsub('statn_', '', cal)) %>%
+  mutate(year_missing = gsub('all', 'none', year_missing_almost)) %>%
+  dplyr::select(-c(year_missing_almost))
+
+burn_params <- bind_rows(grid_burn, statn_burn) %>%
+  ungroup() %>%
+  mutate(across(c(luca_a_rain:luca_soilDistMPSLPS), as.numeric)) %>%
+  group_by(cal) %>%
+  mutate(across(c(luca_a_rain:luca_soilDistMPSLPS), mean)) %>%
+  filter(soilID == 22) %>%
+  dplyr::select(-soilID) %>% 
+  pivot_longer(!c(cal, input_data, year_missing), 
+               names_to = 'params',
+               values_to = 'value') %>% 
+  mutate(params = str_remove(params, 'luca_')) %>%
+  mutate(params = as.factor(params),
+         burn = 'yes') 
+  
+
+```
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+
+plot_burnparams <- function(param_name) {
+  burn_params %>%
+    filter(params == param_name) %>%
+    ggplot(aes(y = value,
+               x = year_missing,
+               color = input_data)) +
+    geom_point(size = 3) +
+    ggtitle(param_name) +
+    theme_bw()
+}
+
+name2 <- levels(burn_params$params)
+
+lapply(name2, plot_burnparams)
+
+
+```
+
+## Combined parameters
+
+The burned HRU parameters were averaged together.
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+params2 <- params %>%
+  mutate(burn = 'no') %>%
+  filter(param %in% c('a_rain',
+                        'a_snow',
+                        'soilMaxInfSummer',
+                        'soilMaxDPS',
+                        'lagSurfaceRunoff',
+                        'soilDistMPSLPS'))
+
+params_combo <- bind_rows(params2,
+                          burn_params %>%
+                            rename(param = params))
+
+#function to plot all params
+plot_params <- function(param_name) {
+  params_combo %>%
+    filter(param == param_name) %>%
+    ggplot(aes(x = year_missing,
+               y = value,
+               shape = burn, 
+               color = input_data)) + 
+    geom_point(size = 3) + 
+    ggtitle(param_name) +
+    theme_bw()
+}
+
+#name <- levels(params_combo$param)
+
+lapply(name2, plot_params)
+
+
+# boxplots of burned and unburned
+
+# ggplot(params_combo, aes(x=burn, y=value, fill=input_data)) +
+#   geom_boxplot() +
+#   facet_wrap(~param, scales = 'free_y')
+# 
+# write_csv(params_combo, '/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/params_burn_unburn.csv')
+
+```
+
+## Parameters area weighted
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+
+# add area weights to params combo
+params_weighted <- params_combo %>%
+  mutate(area = if_else(burn == 'no', 48243400,
+                        18823000)) %>%
+  group_by(param, cal) %>%
+  summarize(numerator = sum(value * area),
+    denominator = sum(area)) %>%
+  mutate(area_weighted_average = numerator / denominator) %>%
+  dplyr::select(-c(numerator, denominator)) %>%
+  separate(col = cal, into = c("source", "year_missing"), sep = "_")
+  
+#write_csv(params_weighted, '/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/params_weighted_sept2013_edits.csv')
+
+#function to plot all params
+plot_params <- function(param_name) {
+  params_weighted %>%
+    filter(param == param_name) %>%
+    ggplot(aes(x = year_missing,
+               y = area_weighted_average,
+               color = source)) + 
+    geom_point(size = 3) + 
+    ggtitle(param_name) +
+    theme_bw()
+}
+
+#name <- levels(params_combo$param)
+
+lapply(name2, plot_params)
+
+```
+
+# Outlet results
+
+## Hydrograph
+
+```{r hydrographs, echo = FALSE, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+
+setwd('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates')
+
+flow <- read_csv('discharge_all.csv') %>%
+  replace(.==-9999, NA) %>%
+  rename(date = time) %>%
+  mutate(date = mdy(date)) 
+
+
+flow_pivot <- flow %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(year = as.factor(year(date)))
+
+
+q <- ggplot(flow_pivot, aes(date, q_m3s, color = cal_run)) +
+  geom_line() +
+  scale_color_manual(name="cal_run", values=c('obs' = 'black',
+                                            # "grid_2011"="seagreen",
+                                            # "grid_2012"="seagreen2",
+                                            # "grid_2013"="steelblue",
+                                            # "grid_2014"='dodgerblue',
+                                            # "grid_2015" = "cyan3",
+                                            # 'grid_2016' = 'blue',
+                                            # 'grid_2017' = 'blue4',
+                                            # 'grid_2018' = 'cadetblue',
+                                            # 'grid_2019' = 'lightgreen',
+                                            # 'grid_2020' = 'olivedrab',
+                                            'grid_all' = 'steelblue3',
+                                            # "statn_2011"="maroon",
+                                            # "statn_2012"="deeppink4",
+                                            # "statn_2013"="deeppink",
+                                            # "statn_2014"='purple',
+                                            # "statn_2015" = "mediumorchid1",
+                                            # 'statn_2016' = 'indianred',
+                                            # 'statn_2017' = 'sienna',
+                                            # 'statn_2018' = 'salmon2',
+                                            # 'statn_2019' = 'mediumpurple1',
+                                            # 'statn_2020' = 'violetred',
+                                            'statn_all' = 'red')) +
+  theme_bw(base_size=20)
+
+ggplotly(q)
+
+```
+
+## Cumulative volume
+
+```{r cumq, echo = FALSE, message = FALSE, warning = FALSE}
+
+flow_cumq <- flow_pivot %>%
+  mutate(month = month(date)) %>%
+  filter(month %in% c(4:9)) %>%
+  dplyr::select(-month) %>%
+  #pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(vol_m3 = q_m3s * 86400) %>%
+  group_by(cal_run, year(date)) %>%
+  mutate(cumsum = cumsum(replace_na(vol_m3, 0))) %>%
+  #rename(year = 4) %>%
+  mutate(year = as.factor(year)) %>%
+  ungroup()
+
+#plot annual cumulative Q vals for ensembles
+plot_cumulq_yr_ <- function(calyear) {
+  {flow_cumq %>%
+    filter(year == calyear) %>%
+    ggplot(aes(x = date,
+               y = cumsum,
+               color = cal_run)) +
+    geom_line() +
+scale_color_manual(name="cal_run", values=c('obs' = 'black',
+                                            # "grid_2011"="seagreen",
+                                            # "grid_2012"="seagreen2",
+                                            # "grid_2013"="steelblue",
+                                            # "grid_2014"='dodgerblue',
+                                            # "grid_2015" = "cyan3",
+                                            # 'grid_2016' = 'blue',
+                                            # 'grid_2017' = 'blue4',
+                                            # 'grid_2018' = 'cadetblue',
+                                            # 'grid_2019' = 'lightgreen',
+                                            # 'grid_2020' = 'olivedrab',
+                                            'grid_all' = 'steelblue3',
+                                            # "statn_2011"="maroon",
+                                            # "statn_2012"="deeppink4",
+                                            # "statn_2013"="deeppink",
+                                            # "statn_2014"='purple',
+                                            # "statn_2015" = "mediumorchid1",
+                                            # 'statn_2016' = 'indianred',
+                                            # 'statn_2017' = 'sienna',
+                                            # 'statn_2018' = 'salmon2',
+                                            # 'statn_2019' = 'mediumpurple1',
+                                            # 'statn_2020' = 'violetred',
+                                            'statn_all' = 'red')) +
+    ggtitle(calyear) +
+    theme_bw() +
+    labs(y = 'Volume (m^3)')} %>%
+    ggplotly()
+}
+
+name <- levels(flow_cumq$year)
+
+cumulative_plots <- lapply(name, plot_cumulq_yr_)
+
+htmltools::tagList(cumulative_plots)
+
+cumulative_plots
+
+```
+
+## KGE
+
+### Overall KGE
+
+```{r kge overall, echo = FALSE, message = FALSE, warning = FALSE}
+
+# flow_kge_all <- flow %>%
+#   summarize(grid2011 = KGE(grid_2011, obs),
+#             grid2012 = KGE(grid_2012, obs),
+#             grid2013 = KGE(grid_2013, obs),
+#             grid2014 = KGE(grid_2014, obs),
+#             grid2015 = KGE(grid_2015, obs),
+#             grid2016 = KGE(grid_2016, obs),
+#             grid2017 = KGE(grid_2017, obs),
+#             grid2018 = KGE(grid_2018, obs),
+#             grid2019 = KGE(grid_2019, obs),
+#             grid2020 = KGE(grid_2020, obs),
+#             gridall = KGE(grid_all, obs),
+#             statn2011 = KGE(statn_2011, obs),
+#             statn2012 = KGE(statn_2012, obs),
+#             statn2013 = KGE(statn_2013, obs),
+#             statn2014 = KGE(statn_2014, obs),
+#             statn2015 = KGE(statn_2015, obs),
+#             statn2016 = KGE(statn_2016, obs),
+#             statn2017 = KGE(statn_2017, obs),
+#             statn2018 = KGE(statn_2018, obs),
+#             statn2019 = KGE(statn_2019, obs),
+#             statn2020 = KGE(statn_2020, obs),
+#             statnall = KGE(statn_all, obs)) %>%
+#     mutate_if(is.numeric,
+#             round,
+#             digits = 2)
+
+flow_kge_all <- flow %>%
+  summarize(
+            gridall = KGE(grid_all,
+                          obs, 
+                          na.rm=T, 
+                          method='2012'),
+            statnall = KGE(statn_all, 
+                           obs, 
+                           na.rm=T,
+                           method='2012')) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_kge_all <- flow_kge_all %>%
+  pivot_longer(everything()) %>%
+  arrange(value)
+
+kable(flow_kge_all) %>%
+  kable_styling(full_width = F)
+
+```
+
+### KGE by year
+
+```{r kge by year, echo = FALSE, message = FALSE, warning = FALSE}
+
+flow_year <- flow %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(
+    # grid2011 = KGE(grid_2011, obs),
+    #         grid2012 = KGE(grid_2012, obs),
+    #         grid2013 = KGE(grid_2013, obs),
+    #         grid2014 = KGE(grid_2014, obs),
+    #         grid2015 = KGE(grid_2015, obs),
+    #         grid2016 = KGE(grid_2016, obs),
+    #         grid2017 = KGE(grid_2017, obs),
+    #         grid2018 = KGE(grid_2018, obs),
+    #         grid2019 = KGE(grid_2019, obs),
+    #         grid2020 = KGE(grid_2020, obs),
+            gridall = KGE(grid_all, obs, na.rm = T, method='2012'),
+            # statn2011 = KGE(statn_2011, obs),
+            # statn2012 = KGE(statn_2012, obs),
+            # statn2013 = KGE(statn_2013, obs),
+            # statn2014 = KGE(statn_2014, obs),
+            # statn2015 = KGE(statn_2015, obs),
+            # statn2016 = KGE(statn_2016, obs),
+            # statn2017 = KGE(statn_2017, obs),
+            # statn2018 = KGE(statn_2018, obs),
+            # statn2019 = KGE(statn_2019, obs),
+            # statn2020 = KGE(statn_2020, obs),
+            statnall = KGE(statn_all, obs, na.rm=T, method='2012')) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_kge <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  pivot_wider(names_from = 'year', values_from = 'kge')
+
+flow_kge %>%
+  kable(.) %>%
+  kable_styling()
+
+
+flow_plot <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
+  mutate(year = as.factor(year))
+
+# add all to the plot below
+kge_all <- flow_kge_all %>%
+  mutate(year = 'all years') %>%
+  rename(model_run = name,
+         kge = value)
+
+flow_plot_updated <- bind_rows(flow_plot, kge_all)
+
+ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = kge)) +
+  geom_tile(color = "white") +
+  scale_fill_viridis_c(option = "viridis", name = "KGE", direction = -1) +
+  geom_text(aes(label = round(kge, 2)), color = "grey", size = 2.5) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(y = "Year")
+
+
+```
+
+<!-- ### Annual KGE plots -->
+
+<!-- ```{r wy plots, echo = FALSE, message = FALSE, warning = FALSE} -->
+
+<!-- plot_kge <- function(calyear) { -->
+<!--   flow_plot %>% -->
+<!--     filter(year == calyear) %>% -->
+<!--     ggplot(aes(x = model_run, -->
+<!--                y = kge)) + -->
+<!--     geom_point(size=3) + -->
+<!--     ggtitle(calyear) + -->
+<!--     theme_bw() + -->
+<!--     theme(axis.text.x = element_text(angle = 45, hjust=1)) -->
+<!-- } -->
+
+<!-- name <- levels(flow_plot$year) -->
+
+<!-- lapply(name, plot_kge) -->
+
+<!-- ``` -->
+
+## Pbias
+
+### Overall pbias
+
+```{r pbias overall, echo = FALSE, message = FALSE, warning = FALSE}
+
+flow_pbias_all <- flow %>%
+  summarize(
+    # grid2011 = pbias(grid_2011, obs),
+    #         grid2012 = pbias(grid_2012, obs),
+    #         grid2013 = pbias(grid_2013, obs),
+    #         grid2014 = pbias(grid_2014, obs),
+    #         grid2015 = pbias(grid_2015, obs),
+    #         grid2016 = pbias(grid_2016, obs),
+    #         grid2017 = pbias(grid_2017, obs),
+    #         grid2018 = pbias(grid_2018, obs),
+    #         grid2019 = pbias(grid_2019, obs),
+    #         grid2020 = pbias(grid_2020, obs),
+            gridall = pbias(grid_all, obs),
+            # statn2011 = pbias(statn_2011, obs),
+            # statn2012 = pbias(statn_2012, obs),
+            # statn2013 = pbias(statn_2013, obs),
+            # statn2014 = pbias(statn_2014, obs),
+            # statn2015 = pbias(statn_2015, obs),
+            # statn2016 = pbias(statn_2016, obs),
+            # statn2017 = pbias(statn_2017, obs),
+            # statn2018 = pbias(statn_2018, obs),
+            # statn2019 = pbias(statn_2019, obs),
+            # statn2020 = pbias(statn_2020, obs),
+            statnall = pbias(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_pbias_all <- flow_pbias_all %>%
+  pivot_longer(everything()) %>%
+  arrange(abs(value))
+
+kable(flow_pbias_all) %>%
+  kable_styling(full_width = F)
+
+```
+
+
+### Pbias by year
+
+```{r pbias by year, echo = FALSE, message = FALSE, warning = FALSE}
+
+flow_year <- flow %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(
+    # grid2011 = pbias(grid_2011, obs),
+    #         grid2012 = pbias(grid_2012, obs),
+    #         grid2013 = pbias(grid_2013, obs),
+    #         grid2014 = pbias(grid_2014, obs),
+    #         grid2015 = pbias(grid_2015, obs),
+    #         grid2016 = pbias(grid_2016, obs),
+    #         grid2017 = pbias(grid_2017, obs),
+    #         grid2018 = pbias(grid_2018, obs),
+    #         grid2019 = pbias(grid_2019, obs),
+    #         grid2020 = pbias(grid_2020, obs),
+            gridall = pbias(grid_all, obs),
+            # statn2011 = pbias(statn_2011, obs),
+            # statn2012 = pbias(statn_2012, obs),
+            # statn2013 = pbias(statn_2013, obs),
+            # statn2014 = pbias(statn_2014, obs),
+            # statn2015 = pbias(statn_2015, obs),
+            # statn2016 = pbias(statn_2016, obs),
+            # statn2017 = pbias(statn_2017, obs),
+            # statn2018 = pbias(statn_2018, obs),
+            # statn2019 = pbias(statn_2019, obs),
+            # statn2020 = pbias(statn_2020, obs),
+            statnall = pbias(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_pbias <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'pbias') %>%
+  pivot_wider(names_from = 'year', values_from = 'pbias')
+
+flow_pbias %>%
+  kable(.) %>%
+  kable_styling()
+
+flow_plot <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'pbias') %>%
+  mutate(year = as.factor(year))
+
+# add all to the plot below
+pbias_all <- flow_pbias_all %>%
+  mutate(year = 'all years') %>%
+  rename(model_run = name,
+         pbias = value)
+
+flow_plot_updated <- bind_rows(flow_plot, pbias_all)
+
+ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = pbias)) +
+  geom_tile(color = "white") +
+   scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, name = "Pbias") +
+  geom_text(aes(label = round(pbias, 2)), color = "black", size = 2.5) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(y = "Year")
+
+
+```
+
+<!-- ### Annual Pbias plots -->
+
+<!-- ```{r pbias plots, echo = FALSE, message = FALSE, warning = FALSE} -->
+
+<!-- plot_pbias <- function(calyear) { -->
+<!--   flow_plot %>% -->
+<!--     filter(year == calyear) %>% -->
+<!--     ggplot(aes(x = model_run, -->
+<!--                y = pbias)) + -->
+<!--     geom_point(size=3) + -->
+<!--     ggtitle(calyear) + -->
+<!--     theme_bw() + -->
+<!--     theme(axis.text.x = element_text(angle = 45, hjust=1)) -->
+<!-- } -->
+
+<!-- name <- levels(flow_plot$year) -->
+
+<!-- lapply(name, plot_pbias) -->
+
+<!-- ``` -->
+
+# RD and RG
+
+- **Different units than streamflow (cms) and volume (m3)**
+- **All in mm**
+
+```{r rd and rg, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 14, fig.asp = 1, out.width = "100%"}
+
+gw_gridall <- read_csv(here('38HRU_dec2024_updates/catchment_output/grid_all.csv'), skip = 3) %>%
+  slice(-c(1,2)) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'grid_all') %>%
+  mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+
+
+gw_statnall <- read_csv(here('38HRU_dec2024_updates/catchment_output/statn_all.csv'), skip = 3) %>%
+  slice(-c(1,2)) %>%
+  dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+  mutate(source = 'statn_all') %>%
+  mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+
+# gw_grid2011 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2011.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2011')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2012 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2012.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2012')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2013 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2013.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2013')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2014 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2014.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2014')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2015 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2015.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2015')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2016 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2016.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2016')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2017 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2017.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2017')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2018 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2018.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2018')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2019 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2019.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2019')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_grid2020 <- read_csv(here('38HRU_sept2013_updates/catchment_output/grid_2020.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'grid_2020')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2011 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2011.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2011')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2012 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2012.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2012')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2013 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2013.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2013')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2014 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2014.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2014')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2015 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2015.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2015')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2016 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2016.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2016')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2017 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2017.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2017')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2018 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2018.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2018')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2019 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2019.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2019')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+#
+# gw_statn2020 <- read_csv(here('38HRU_sept2013_updates/catchment_output/statn_2020.csv'), skip = 3) %>%
+#   slice(-c(1,2)) %>%
+#   dplyr::select(time, catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w) %>%
+#   mutate(source = 'statn_2020')%>%
+#   mutate(across(c(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w), as.numeric))
+
+gw <- bind_rows(
+  gw_gridall, gw_statnall
+  # gw_grid2011, gw_grid2012,
+  # gw_grid2013, gw_grid2014,
+  # gw_grid2015, gw_grid2016,
+  # gw_grid2017, gw_grid2018,
+  # gw_grid2019, gw_grid2020,
+  # gw_statn2011, gw_statn2012,
+  # gw_statn2013, gw_statn2014,
+  # gw_statn2015, gw_statn2016,
+  # gw_statn2017, gw_statn2018,
+  # gw_statn2019, gw_statn2020
+) %>%
+  mutate(date = mdy(time),
+         year = year(date)) %>%
+  arrange(date)
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRD1_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RD1') +
+  theme(text = element_text(size = 20)) +
+  labs(y = 'RD1 (mm)')
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRD2_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RD2') +
+  theme(text = element_text(size = 20))+
+  labs(y = 'RD2 (mm)')
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRG1_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RG1') +
+  theme(text = element_text(size = 20)) +
+  labs(y = 'RG1 (mm)')
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=catchmentRG2_w), size =1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('RG2') +
+  theme(text = element_text(size = 20))+
+  labs(y = 'RG2 (mm)')
+
+gw <- gw %>%
+  arrange(date) %>%
+  group_by(year, source) %>%
+  mutate(RD1cumsum = cumsum(catchmentRD1_w),
+         RD2cumsum = cumsum(catchmentRD2_w),
+         RG1cumsum = cumsum(catchmentRG1_w),
+         RG2cumsum = cumsum(catchmentRG2_w))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RD1cumsum), size =1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RD1 (mm)') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RD2cumsum), size = 1) +
+  facet_wrap(~year, scales = 'free', ncol=2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RD2 (mm)') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RG1cumsum), size  = 1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RG1 (mm)') +
+  theme(text = element_text(size = 20))
+
+ggplot(gw, aes(x=date, color = source)) +
+  geom_line(aes(y=RG2cumsum), size =1) +
+  facet_wrap(~year, scales = 'free', ncol = 2) +
+  scale_x_date(labels = date_format("%b")) +
+  ggtitle('Cumulative RG2 (mm)') +
+  theme(text = element_text(size = 20))
+
+```
+
+
+```{r rd and rg sums, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 22, fig.asp = 1.5, out.width = "100%"}
+
+##################
+# all 4 with facets
+
+ggplot(gw, aes(x=date)) +
+  geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) +
+  geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) +
+  geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) +
+  geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) +
+  scale_x_date(labels = date_format("%b")) +
+  facet_wrap(~year + source, scales = 'free_x', ncol=2) +
+  ggtitle('Cumulative RD and RG (mm)') +
+  theme(text = element_text(size = 24))
+
+```
+
+
+```{r gw boxplot, echo = FALSE, message = FALSE, warning = FALSE}
+
+gw_maxcumsum <- gw %>%
+  group_by(source, year) %>%
+  summarize(yr_cum_RD1 = max(RD1cumsum),
+            yr_cum_RD2 = max(RD2cumsum),
+            yr_cum_RG1 = max(RG1cumsum),
+            yr_cum_RG2 = max(RG2cumsum)) %>%
+  mutate(year = as.factor(year)) %>%
+  pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms')
+
+
+ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  ggtitle('Annual sum') +
+  labs(y = 'mm of water')
+
+ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~flow_type, scales = 'free') +
+  ggtitle('Annual sum') +
+  labs(y = 'mm of water')
+
+```
+
+### RD and RG by season
+
+- January-February = baseflow_winter
+- March-June = snowmelt
+- July-August = Monsoon
+- September-December = Baseflow_fall
+
+
+```{r flow season, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 12, fig.asp = 0.75, out.width = "100%"}
+
+#group by season and get max sums by season
+flow_season <- gw %>%
+  dplyr::select(catchmentRD1_w, catchmentRD2_w, catchmentRG1_w, catchmentRG2_w, date, year, source) %>%
+  mutate(month = month(date)) %>%
+  mutate(season = case_when(month %in% c(3,4,5,6) ~ 'snowmelt',
+                            month %in% c(7,8) ~ 'monsoon',
+                            month %in% c(9,10,11,12) ~ 'baseflow_fall',
+                            month %in% c(1,2) ~ 'baseflow_winter')) %>%
+  group_by(source, year, season) %>%
+  mutate(yr_season_RD1 = cumsum(catchmentRD1_w),
+            yr_season_RD2 = cumsum(catchmentRD2_w),
+            yr_season_RG1 = cumsum(catchmentRG1_w),
+            yr_season_RG2 = cumsum(catchmentRG2_w)) %>%
+  summarize(sumRD1 = max(yr_season_RD1),
+            sumRD2 = max(yr_season_RD2),
+            sumRG1 = max(yr_season_RG1),
+            sumRG2 = max(yr_season_RG2)) %>%
+            pivot_longer(!c(year, source, season), names_to = 'flow_type', values_to = 'mm_water')
+
+
+flow_season %>%
+  ggplot(aes(x = flow_type, y = mm_water, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  #geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~season) +
+  ggtitle('RD/RG sums (mm)') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(text = element_text(size = 20)) +
+  labs(y = 'RD/RG sums (mm)')
+
+
+flow_season %>%
+  ggplot(aes(x = flow_type, y = mm_water, fill = source)) +
+  geom_boxplot(position = position_dodge(1)) +
+  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(aes(color = source)) +
+  facet_wrap(~season + flow_type, scales = 'free') +
+  ggtitle('Seasonal sums') +
+  theme_bw() +
+  theme(text = element_text(size = 20)) +
+  labs(y = 'RD/RG seasonal sums (mm)')
+
+```
+
