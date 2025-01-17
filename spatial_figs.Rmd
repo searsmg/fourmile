@@ -725,7 +725,7 @@ ggsave("./figures/p_compare.png", plot = p_comp, dpi = 600)
 
 ```{r}
 
-setwd('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates')
+setwd('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates')
 
 flow <- read_csv('discharge_all.csv') %>%
   replace(.==-9999, NA) %>%
@@ -733,22 +733,241 @@ flow <- read_csv('discharge_all.csv') %>%
   mutate(date = mdy(date)) %>%
   dplyr::select(date, obs) %>%
   mutate(year = year(date),
-         DOY = yday(date)) %>%
-  drop_na(obs)
+         DOY = yday(date)) #%>%
+  #drop_na(obs)
 
 library(viridis)
 
-flow_plot <- ggplot(flow, aes(x = DOY, y = obs, color = as.factor(year))) + 
+flow_plot <- ggplot(flow, aes(x = DOY, y = obs, color = as.factor(year),
+                              linetype = as.factor(year))) + 
   geom_line(size = 1.1) +
   theme_bw(base_size = 20) +
   labs(y = 'Discharge (cms)', color = 'Year') +
-  scale_color_viridis_d(option = "turbo")
+  scale_color_viridis_d(option = "mako") +
+     theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_text(color = "black"))
+
+
+
 
 flow_plot
 
 ggsave("./figures/flow_obs_plot.png", dpi = 600)
 
 summary(flow)
+
+flow_plot2 <- ggplot(flow, aes(x = date, y = obs)) + 
+  geom_line(size = 1.1) +
+  theme_bw(base_size = 20) +
+  labs(y = 'Discharge (cms)',
+         x = element_blank()) +
+   theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_text(color = "black"))
+
+flow_plot2
+
+ggsave("/Users/megansears/Documents/Repos/fourmile/figures/flow_obs_plot2.png", dpi = 600, width = 12, height = 4, units = "in")
+
+
+```
+
+# statn vs grid met
+
+```{r}
+
+grid <- read_csv("/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/grid_all_Catchment.csv",
+                 skip=3) %>%
+   slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(date = ymd(time)) %>%
+  dplyr::select(-time) %>%
+  mutate_if(is.character, as.numeric) %>% 
+  mutate(site = 'grid')
+
+statn <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/statn_all_Catchment.csv',
+                 skip=3) %>%
+   slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(date = ymd(time)) %>%
+  dplyr::select(-time) %>%
+  mutate_if(is.character, as.numeric) %>% 
+  mutate(site = 'statn')
+
+all <- bind_rows(grid, statn) %>%
+  arrange(date)
+
+catchment_mo_mean <- all %>%
+  mutate(month = month(date)) %>%
+  group_by(site, month) %>%
+  summarise(across(tmean:solRad, ~ mean(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month, tmean_mean = tmean, 
+                solrad_mean = solRad, rh_mean = rhum)
+
+catchment_mo_sum <- all %>%
+  dplyr::select(date, precip, site) %>%
+  mutate(month = month(date),
+         year = year(date)) %>%
+  group_by(month, year, site) %>%
+  summarize(p_sum = sum(precip)) %>%
+  group_by(month, site) %>%
+  summarize(avg_p = mean(p_sum),
+          sd_p = sd(p_sum))
+  
+
+catchment_mo_sd <- all %>%
+  mutate(month = month(date)) %>%
+  group_by(site, month) %>%
+  summarise(across(tmean:solRad, ~ sd(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month, tmean_sd = tmean, 
+                solrad_sd = solRad, rh_sd = rhum)
+
+
+catchment_mo <- left_join(catchment_mo_mean, catchment_mo_sd, 
+                          by = c('month', 'site'))
+
+catchment_mo <- left_join(catchment_mo, catchment_mo_sum)
+
+catchment_mo2 <- catchment_mo %>%
+  mutate(month_name = month.abb[month]) %>%
+  mutate(month_name = factor(month_name, 
+                             levels = c('Jan', 'Feb', 'Mar',
+                                        'Apr', 'May', 'Jun',
+                                        'Jul', 'Aug', 'Sep',
+                                        'Oct', 'Nov', 'Dec')))
+
+
+p_cols <- ggplot(catchment_mo2, aes(x = month_name, y = avg_p,
+                                    color = site, fill = site)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = 0, ymax = avg_p + sd_p), 
+                position = position_dodge(width = 0.6), width = 0.2) +
+  scale_color_manual(values = c("blue", "orange"),
+                     labels = c("Gridded", "Observed")) +  # Rename color legend items
+  scale_fill_manual(values = c("blue", "orange"),
+                    labels = c("Gridded", "Observed")) +   # Rename fill legend items
+  theme_bw(base_size = 20) +
+  labs(y = 'Precipitation (mm)',
+       x = element_blank()) +
+  guides(color = guide_legend(title = NULL),
+         fill = guide_legend(title = NULL)) +
+    theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank()
+  ) 
+
+
+p_cols
+
+ggsave("/Users/megansears/Documents/Repos/fourmile/figures/precip.png", plot = p_cols, width = 8, height = 6, dpi = 300)
+
+# Temperature plot
+t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean, 
+                                      color = site, group = site)) +
+  geom_ribbon(aes(ymin = tmean_mean - tmean_sd, ymax = tmean_mean + tmean_sd, fill = site), alpha = 0.4) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("blue", "orange"),
+                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
+  scale_fill_manual(values = c("blue", "orange"),
+                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  theme_bw(base_size=20) +
+  labs(y = expression("Air temperature " ( degree~C)),
+       x = element_blank()) +
+  labs(color = NULL, fill = NULL) +
+      theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank())
+
+# Solar radiation plot
+sol_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = solrad_mean, 
+                                         color = site, group = site)) +
+  geom_ribbon(aes(ymin = solrad_mean - solrad_sd, ymax = solrad_mean + solrad_sd, fill = site), alpha = 0.4) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("blue", "orange"),
+                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
+  scale_fill_manual(values = c("blue", "orange"),
+                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  theme_bw(base_size = 20) +
+  labs(y = expression("Solar radiation (MJ/m"^"2" * ")"),
+       x = element_blank()) +
+  labs(color = NULL, fill = NULL) +
+      theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank())
+
+# Relative humidity plot
+rh_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = rh_mean, 
+                                        color = site, group = site)) +
+  geom_ribbon(aes(ymin = rh_mean - rh_sd, ymax = rh_mean + rh_sd, fill = site), alpha = 0.4) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("blue", "orange"),
+                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
+  scale_fill_manual(values = c("blue", "orange"),
+                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  theme_bw(base_size = 20) +
+  labs(y = 'RH (%)', x= element_blank()) +
+  labs(color = NULL, fill = NULL) +
+      theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank())
+
+
+library(ggpubr)
+
+quad <- ggarrange(p_cols, 
+          t_moplot,
+          sol_moplot,
+          rh_moplot,
+          common.legend = T,
+          legend = 'bottom',
+          ncol=2,
+          nrow=2) 
+          #nrow = 4)
+          #ncol= 0)
+quad
+
+ggsave("/Users/megansears/Documents/Repos/fourmile/figures/quad.png", plot = quad, dpi = 600)
+
+
+quad_plus <- ggarrange(flow_plot2,quad,
+                       nrow=2)
+quad_plus
+
+ggsave("./figures/quad_plus2.png", plot = quad_plus, dpi = 600)
+
 
 ```
 
