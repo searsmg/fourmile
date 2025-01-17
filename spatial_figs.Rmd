@@ -33,6 +33,7 @@ library(ggpubr)
 hru_new <- vect('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp')
 plot(hru_new)
 
+
 hru_new <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/hrus_final.shp')
 
 mapview(hru_new) 
@@ -50,6 +51,15 @@ dem_raster <- raster('/Users/megansears/Documents/Repos/fourmile/data/GIS/USGS_1
 dem_raster2 <- raster('/Users/megansears/Documents/Repos/fourmile/data/GIS/USGS_13_n40w106_20230602.tif')
 
 dem_raster <- merge(dem_raster, dem_raster2)
+
+dem_raster1 <- rast(dem_raster)
+
+# extract min, max
+min <- terra::extract(dem_raster1, hru_new, 'min', touches=T)
+min(min$layer)
+
+max <- terra::extract(dem_raster1, hru_new, 'max', touches=T)
+max(max$layer)
 
 mapview(dem_raster) + mapview(hru_new) + mapview(locations)
 
@@ -280,11 +290,19 @@ p_cols <- ggplot(catchment_mo2, aes(x = month_name, y = precip_mean,
                      labels = c("Gridded", "Observed")) +  # Rename color legend items
   scale_fill_manual(values = c("blue", "orange"),
                     labels = c("Gridded", "Observed")) +   # Rename fill legend items
-  theme_bw(base_size = 12) +
+  theme_bw(base_size = 20) +
   labs(y = 'Precipitation (mm)',
        x = element_blank()) +
   guides(color = guide_legend(title = NULL),
-         fill = guide_legend(title = NULL))
+         fill = guide_legend(title = NULL)) +
+    theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank()
+  ) 
 
 
 p_cols
