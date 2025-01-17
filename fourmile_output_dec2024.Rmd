@@ -635,6 +635,12 @@ cumulative_plots
 #             round,
 #             digits = 2)
 
+kge_grid <- flow %>%
+  summarize(grid_kge = KGE(grid_all,
+                           obs,
+                           na.rm=T,
+                           method = '2012'))
+
 flow_kge_all <- flow %>%
   summarize(
             gridall = KGE(grid_all,
