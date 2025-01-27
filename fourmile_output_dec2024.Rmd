@@ -408,7 +408,7 @@ ggplot(params_combo, aes(x=burn, y=value, fill=input_data)) +
   geom_boxplot() +
   facet_wrap(~param, scales = 'free_y')
 # 
-# write_csv(params_combo, '/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/params_burn_unburn.csv')
+#write_csv(params_combo, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/params_burn_unburn.csv')
 
 ```
 
@@ -427,7 +427,7 @@ params_weighted <- params_combo %>%
   dplyr::select(-c(numerator, denominator)) %>%
   separate(col = cal, into = c("source", "year_missing"), sep = "_")
   
-#write_csv(params_weighted, '/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/params_weighted_sept2013_edits.csv')
+#write_csv(params_weighted, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/params_weighted_dec2024.csv')
 
 #function to plot all params
 plot_params <- function(param_name) {
