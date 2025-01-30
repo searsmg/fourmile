@@ -19,13 +19,13 @@ knitr::opts_chunk$set(
 
 library(tidyverse)
 library(plotly)
+library(ggpubr)
 
 ```
 
-# 10 most sensitive params
+# Sensitivity analysis
 
 ```{r}
-
 statn <- read_csv('./data/sens_analysis/output_rsa_kge_runoff_statn.csv') %>%
   rename(statn_sens = sensitivity)
 
@@ -41,16 +41,153 @@ join <- join %>%
          avg_rank = (grid_rank + statn_rank)/2) %>%
   arrange(avg_rank)
 
-special <- join %>%
-  slice(1:10)
+# in the average top 10 rank:
+# soilOutLPS, snow_trs, lagSurfaceRunoff, a_rain, lagInterflow,
+# baseTemp, a_snow, t_factor, soilLatVertLPS, r_factor
+# all but the last two are in statn and grids top 10,
+# so show the first 8 in the plot
+# rest of params show in the supp
 
-####
+```
 
-# 10 most sensitive params
-params <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv')
+# Parameters selected from above
 
-params_filter <- params %>%
-  filter(param %in% special$parameter)
+```{r}
+# params area weighted (only for lagSurfaceRunoff, a_rain, a_snow)
+params <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv') %>%
+  filter(param %in% c('lagSurfaceRunoff',
+                      'a_rain',
+                      'a_snow')) %>% # select params in the top 8 sens that are area weighted
+  rename(value = area_weighted_average,
+         input_data = source) %>%
+  select(param, input_data, value)
+
+# params unburned (above is params that needed to be area weighted bc burn/unburn)
+params_unburn <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
+  filter(param %in% c('soilOutLPS',
+                      'snow_trs',
+                      'lagInterflow',
+                      'baseTemp',
+                      't_factor')) %>%
+  select(param, input_data, value)
+
+# join the two to get the top 8 sensitve params
+param_sens <- bind_rows(params, params_unburn) %>% 
+  mutate(input_data = if_else(input_data == 'grid',
+                              'Gridded',
+                              'Station'))
+
+# get distribution for signf. test
+ggplot(param_sens, aes(x = value, fill = input_data)) +
+  geom_density(alpha = 0.6) +
+  facet_wrap(~param, scales = "free") +
+  theme_bw(base_size = 20) +
+  scale_fill_manual(values = c("#0047AB", "orange")) +
+  theme(
+    strip.background = element_blank(),
+    panel.grid = element_blank(),
+    legend.position = "bottom"
+  )
+
+# boxplots of top 8
+ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
+  geom_boxplot(alpha=0.8,
+                outlier.colour = "black") +
+  facet_wrap(~param, scales = 'free_y') +
+  labs(y=element_blank(),
+       x=element_blank()) +
+  theme_bw(base_size=20) +
+  stat_compare_means(aes(group = input_data),
+                     method = "wilcox.test", 
+                     label = "p.signif",
+                     hide.ns = T,
+                     paired = F,
+                     #label.y = 0,
+                     #label.x = 1.4,
+                     size = 7) +
+  scale_fill_manual(values = c("#0047AB", "orange")) +
+    theme(
+    legend.position = 'none',
+    #legend.justification = c(0, 1.1), 
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(), 
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    #strip.text = element_blank()
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
+
+ggsave('./figures/param_sensit_boxplots.png',
+       dpi=600)
+
+# show rest of params for supplemental
+# first take area weighted params (except lagSurfaceRunoff, a_rain, a_snow since that is already shown in main fig)
+otherParamsWeighted <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv') %>%
+  filter(!param %in% c('lagSurfaceRunoff',
+                       'a_rain',
+                       'a_snow')) %>%
+  rename(value = area_weighted_average,
+         input_data = source) %>%
+  select(param, input_data, value)
+  
+# params that were not affected by burn
+otherParams <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
+  filter(!param %in% c('soilOutLPS',
+                       'snow_trs',
+                       'lagInterflow',
+                       'baseTemp',
+                       't_factor',
+                       'lagSurfaceRunoff',
+                       'a_rain',
+                       'a_snow')) %>% # these are the ones already shown
+  filter(!param %in% otherParamsWeighted$param) %>% # there are the ones that need to be area weighted
+  select(param, input_data, value)
+
+# now join the area weighted other to the other params
+otherParams <- bind_rows(otherParams, otherParamsWeighted)
+
+# plot the remaning params for catchment
+ggplot(otherParams, aes(x=input_data, y=value, fill=input_data)) +
+  geom_boxplot(alpha=0.8,
+                outlier.colour = "black") +
+  facet_wrap(~param, scales = 'free_y',
+             ncol=3) +
+  labs(y=element_blank(),
+       x=element_blank()) +
+  theme_bw(base_size=20) +
+  stat_compare_means(aes(group = input_data),
+                     method = "wilcox.test", 
+                     label = "p.signif",
+                     hide.ns = T,
+                     paired = F,
+                     #label.y = 0,
+                     #label.x = 1.4,
+                     size = 7) +
+  scale_fill_manual(values = c("#0047AB", "orange")) +
+    theme(
+    legend.position = 'none',
+    #legend.justification = c(0, 1.1), 
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(), 
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    #strip.text = element_blank()
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
+
+ggsave('./figures/remainingparams_boxplots.png',
+       dpi=600,
+       height=16,
+       width=10)
+
 
 ```
 
@@ -110,6 +247,10 @@ ggplot(combo, aes(x=burn, y=value, fill=input_data)) +
     #strip.text = element_blank()
   ) +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
+
+ggsave('./figures/burn_unburn_params.png',
+       dpi=600)
+
 
 ```
 
