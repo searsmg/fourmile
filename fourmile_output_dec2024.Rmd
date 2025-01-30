@@ -152,6 +152,7 @@ params <- params %>%
     mutate(value = as.numeric(value),
          param = as.factor(param))
 
+write_csv(params, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/params_unburn.csv')
 
 #function to plot all params
 plot_params <- function(param_name) {
@@ -497,6 +498,51 @@ ggplotly(q)
 
 ```
 
+Q 1:1  and residual plots
+
+```{r}
+
+flowComp <- flow %>%
+  dplyr::select(date,obs, statn_all, grid_all) %>%
+  drop_na(obs) %>% 
+  mutate(month = month(date)) %>%
+  mutate(statn_res = obs - statn_all,
+         grid_res = obs - grid_all)
+
+statn_comp <- ggplot(flowComp) +
+  geom_point(aes(x=obs, y = statn_all, color=as.factor(month))) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red")
+
+ggplotly(statn_comp)
+
+grid_comp <- ggplot(flowComp) +
+  geom_point(aes(x=obs, y = grid_all, color = as.factor(month))) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  ylim(0,5)
+
+ggplotly(grid_comp)
+
+
+statn_res <- ggplot(flowComp) + geom_point(aes(x=obs, y = statn_res, color = as.factor(month))) +
+  theme_bw(base_size = 20) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") 
+
+ggplotly(statn_res)
+
+ggplot(flowComp) + geom_point(aes(x=obs, y = grid_res, color = as.factor(month))) +
+  theme_bw(base_size = 20)+
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") 
+
+grid_res <- ggplot(flowComp) + geom_point(aes(x=obs, y = grid_res, color = as.factor(month))) +
+  theme_bw(base_size = 20) + ylim(-5,6)+
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") 
+
+ggplotly(grid_res)
+
+
+```
+
+
 ## Cumulative volume
 
 ```{r cumq, echo = FALSE, message = FALSE, warning = FALSE}
@@ -658,13 +704,16 @@ kge_all <- flow_kge_all %>%
 
 flow_plot_updated <- bind_rows(flow_plot, kge_all)
 
-ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = kge)) +
+flow_plot_updated <- flow_plot_updated %>%
+  mutate(kge_revise = if_else(kge < 0, 0, kge))
+
+ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = kge_revise)) +
   geom_tile(color = "white") +
-  scale_fill_viridis_c(option = "viridis", name = "KGE", direction = -1) +
-  geom_text(aes(label = round(kge, 2)), color = "grey", size = 2.5) +
-  theme_bw() +
+  scale_fill_viridis_c(option = "mako", name = "KGE", direction = -1) +
+  geom_text(aes(label = round(kge_revise, 2)), color = "grey", size = 2.5) +
+  theme_bw(base_size=20) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(y = "Year")
+  labs(y = "Year") 
 
 
 ```
@@ -771,7 +820,7 @@ ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = pbias)) +
   geom_tile(color = "white") +
    scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, name = "Pbias") +
   geom_text(aes(label = round(pbias, 2)), color = "black", size = 2.5) +
-  theme_bw() +
+  theme_bw(base_size=20) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(y = "Year")
 
@@ -937,11 +986,12 @@ gw <- bind_rows(
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=catchmentRD1_w), size =1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
+  facet_wrap(~year, scales="free", ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('RD1') +
   theme(text = element_text(size = 20)) +
-  labs(y = 'RD1 (mm)')
+  labs(y = 'RD1 (mm)') +
+  theme_bw(base_size=20)
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=catchmentRD2_w), size =1) +
@@ -949,7 +999,8 @@ ggplot(gw, aes(x=date, color = source)) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('RD2') +
   theme(text = element_text(size = 20))+
-  labs(y = 'RD2 (mm)')
+  labs(y = 'RD2 (mm)')+
+  theme_bw(base_size=20)
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=catchmentRG1_w), size =1) +
@@ -957,7 +1008,8 @@ ggplot(gw, aes(x=date, color = source)) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('RG1') +
   theme(text = element_text(size = 20)) +
-  labs(y = 'RG1 (mm)')
+  labs(y = 'RG1 (mm)')+
+  theme_bw(base_size=20)
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=catchmentRG2_w), size =1) +
@@ -965,7 +1017,8 @@ ggplot(gw, aes(x=date, color = source)) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('RG2') +
   theme(text = element_text(size = 20))+
-  labs(y = 'RG2 (mm)')
+  labs(y = 'RG2 (mm)')+
+  theme_bw(base_size=20)
 
 gw <- gw %>%
   arrange(date) %>%
@@ -980,28 +1033,32 @@ ggplot(gw, aes(x=date, color = source)) +
   facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('Cumulative RD1 (mm)') +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20)) +
+  theme_bw(base_size=20)
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RD2cumsum), size = 1) +
   facet_wrap(~year, scales = 'free', ncol=2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('Cumulative RD2 (mm)') +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20))+
+  theme_bw(base_size=20)
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RG1cumsum), size  = 1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('Cumulative RG1 (mm)') +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20))+
+  theme_bw(base_size=20)
 
 ggplot(gw, aes(x=date, color = source)) +
   geom_line(aes(y=RG2cumsum), size =1) +
   facet_wrap(~year, scales = 'free', ncol = 2) +
   scale_x_date(labels = date_format("%b")) +
   ggtitle('Cumulative RG2 (mm)') +
-  theme(text = element_text(size = 20))
+  theme(text = element_text(size = 20))+
+  theme_bw(base_size=20)
 
 ```
 
@@ -1011,15 +1068,34 @@ ggplot(gw, aes(x=date, color = source)) +
 ##################
 # all 4 with facets
 
-ggplot(gw, aes(x=date)) +
+gw %>%
+  filter(source == 'grid_all') %>%
+  ggplot(aes(x=date)) +
   geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) +
   geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) +
   geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) +
   geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) +
   scale_x_date(labels = date_format("%b")) +
-  facet_wrap(~year + source, scales = 'free_x', ncol=2) +
-  ggtitle('Cumulative RD and RG (mm)') +
-  theme(text = element_text(size = 24))
+  facet_wrap(~year, scales = 'free_x', ncol=3) +
+  ggtitle('Grid Cumulative RD and RG (mm)') +
+  #theme(text = element_text(size = 24)) +
+  theme_bw(base_size=14) +
+  labs(y='cumulative sum')
+
+gw %>%
+  filter(source == 'statn_all') %>%
+  ggplot(aes(x=date)) +
+  geom_line(aes(y=RG2cumsum, color = 'cumulative RG2'), size =1) +
+  geom_line(aes(y=RG1cumsum, color = 'cumulative RG1'), size =1) +
+  geom_line(aes(y=RD1cumsum, color = 'cumulative RD1'), size =1) +
+  geom_line(aes(y=RD2cumsum, color = 'cumulative RD2'), size =1) +
+  scale_x_date(labels = date_format("%b")) +
+  facet_wrap(~year, scales = 'free_x', ncol=3) +
+  ggtitle('Statn Cumulative RD and RG (mm)') +
+  #theme(text = element_text(size = 24)) +
+  theme_bw(base_size=14) +
+  labs(y='cumulative sum')
+
 
 ```
 
@@ -1038,17 +1114,17 @@ gw_maxcumsum <- gw %>%
 
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
-  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(position=position_jitterdodge(),alpha=0.3) +
   ggtitle('Annual sum') +
-  labs(y = 'mm of water')
+  labs(y = 'mm of water') + theme_bw(base_size=20)
 
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
-  geom_point(position=position_jitterdodge(),alpha=0.3) +
+  #geom_point(position=position_jitterdodge(),alpha=0.3) +
   #geom_point(aes(color = source)) +
   facet_wrap(~flow_type, scales = 'free') +
   ggtitle('Annual sum') +
-  labs(y = 'mm of water')
+  labs(y = 'mm of water') + theme_bw(base_size=20)
 
 ```
 
