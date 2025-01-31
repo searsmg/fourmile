@@ -27,12 +27,12 @@ library(kableExtra)
 
 ```{r, include = F}
 
-statn <- read_csv('./38HRU_sept2013_updates/catchment_output/Catchment_statnall.csv') %>%
+statn <- read_csv('./38HRU_dec2024_updates/catchment_output/Catchment_statnall.csv') %>%
   mutate(date = mdy(time),
          source = 'statn') %>%
   select(-time)
 
-grid <- read_csv('./38HRU_sept2013_updates/catchment_output/Catchment_gridall.csv') %>%
+grid <- read_csv('./38HRU_dec2024_updates/catchment_output/Catchment_gridall.csv') %>%
   mutate(date = mdy(time),
          source = 'grid') %>%
   select(-time)
@@ -52,7 +52,7 @@ temp <- ggplot(both,
                    tmean,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(temp)
 
@@ -65,7 +65,7 @@ tmean_avg <- both %>%
 ggplot(tmean_avg, aes(x=month, y=mean_tmean,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean tmean (C)')
 
 
@@ -74,7 +74,7 @@ precip <- ggplot(both,
                    precip,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(precip)
 
@@ -90,7 +90,7 @@ precip_avg <- both %>%
 ggplot(precip_avg, aes(x=month, y=mean_p,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean precip (mm)')
 
 solrad_avg <- both %>%
@@ -102,14 +102,14 @@ solrad_avg <- both %>%
 ggplot(solrad_avg, aes(x=month, y=mean_solrad,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean solrad')
 
 
 ```
 
 ## Interception
-- Average interception: grid > statn
+
 - Monthly average: Statn > grid 1:4 and 10:12, grid > statn 5:9
 - During the summer rain interception is greater from grid
 - In the winter snow interception is greater from statn
@@ -124,7 +124,7 @@ int_avg <- both %>%
 ggplot(int_avg, aes(x=month, y=mean_interception,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean interception')
 
 
@@ -133,7 +133,7 @@ interception <- ggplot(both,
                    interception,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(interception)
 
@@ -142,7 +142,7 @@ ggplotly(interception)
 ## ET 
 
 - Average ET: grid > statn
-- Monthly average ET: grid > statn 1:6 and 9:12, statn > grid 7:8
+- Monthly average ET: grid > statn 1:5 and 9:12, statn > grid 6:8
 
 ```{r}
 
@@ -155,7 +155,7 @@ et_avg <- both %>%
 ggplot(et_avg, aes(x=month, y=mean_et,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean ET (mm)')
 
 et <- ggplot(both, 
@@ -163,7 +163,7 @@ et <- ggplot(both,
                    actET...21,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='ET (mm)')
 
 ggplotly(et)
@@ -172,9 +172,9 @@ ggplotly(et)
 
 ## SWE 
 
-- Grid > Statn
-- SWE starts accumulating faster in Sept for statn than grid
-- But grid > statn all other months
+- Despite grid being higher all winter, it melts out faster than statn
+- grid generally has higher SWE, but statn starts accumulating earlier & melts slower
+
 
 ```{r}
 
@@ -187,7 +187,7 @@ swe_avg <- both %>%
 ggplot(swe_avg, aes(x=month, y=mean_swe,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean SWE (l/day)')
 
 snowTotSWE <- ggplot(both, 
@@ -195,7 +195,7 @@ snowTotSWE <- ggplot(both,
                          snowTotSWE,
                          color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='SWE (l/day)')
 
 ggplotly(snowTotSWE)
@@ -204,7 +204,8 @@ ggplotly(snowTotSWE)
 
 ## Soil sat (whole profile)
 
-- Statn > grid all months
+- 4,5,6,10 statn > SM than grid
+- SM higher for statn
 
 ```{r}
 
@@ -217,7 +218,7 @@ soil_avg <- both %>%
 ggplot(soil_avg, aes(x=month, y=mean_soil,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean soil sat')
 
 soil <- ggplot(both, 
@@ -225,7 +226,7 @@ soil <- ggplot(both,
                    soilSat,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(soil)
 
@@ -233,9 +234,8 @@ ggplotly(soil)
 
 ## Surface runoff
 
-- RG1: when there is surface runoff, statn is slightly higher
-- Except for September (Sep 2013 flood heavily influences this avg)
-- Many of the surface runoff events are happening Mar-May and Jul
+- RG1: very little other than Sept, where grid > statn
+
 
 ```{r}
 
@@ -248,7 +248,7 @@ rd1_avg <- both %>%
 ggplot(rd1_avg, aes(x=month, y=mean_rd1,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean surface runoff (l)')
 
 rd1 <- ggplot(both, 
@@ -256,7 +256,7 @@ rd1 <- ggplot(both,
                    outRD1,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='Surface runoff (l)')
 
 ggplotly(rd1)
@@ -265,9 +265,8 @@ ggplotly(rd1)
 
 ## Interflow
 
-- Statn > grid Jan to Apr
-- Grid > statn May, Jun, Oct
-- Other months are similar
+- Statn > grid
+- very little grid
 
 ```{r}
 
@@ -280,7 +279,7 @@ rd2_avg <- both %>%
 ggplot(rd2_avg, aes(x=month, y=mean_rd2,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean interflow (l)')
 
 rd2 <- ggplot(both, 
@@ -288,7 +287,7 @@ rd2 <- ggplot(both,
                    outRD2,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='Interflow (l)')
 
 ggplotly(rd2)
@@ -298,8 +297,7 @@ ggplotly(rd2)
 ## Groundwater
 
 - RG1 = shallow groundwater
-- RG1: during snowmelt runoff to fall baseflow grid > statn
-- RG1: statn > grid during winter
+- RG1: grid > statn
 
 - RG2 = groundwater baseflow
 - RG2: Very small relative to RG1
@@ -315,7 +313,7 @@ gw1_avg <- both %>%
 ggplot(gw1_avg, aes(x=month, y=mean_rg1,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean RG1 (unit?)')
 
 gw1 <- ggplot(both, 
@@ -323,7 +321,7 @@ gw1 <- ggplot(both,
                    outRG1,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(gw1)
 
@@ -337,7 +335,7 @@ gw2_avg <- both %>%
 ggplot(gw2_avg, aes(x=month, y=mean_rg2,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean RG2 (unit?)')
 
 gw2 <- ggplot(both, 
@@ -345,11 +343,13 @@ gw2 <- ggplot(both,
                    outRG2,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(gw2)
 
 ```
+
+NOTHING BELOW HAS BEEN UPDATED WITH DEC2024 UPDATES
 
 # High elevation HRU
 
@@ -384,7 +384,7 @@ tmean_avg <- both_hi %>%
 ggplot(tmean_avg, aes(x=month, y=mean_tmean,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean tmean (C)')
 
 temp <- ggplot(both_hi, 
@@ -392,7 +392,7 @@ temp <- ggplot(both_hi,
                    tmean,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(temp)
 ############
@@ -408,7 +408,7 @@ precip_avg <- both_hi %>%
 ggplot(precip_avg, aes(x=month, y=mean_p,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean precip (mm)')
 
 precip <- ggplot(both_hi, 
@@ -416,7 +416,7 @@ precip <- ggplot(both_hi,
                    precip,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(precip)
 #################
@@ -430,7 +430,7 @@ solrad_avg <- both_hi %>%
 ggplot(solrad_avg, aes(x=month, y=mean_solrad,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean solrad (MJ/m2/day)')
 
 ```
@@ -449,7 +449,7 @@ int_avg <- both_hi %>%
 ggplot(int_avg, aes(x=month, y=mean_interception,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean interception')
 
 
@@ -458,7 +458,7 @@ interception <- ggplot(both_hi,
                    interception,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(interception)
 
@@ -479,7 +479,7 @@ et_avg <- both_hi %>%
 ggplot(et_avg, aes(x=month, y=mean_et,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean ET (mm)')
 
 et <- ggplot(both_hi, 
@@ -487,7 +487,7 @@ et <- ggplot(both_hi,
                    actET,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='ET (mm)')
 
 ggplotly(et)
@@ -509,7 +509,7 @@ swe_avg <- both_hi %>%
 ggplot(swe_avg, aes(x=month, y=mean_swe,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean SWE (l/day)')
 
 snowTotSWE <- ggplot(both_hi, 
@@ -517,7 +517,7 @@ snowTotSWE <- ggplot(both_hi,
                          snowTotSWE,
                          color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='SWE (l/day)')
 
 ggplotly(snowTotSWE)
@@ -539,7 +539,7 @@ soil_avg <- both_hi %>%
 ggplot(soil_avg, aes(x=month, y=mean_soil,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean soil sat')
 
 soil <- ggplot(both_hi, 
@@ -547,7 +547,7 @@ soil <- ggplot(both_hi,
                    soilSat,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(soil)
 
@@ -568,7 +568,7 @@ rd1_avg <- both_hi %>%
 ggplot(rd1_avg, aes(x=month, y=mean_rd1,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean surface runoff (l)')
 
 rd1 <- ggplot(both_hi, 
@@ -576,7 +576,7 @@ rd1 <- ggplot(both_hi,
                    outRD1,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='Surface runoff (l)')
 
 ggplotly(rd1)
@@ -600,7 +600,7 @@ rd2_avg <- both_hi %>%
 ggplot(rd2_avg, aes(x=month, y=mean_rd2,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean interflow (l)')
 
 rd2 <- ggplot(both_hi, 
@@ -608,7 +608,7 @@ rd2 <- ggplot(both_hi,
                    outRD2,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='Interflow (l)')
 
 ggplotly(rd2)
@@ -636,7 +636,7 @@ gw1_avg <- both_hi %>%
 ggplot(gw1_avg, aes(x=month, y=mean_rg1,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean RG1 (unit?)')
 
 gw1 <- ggplot(both_hi, 
@@ -644,7 +644,7 @@ gw1 <- ggplot(both_hi,
                    outRG1,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(gw1)
 
@@ -658,7 +658,7 @@ gw2_avg <- both_hi %>%
 ggplot(gw2_avg, aes(x=month, y=mean_rg2,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean RG2 (unit?)')
 
 gw2 <- ggplot(both_hi, 
@@ -666,7 +666,7 @@ gw2 <- ggplot(both_hi,
                    outRG2,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(gw2)
 
@@ -705,7 +705,7 @@ tmean_avg <- both_lo %>%
 ggplot(tmean_avg, aes(x=month, y=mean_tmean,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean tmean (C)')
 
 temp <- ggplot(both_lo, 
@@ -713,7 +713,7 @@ temp <- ggplot(both_lo,
                    tmean,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(temp)
 ############
@@ -729,7 +729,7 @@ precip_avg <- both_lo %>%
 ggplot(precip_avg, aes(x=month, y=mean_p,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean precip (mm)')
 
 precip <- ggplot(both_lo, 
@@ -737,7 +737,7 @@ precip <- ggplot(both_lo,
                    precip,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(precip)
 #################
@@ -751,7 +751,7 @@ solrad_avg <- both_lo %>%
 ggplot(solrad_avg, aes(x=month, y=mean_solrad,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean solrad (MJ/m2/day)')
 
 ```
@@ -771,7 +771,7 @@ int_avg <- both_lo %>%
 ggplot(int_avg, aes(x=month, y=mean_interception,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean interception')
 
 
@@ -780,7 +780,7 @@ interception <- ggplot(both_lo,
                    interception,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(interception)
 
@@ -801,7 +801,7 @@ et_avg <- both_lo %>%
 ggplot(et_avg, aes(x=month, y=mean_et,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean ET (mm)')
 
 et <- ggplot(both_lo, 
@@ -809,7 +809,7 @@ et <- ggplot(both_lo,
                    actET,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='ET (mm)')
 
 ggplotly(et)
@@ -832,7 +832,7 @@ swe_avg <- both_lo %>%
 ggplot(swe_avg, aes(x=month, y=mean_swe,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean SWE (l/day)')
 
 snowTotSWE <- ggplot(both_lo, 
@@ -840,7 +840,7 @@ snowTotSWE <- ggplot(both_lo,
                          snowTotSWE,
                          color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='SWE (l/day)')
 
 ggplotly(snowTotSWE)
@@ -862,7 +862,7 @@ soil_avg <- both_lo %>%
 ggplot(soil_avg, aes(x=month, y=mean_soil,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean soil sat')
 
 soil <- ggplot(both_lo, 
@@ -870,7 +870,7 @@ soil <- ggplot(both_lo,
                    soilSat,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(soil)
 
@@ -891,7 +891,7 @@ rd1_avg <- both_lo %>%
 ggplot(rd1_avg, aes(x=month, y=mean_rd1,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean surface runoff (l)')
 
 rd1 <- ggplot(both_lo, 
@@ -899,7 +899,7 @@ rd1 <- ggplot(both_lo,
                    outRD1,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='Surface runoff (l)')
 
 ggplotly(rd1)
@@ -921,7 +921,7 @@ rd2_avg <- both_lo %>%
 ggplot(rd2_avg, aes(x=month, y=mean_rd2,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean interflow (l)')
 
 rd2 <- ggplot(both_lo, 
@@ -929,7 +929,7 @@ rd2 <- ggplot(both_lo,
                    outRD2,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y='Interflow (l)')
 
 ggplotly(rd2)
@@ -955,7 +955,7 @@ gw1_avg <- both_lo %>%
 ggplot(gw1_avg, aes(x=month, y=mean_rg1,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean RG1 (unit?)')
 
 gw1 <- ggplot(both_lo, 
@@ -963,7 +963,7 @@ gw1 <- ggplot(both_lo,
                    outRG1,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(gw1)
 
@@ -977,7 +977,7 @@ gw2_avg <- both_lo %>%
 ggplot(gw2_avg, aes(x=month, y=mean_rg2,
                  color=source)) +
   geom_point(size=3) +
-  scale_color_manual(values = c("orange", "blue")) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y= 'Monthly mean RG2 (unit?)')
 
 gw2 <- ggplot(both_lo, 
@@ -985,7 +985,7 @@ gw2 <- ggplot(both_lo,
                    outRG2,
                    color = source)) +
   geom_line() +
-  scale_color_manual(values = c("orange", "blue"))
+  scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(gw2)
 
