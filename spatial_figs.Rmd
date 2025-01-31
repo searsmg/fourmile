@@ -856,10 +856,10 @@ p_cols <- ggplot(catchment_mo2, aes(x = month_name, y = avg_p,
   geom_col(position = 'dodge') +
   geom_errorbar(aes(ymin = 0, ymax = avg_p + sd_p), 
                 position = position_dodge(width = 0.6), width = 0.2) +
-  scale_color_manual(values = c("blue", "orange"),
-                     labels = c("Gridded", "Observed")) +  # Rename color legend items
-  scale_fill_manual(values = c("blue", "orange"),
-                    labels = c("Gridded", "Observed")) +   # Rename fill legend items
+  scale_color_manual(values = c("#0047AB", "orange"),
+                     labels = c("Gridded", "Station")) +  # Rename color legend items
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    labels = c("Gridded", "Station")) +   # Rename fill legend items
   theme_bw(base_size = 20) +
   labs(y = 'Precipitation (mm)',
        x = element_blank()) +
@@ -882,13 +882,13 @@ ggsave("/Users/megansears/Documents/Repos/fourmile/figures/precip.png", plot = p
 # Temperature plot
 t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean, 
                                       color = site, group = site)) +
-  geom_ribbon(aes(ymin = tmean_mean - tmean_sd, ymax = tmean_mean + tmean_sd, fill = site), alpha = 0.4) +
+  geom_ribbon(aes(ymin = tmean_mean - tmean_sd, ymax = tmean_mean + tmean_sd, fill = site), alpha = 0.6) +
   geom_line() +
   geom_point() +
-  scale_color_manual(values = c("blue", "orange"),
-                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
-  scale_fill_manual(values = c("blue", "orange"),
-                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  scale_color_manual(values = c("#0047AB", "orange"),
+                     labels = c("Gridded", "Station")) +  # Set line color to #0047AB and orange and rename
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    labels = c("Gridded", "Station")) +   # Set ribbon fill color to #0047AB and orange and rename
   theme_bw(base_size=20) +
   labs(y = expression("Air temperature " ( degree~C)),
        x = element_blank()) +
@@ -904,13 +904,13 @@ t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean,
 # Solar radiation plot
 sol_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = solrad_mean, 
                                          color = site, group = site)) +
-  geom_ribbon(aes(ymin = solrad_mean - solrad_sd, ymax = solrad_mean + solrad_sd, fill = site), alpha = 0.4) +
+  geom_ribbon(aes(ymin = solrad_mean - solrad_sd, ymax = solrad_mean + solrad_sd, fill = site), alpha = 0.6) +
   geom_line() +
   geom_point() +
-  scale_color_manual(values = c("blue", "orange"),
-                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
-  scale_fill_manual(values = c("blue", "orange"),
-                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  scale_color_manual(values = c("#0047AB", "orange"),
+                     labels = c("Gridded", "Station")) +  # Set line color to #0047AB and orange and rename
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    labels = c("Gridded", "Station")) +   # Set ribbon fill color to #0047AB and orange and rename
   theme_bw(base_size = 20) +
   labs(y = expression("Solar radiation (MJ/m"^"2" * ")"),
        x = element_blank()) +
@@ -926,13 +926,13 @@ sol_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = solrad_mean,
 # Relative humidity plot
 rh_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = rh_mean, 
                                         color = site, group = site)) +
-  geom_ribbon(aes(ymin = rh_mean - rh_sd, ymax = rh_mean + rh_sd, fill = site), alpha = 0.4) +
+  geom_ribbon(aes(ymin = rh_mean - rh_sd, ymax = rh_mean + rh_sd, fill = site), alpha = 0.6) +
   geom_line() +
   geom_point() +
-  scale_color_manual(values = c("blue", "orange"),
-                     labels = c("Gridded", "Observed")) +  # Set line color to blue and orange and rename
-  scale_fill_manual(values = c("blue", "orange"),
-                    labels = c("Gridded", "Observed")) +   # Set ribbon fill color to blue and orange and rename
+  scale_color_manual(values = c("#0047AB", "orange"),
+                     labels = c("Gridded", "Station")) +  # Set line color to #0047AB and orange and rename
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    labels = c("Gridded", "Station")) +   # Set ribbon fill color to #0047AB and orange and rename
   theme_bw(base_size = 20) +
   labs(y = 'RH (%)', x= element_blank()) +
   labs(color = NULL, fill = NULL) +
@@ -960,14 +960,6 @@ quad <- ggarrange(p_cols,
 quad
 
 ggsave("/Users/megansears/Documents/Repos/fourmile/figures/quad.png", plot = quad, dpi = 600)
-
-
-quad_plus <- ggarrange(flow_plot2,quad,
-                       nrow=2)
-quad_plus
-
-ggsave("./figures/quad_plus2.png", plot = quad_plus, dpi = 600)
-
 
 ```
 
