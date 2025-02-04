@@ -60,7 +60,7 @@ params <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv') %>%
                       'a_snow')) %>% # select params in the top 8 sens that are area weighted
   rename(value = area_weighted_average,
          input_data = source) %>%
-  select(param, input_data, value)
+  dplyr::select(param, input_data, value)
 
 # params unburned (above is params that needed to be area weighted bc burn/unburn)
 params_unburn <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
@@ -68,8 +68,9 @@ params_unburn <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
                       'snow_trs',
                       'lagInterflow',
                       'baseTemp',
-                      't_factor')) %>%
-  select(param, input_data, value)
+                      't_factor',
+                      'soilLatVertLPS')) %>%
+  dplyr::select(param, input_data, value)
 
 # join the two to get the top 8 sensitve params
 param_sens <- bind_rows(params, params_unburn) %>% 
@@ -132,7 +133,7 @@ otherParamsWeighted <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024
                        'a_snow')) %>%
   rename(value = area_weighted_average,
          input_data = source) %>%
-  select(param, input_data, value)
+  dplyr::select(param, input_data, value)
   
 # params that were not affected by burn
 otherParams <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
@@ -143,9 +144,10 @@ otherParams <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
                        't_factor',
                        'lagSurfaceRunoff',
                        'a_rain',
-                       'a_snow')) %>% # these are the ones already shown
+                       'a_snow',
+                       'soilLatVertLPS')) %>% # these are the ones already shown
   filter(!param %in% otherParamsWeighted$param) %>% # there are the ones that need to be area weighted
-  select(param, input_data, value)
+  dplyr::select(param, input_data, value)
 
 # now join the area weighted other to the other params
 otherParams <- bind_rows(otherParams, otherParamsWeighted)
@@ -181,7 +183,7 @@ ggplot(otherParams, aes(x=input_data, y=value, fill=input_data)) +
     axis.text = element_text(color = "black"),
     #strip.text = element_blank()
   ) +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
+  scale_y_continuous(expand = expansion(mult = c(0.001, 0.3)))
 
 ggsave('./figures/remainingparams_boxplots.png',
        dpi=600,
