@@ -525,7 +525,8 @@ ggplotly(grid_comp)
 
 statn_res <- ggplot(flowComp) + geom_point(aes(x=obs, y = statn_res, color = as.factor(month))) +
   theme_bw(base_size = 20) +
-    geom_hline(yintercept = 0, linetype = "dashed", color = "red") 
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red")+
+  ylim(-5, 6)
 
 ggplotly(statn_res)
 
