@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 library(tidyverse)
 library(plotly)
 library(ggpubr)
+library(broom)
+library(multcompView)
 
 ```
 
@@ -204,6 +206,9 @@ combo <- read_csv('./38HRU_dec2024_updates/params_burn_unburn.csv') %>%
                               'Station'))
 
 
+#write_csv(combo, './38HRU_dec2024_updates/params_burn_unburn.csv')
+combo <- read_csv('./38HRU_dec2024_updates/params_burn_unburn.csv')
+
 ggplot(combo, aes(x = value, fill = input_data)) +
   geom_density(alpha = 0.6) +
   facet_wrap(burn ~ param, scales = "free") +
@@ -217,19 +222,17 @@ ggplot(combo, aes(x = value, fill = input_data)) +
 
 
 ggplot(combo, aes(x=burn, y=value, fill=input_data)) +
-  #geom_violin(trim=T, scale='width', alpha=0.6) +
   geom_boxplot(alpha=0.8,
                 outlier.colour = "black") +
-  # stat_summary(fun.y=median, geom="point", size=2, color="black",
-  #              position = position_dodge(width = 0.9)) +
-  stat_compare_means(aes(group = input_data),
-                     method = "wilcox.test", 
-                     label = "p.signif",
-                     hide.ns = T,
-                     paired = F,
-                     #label.y = 0,
-                     #label.x = 1.4,
-                     size = 7) +
+  geom_text(aes(label = letter)) +
+  # stat_compare_means(aes(group = input_data),
+  #                    method = "wilcox.test", 
+  #                    label = "p.signif",
+  #                    hide.ns = T,
+  #                    paired = F,
+  #                    #label.y = 0,
+  #                    #label.x = 1.4,
+  #                    size = 7) +
   facet_wrap(~param, scales = 'free_y') +
   labs(y=element_blank(),
        x=element_blank()) +
@@ -250,8 +253,85 @@ ggplot(combo, aes(x=burn, y=value, fill=input_data)) +
   ) +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
 
-ggsave('./figures/burn_unburn_params.png',
+ggsave('./figures/burn_unburn_params_tukey.png',
        dpi=600)
+
+
+
+# Compute y_text just above the boxplot whiskers
+combo <- combo %>%
+  group_by(param, burn, input_data) %>%
+  mutate(y_text = max(value, na.rm = TRUE) * 1.08) %>%  # Slightly above max value
+  ungroup()
+
+ggplot(combo, aes(x = burn, y = value, fill = input_data)) +
+  geom_boxplot(alpha = 0.8, outlier.colour = "black") +
+  geom_text(aes(label = letter, y = y_text), 
+            position = position_dodge(width = 0.75),  # Align with boxplots
+            size = 6, 
+            vjust = 0) +  # Prevent overlap with whiskers
+  facet_wrap(~param, scales = 'free_y') +
+  labs(y = element_blank(), x = element_blank()) +
+  theme_bw(base_size = 20) +
+  scale_fill_manual(values = c("#0047AB", "orange")) +
+  theme(
+    legend.position = 'bottom',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  ) +
+   scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
+
+ggsave('./figures/burn_unburn_params_tukey.png',
+       dpi=600,
+       width = 12,
+       height = 8)
+
+
+```
+
+# Anova for Burn/Unburn Params
+
+```{r}
+
+tukey_results <- combo %>%
+  rename(burn_status = burn) %>%
+  mutate(burn_status = as.factor(burn_status),
+         input_data = as.factor(input_data)) %>%
+  group_split(param) %>%
+  map(function(df) {
+    # 2 way anova
+    model <- aov(value ~ burn_status * input_data, data = df)
+    
+    # Tukey HSD
+    tukey_test <- TukeyHSD(model)
+    
+    # Tukey letters based on p val
+    tukey_letters <- multcompLetters4(model, tukey_test)
+
+    list(
+      parameter = unique(df$param),
+      model = model,
+      tukey = tukey_test,
+      letters = tukey_letters
+    )
+  })
+
+# Convert results into a tibble
+tukey_df <- tibble(
+  parameter = map_chr(tukey_results, "parameter"),
+  model = map(tukey_results, "model"),
+  tukey = map(tukey_results, "tukey"),
+  letters = map(tukey_results, "letters")
+)
+
+# added tukey letters to parmas_burn_unburn.csv in dec2024 folder
+
 
 
 ```
