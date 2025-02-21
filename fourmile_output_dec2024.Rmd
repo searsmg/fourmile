@@ -656,7 +656,6 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/resids_option2.png',
 
 ```
 
-
 ## Cumulative volume
 
 ```{r cumq, echo = FALSE, message = FALSE, warning = FALSE}
