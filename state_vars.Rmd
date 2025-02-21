@@ -991,3 +991,21 @@ ggplotly(gw2)
 
 ```
 
+# ANOVA for water partition
+
+```{r}
+
+flow <- both %>%
+  select(date, 
+         source, 
+         outRG1,
+         outRG2,
+         outRD1, 
+         outRD2,
+         source)
+
+rd1_model <- aov(outRD2 ~ source, data = flow)
+summary(rd1_model)
+
+```
+
