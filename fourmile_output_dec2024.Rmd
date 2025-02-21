@@ -35,6 +35,7 @@ library(tmap)
 library(ggpubr)
 library(gridExtra)
 library(stringr)
+library(cowplot)
 
 ```
 
@@ -498,7 +499,7 @@ ggplotly(q)
 
 ```
 
-Q 1:1  and residual plots
+# Q 1:1  and residual plots
 
 ```{r}
 
@@ -540,6 +541,118 @@ grid_res <- ggplot(flowComp) + geom_point(aes(x=obs, y = grid_res, color = as.fa
 
 ggplotly(grid_res)
 
+################################################################################
+
+# make the actual figures
+compFlip <- flowComp %>%
+  dplyr::select(-month) %>%
+  pivot_longer(!c(date, obs), names_to = 'flow_type',
+               values_to = 'flow_cms')
+
+# residual scatter plot
+plot <- compFlip %>%
+  filter(flow_type %in% c('statn_res', 'grid_res')) %>%
+  ggplot(., aes(x=obs, 
+                     y=flow_cms,
+                color = flow_type)) +
+  geom_hline(yintercept = 0, color = "black") +
+  geom_point(size=3,
+             alpha=0.6) +
+  ylim(-5,6) +
+  theme_bw(base_size = 20) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
+  labs(x='Observed discharge (cms)',
+       y='Residuals (cms)') +
+  facet_wrap(~flow_type,
+             labeller = as_labeller(c("grid_res" = "Gridded", "statn_res" = "Station"))) +
+  theme(
+    legend.position = 'none',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  )
+
+plot
+
+# pick select years to show resids over time
+plot_bottom12 <- compFlip %>%
+  filter(flow_type %in% c('statn_res', 'grid_res')) %>%
+  mutate(year = year(date)) %>%
+  filter(year %in% c(2012, 2015, 2017)) %>% 
+  mutate(flow_type = if_else(flow_type == 'grid_res', 
+                             "Gridded",
+                             "Station")) %>%
+  ggplot(aes(x = date, y = flow_cms, color = flow_type)) +  
+  geom_line(size=1, alpha=0.7) + 
+  scale_color_manual(values = c("#0047AB", "orange")) +
+  facet_wrap(~year, scales="free_x") +
+  labs(x=element_blank(),
+       y='Residuals (cms)') +
+  theme(
+   legend.position = c(0.93, 0.85),
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  )
+  
+plot_bottom12
+
+# add 2 above plots together
+plot_grid(plot, plot_bottom12, ncol = 1)
+
+# export
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/resids.png',
+       dpi=600,
+       width = 12,
+       height = 8)
+
+# OPTION 2 - make the bottom the whole time series
+plot_bottom <- compFlip %>%
+  filter(flow_type %in% c('statn_res', 'grid_res')) %>%
+  complete(date = seq.Date(min(date), max(date), by = "day"), fill = list(flow_cms = NA)) %>%
+  # Create a new group ID that resets at each missing value (only where flow_cms is NA)
+  mutate(group_id = cumsum(is.na(flow_cms))) %>%
+  filter(!is.na(flow_cms)) %>%
+  mutate(flow_type = if_else(flow_type == 'grid_res', 
+                             "Gridded",
+                             "Station")) %>%
+  ggplot(aes(x = date, y = flow_cms, color = flow_type, group = group_id)) +  
+  geom_line(size=1, alpha=0.7) +  
+  ylim(-4,6) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
+  labs(x=element_blank(),
+       y='Residuals (cms)') +
+  theme(
+    legend.position = c(0.9, 0.87),
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  )
+  
+plot_bottom
+
+plot_grid(plot, plot_bottom, ncol = 1)
+
+# export
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/resids_option2.png',
+       dpi=600,
+       width = 12,
+       height = 8)
 
 ```
 
