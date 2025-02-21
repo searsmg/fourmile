@@ -811,7 +811,7 @@ flow_plot <- flow_year %>%
 
 # add all to the plot below
 kge_all <- flow_kge_all %>%
-  mutate(year = 'all years') %>%
+  mutate(year = 'All') %>%
   rename(model_run = name,
          kge = value)
 
@@ -820,13 +820,46 @@ flow_plot_updated <- bind_rows(flow_plot, kge_all)
 flow_plot_updated <- flow_plot_updated %>%
   mutate(kge_revise = if_else(kge < 0, 0, kge))
 
-ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = kge_revise)) +
+flow_plot_updated <- flow_plot_updated %>% 
+  mutate(source = case_when(
+    grepl("grid", model_run) ~ "grid",
+    grepl("statn", model_run) ~ "statn"),
+    year_excluded = str_extract(model_run, "\\d{4}$")) %>%
+  mutate(year_excluded = if_else(model_run %in% c('gridall',
+                                                       'statnall'),
+                                  'None', year_excluded))
+
+
+ggplot(flow_plot_updated, aes(x = year_excluded, y = year, fill = kge_revise)) +
   geom_tile(color = "white") +
   scale_fill_viridis_c(option = "mako", name = "KGE", direction = -1) +
-  geom_text(aes(label = round(kge_revise, 2)), color = "grey", size = 2.5) +
+  #geom_text(aes(label = round(kge_revise, 2)), color = "grey", size = 2.5) +
+  geom_text(aes(label = sprintf("%.2f", kge_revise)), color = "grey", size = 2.5) +
   theme_bw(base_size=20) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(y = "Year") 
+  labs(y = "Year",
+       x='Year Excluded') +
+  facet_wrap(~source,
+             scales = 'free_x',
+             labeller = as_labeller(c("grid" = "Gridded", "statn" = "Station"))) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 16),  # Correct way to adjust legend title text
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  )
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap.png',
+       dpi=600,
+       width = 10,
+       height = 6)
 
 
 ```
