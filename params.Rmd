@@ -256,9 +256,7 @@ ggplot(combo, aes(x=burn, y=value, fill=input_data)) +
 ggsave('./figures/burn_unburn_params_tukey.png',
        dpi=600)
 
-
-
-# Compute y_text just above the boxplot whiskers
+# text above boxplots
 combo <- combo %>%
   group_by(param, burn, input_data) %>%
   mutate(y_text = max(value, na.rm = TRUE) * 1.08) %>%  # Slightly above max value
