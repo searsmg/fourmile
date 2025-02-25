@@ -1242,6 +1242,51 @@ gw %>%
   theme_bw(base_size=14) +
   labs(y='cumulative sum')
 
+# look at 2015, high snow year 
+example <- gw %>%
+  filter(year == 2015) %>%
+  ungroup() %>% 
+  dplyr::select(date, source,
+         RD1cumsum,
+         RD2cumsum,
+         RG1cumsum,
+         RG2cumsum) %>%
+  pivot_longer(!c(date,source), names_to='flow_type',
+               values_to='flow_cms') %>%
+  mutate(source = if_else(source == 'grid_all',
+                          'Gridded',
+                          'Station'))
+
+facet_labels <- c('RD1cumsum' = 'Surface runoff',
+                  'RD2cumsum' = 'Interflow',
+                  'RG1cumsum' = 'Fast groundwater',
+                  'RG2cumsum' = 'Slow groundwater')
+
+ggplot(example,
+       aes(x=date, y = flow_cms, color=source)) +
+  geom_line() +
+  facet_wrap(~flow_type, 
+             scales = 'free_y',
+             labeller = labeller(flow_type = facet_labels)) +
+   geom_line(size=1, alpha=0.7) +  
+  scale_color_manual(values = c("#0047AB", "orange")) +
+  labs(x=element_blank(),
+       y='Flow (cms)') +
+  theme_bw(base_size = 20) +
+  theme(
+    legend.position = c(0.94, 0.08),
+    legend.text = element_text(size = 12),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  )
+
+ggsave('./figures/2015_flowcumulative.png',
+       dpi=600)
 
 ```
 
@@ -1255,24 +1300,169 @@ gw_maxcumsum <- gw %>%
             yr_cum_RG1 = max(RG1cumsum),
             yr_cum_RG2 = max(RG2cumsum)) %>%
   mutate(year = as.factor(year)) %>%
-  pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms')
+  pivot_longer(!c(year, source), names_to = 'flow_type', values_to = 'flow_cms') %>%
+  mutate(source = if_else(source == 'grid_all',
+                          'Gridded',
+                          'Station'))
 
 
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
   geom_boxplot(position = position_dodge(1)) +
   #geom_point(position=position_jitterdodge(),alpha=0.3) +
+  scale_y_log10() +
   ggtitle('Annual sum') +
-  labs(y = 'mm of water') + theme_bw(base_size=20)
+  labs(y = 'mm of water') + theme_bw(base_size=20) # this plot doesnt show lower values (eg rd1)
+# i tried with log scale on y and it looks really bad so going with facet below
+
+
+facet_labels <- c('yr_cum_RD1' = 'Surface runoff',
+                  'yr_cum_RD2' = 'Interflow',
+                  'yr_cum_RG1' = 'Fast groundwater',
+                  'yr_cum_RG2' = 'Slow groundwater')
 
 ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
-  geom_boxplot(position = position_dodge(1)) +
-  #geom_point(position=position_jitterdodge(),alpha=0.3) +
-  #geom_point(aes(color = source)) +
-  facet_wrap(~flow_type, scales = 'free') +
-  ggtitle('Annual sum') +
-  labs(y = 'mm of water') + theme_bw(base_size=20)
+  geom_boxplot(position = position_dodge(1),
+               outliers=F) + # need to note 1 outlier is removed from RD1 grid and statn (2013 flood) ****
+  stat_compare_means(data = gw_maxcumsum %>% 
+                       filter(flow_type != "yr_cum_RD1"),
+                     aes(group = source),
+                     method = "wilcox.test",
+                     label = "p.signif",
+                     hide.ns = T,
+                     paired = F,
+                     size = 7) +
+  facet_wrap(~flow_type, 
+             scales = 'free',
+             labeller = labeller(flow_type = facet_labels)) +
+  labs(y = 'mm of water') + 
+  theme_bw(base_size=20) +
+  scale_fill_manual(values = c("#0047AB", "orange")) +
+  theme(
+    legend.position = c(0.9, 0.38),
+    legend.text = element_text(size = 12),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
+
+ggsave('./figures/water_partition_boxplots.png',
+       dpi=600)
+
+
+# want to see distribution
+ggplot(gw_maxcumsum, aes(x = flow_cms, fill = source)) +
+  geom_density(alpha = 0.6, adjust = 1.2) +  # Adjust smoothness with `adjust`
+  facet_wrap(~flow_type, 
+             scales = 'free', 
+             labeller = labeller(flow_type = facet_labels)) +
+  labs(x = "Flow (cms)", y = "Density") + 
+  theme_bw(base_size = 20) +
+  scale_fill_manual(values = c("#0047AB", "orange")) +
+  theme(
+    legend.position = 'top',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  )
 
 ```
+
+### RD and RG stats
+
+```{r}
+
+model <-aov(flow_cms ~ source * flow_type, 
+            data = gw_maxcumsum)
+    
+# Tukey HSD
+tukey_test <- TukeyHSD(model)
+
+tukey_test
+
+library(multcompView)
+tukey_letters <- multcompLetters4(model, tukey_test)
+
+tukey_letters$`source:flow_type`$Letters
+
+# make a vector of the letters
+letters_vector <- c("a", "b", "b", "c", "c", "c", "c", "c")
+
+gw_maxcumsum <- gw_maxcumsum %>%
+  mutate(letter = case_when(
+    source == "Gridded" & flow_type == "yr_cum_RG1" ~ letters_vector[1],
+    source == "Station" & flow_type == "yr_cum_RG1" ~ letters_vector[2],
+    source == "Station" & flow_type == "yr_cum_RD2" ~ letters_vector[3],
+    source == "Gridded" & flow_type == "yr_cum_RD1" ~ letters_vector[4],
+    source == "Station" & flow_type == "yr_cum_RD1" ~ letters_vector[5],
+    source == "Gridded" & flow_type == "yr_cum_RD2" ~ letters_vector[6],
+    source == "Gridded" & flow_type == "yr_cum_RG2" ~ letters_vector[7],
+    source == "Station" & flow_type == "yr_cum_RG2" ~ letters_vector[8]
+  ))
+
+# now make the same figure as above but with letters
+facet_labels <- c('yr_cum_RD1' = 'Surface runoff',
+                  'yr_cum_RD2' = 'Interflow',
+                  'yr_cum_RG1' = 'Fast groundwater',
+                  'yr_cum_RG2' = 'Slow groundwater')
+
+gw_maxcumsum_letters <- gw_maxcumsum %>%
+  group_by(source, flow_type) %>%
+  mutate(max = max(flow_cms)) %>%
+  distinct(flow_type, source, .keep_all = TRUE) %>%
+    mutate(max = if_else((flow_type == 'yr_cum_RD1' & 
+                           source == 'Gridded'),
+                         3.5, max)) %>%
+    mutate(max = if_else((flow_type == 'yr_cum_RD1' & 
+                           source == 'Station'),
+                         1.3, max)) 
+
+ggplot(gw_maxcumsum, aes(x = flow_type, y = flow_cms, fill = source)) +
+  geom_boxplot(position = position_dodge(1),
+               outliers=F) + # need to note 1 outlier is removed from RD1 grid and statn (2013 flood) ****
+  geom_text(data = gw_maxcumsum_letters, 
+            aes(label=letter,
+                x=flow_type, 
+                y=max), 
+            position=position_dodge2(0.75), 
+            vjust = -6) + 
+  facet_wrap(~flow_type, 
+             scales = 'free',
+             labeller = labeller(flow_type = facet_labels)) +
+  labs(y = 'mm of water') + 
+  theme_bw(base_size=20) +
+  scale_fill_manual(values = c("#0047AB", "orange")) +
+  theme(
+    legend.position = c(0.9, 0.38),
+    legend.text = element_text(size = 12),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank())
+
+ggsave('./figures/water_partition_boxplots.png',
+       dpi=600)
+
+
+```
+
 
 ### RD and RG by season
 
