@@ -267,7 +267,7 @@ ggplot(combo, aes(x = burn, y = value, fill = input_data)) +
   geom_text(aes(label = letter, y = y_text), 
             position = position_dodge(width = 0.75),  # Align with boxplots
             size = 6, 
-            vjust = 0) +  # Prevent overlap with whiskers
+            vjust = 0) +  
   facet_wrap(~param, scales = 'free_y') +
   labs(y = element_blank(), x = element_blank()) +
   theme_bw(base_size = 20) +
