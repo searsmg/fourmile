@@ -351,21 +351,21 @@ ggplotly(gw2)
 
 NOTHING BELOW HAS BEEN UPDATED WITH DEC2024 UPDATES
 
-# High elevation HRU
+# High elevation HRU - old
 
 HRU18
 
 ```{r}
 
-statn_hi <- read_csv('./38HRU_sept2013_updates/HRU_18_statn.csv') %>% 
+statn_hi <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_18.csv') %>% 
   mutate(date = mdy(time),
          source = 'statn') %>%
-  select(-time)
+  dplyr::select(-time)
 
-grid_hi <- read_csv('./38HRU_sept2013_updates/HRU_18_grid.csv') %>%
+grid_hi <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_18.csv') %>%
   mutate(date = mdy(time),
          source = 'grid') %>%
-  select(-time)
+  dplyr::select(-time)
 
 both_hi <- bind_rows(statn_hi, grid_hi)  
 
@@ -672,7 +672,7 @@ ggplotly(gw2)
 
 ```
 
-# Low elevation HRU
+# Low elevation HRU - old
 
 HRU19
 
@@ -988,6 +988,87 @@ gw2 <- ggplot(both_lo,
   scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(gw2)
+
+```
+
+
+# 2015 for low and high HRU
+
+```{r}
+
+statn_hi <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_18.csv') %>% 
+  mutate(date = mdy(time),
+         source = 'statn') %>%
+  dplyr::select(-time)
+
+grid_hi <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_18.csv') %>%
+  mutate(date = mdy(time),
+         source = 'grid') %>%
+  dplyr::select(-time)
+
+both_hi <- bind_rows(statn_hi, grid_hi) %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
+  filter(year == 2015,
+         month %in% c(4,5,6))
+
+
+temp <- ggplot(both_hi, 
+               aes(date, 
+                   tmean,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("#0047AB", "orange"))
+
+ggplotly(temp)
+
+swe <- ggplot(both_hi, 
+               aes(date, 
+                   snowTotSWE,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("#0047AB", "orange"))
+
+ggplotly(swe)
+
+```
+
+```{r}
+
+statn_hi <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_19.csv') %>% 
+  mutate(date = mdy(time),
+         source = 'statn') %>%
+  dplyr::select(-time)
+
+grid_hi <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_19.csv') %>%
+  mutate(date = mdy(time),
+         source = 'grid') %>%
+  dplyr::select(-time)
+
+both_hi <- bind_rows(statn_hi, grid_hi) %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
+  filter(year == 2015,
+         month %in% c(4,5,6))
+
+
+temp <- ggplot(both_hi, 
+               aes(date, 
+                   tmean,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("#0047AB", "orange"))
+
+ggplotly(temp)
+
+swe <- ggplot(both_hi, 
+               aes(date, 
+                   snowTotSWE,
+                   color = source)) +
+  geom_line() +
+  scale_color_manual(values = c("#0047AB", "orange"))
+
+ggplotly(swe)
 
 ```
 
