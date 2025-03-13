@@ -830,33 +830,275 @@ flow_plot_updated <- flow_plot_updated %>%
                                   'None', year_excluded))
 
 
-ggplot(flow_plot_updated, aes(x = year_excluded, y = year, fill = kge_revise)) +
+# need to make separate plots bc can't put boxplots in margins for facet wrap
+grid_kge_plot <- flow_plot_updated %>%
+  filter(source == 'grid') %>% 
+ggplot(., aes(x = year_excluded, 
+              y = year, fill = 
+                kge_revise)) +
   geom_tile(color = "white") +
-  scale_fill_viridis_c(option = "mako", name = "KGE", direction = -1) +
-  #geom_text(aes(label = round(kge_revise, 2)), color = "grey", size = 2.5) +
-  geom_text(aes(label = sprintf("%.2f", kge_revise)), color = "grey", size = 2.5) +
+  scale_fill_viridis_c(option = "mako", 
+                       name = "KGE", 
+                       direction = -1) +
+  geom_text(aes(label = sprintf("%.2f", 
+                                kge_revise)), 
+            color = "grey", 
+            size = 2.5) +
   theme_bw(base_size=20) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
   labs(y = "Year",
        x='Year Excluded') +
-  facet_wrap(~source,
-             scales = 'free_x',
-             labeller = as_labeller(c("grid" = "Gridded", "statn" = "Station"))) +
+  # facet_wrap(~source,
+  #            scales = 'free_x',
+  #            labeller = as_labeller(c("grid" = "Gridded", 
+  #                                     "statn" = "Station"))) +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = 'bottom',
-    legend.text = element_text(size = 16),
-    legend.title = element_text(size = 16),  # Correct way to adjust legend title text
-    legend.key.width = unit(1, "cm"),
+    axis.text.x = element_text(angle = 45, 
+                               hjust = 1),
+    legend.position = 'none',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(.75, "cm"),
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
     strip.background = element_blank(),
     text = element_text(color = "black"),
     axis.title = element_text(color = "black"),
     axis.text = element_text(color = "black")
+  ) 
+
+grid_kge_plot
+
+
+
+#003f5c
+#58508d
+#bc5090
+#ff6361
+#ffa600
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_grid.png',
+       dpi=600,
+       width = 10,
+       height = 6)
+
+
+```
+
+```{r}
+
+flow_plot_updated <- flow_plot_updated %>%
+  mutate(kge_revise_bins = cut(kge,
+                               breaks = c(-Inf, 0, 0.25, 0.5, 0.75, 1),
+                               include.lowest = TRUE,
+                               labels = c("< 0", "0-0.25", "0.25-0.5", "0.5-0.75", "0.75-1")))
+
+
+grid_kge_plot <- flow_plot_updated %>%
+  filter(source == 'grid') %>% 
+ggplot(., aes(x = year_excluded, 
+              y = year, 
+              fill = kge_revise_bins)) +
+  geom_tile(color = "white") +
+  # scale_fill_manual(values = color_palette) +
+paletteer::scale_fill_paletteer_d("PNWColors::Anemone") +
+  geom_text(aes(label = sprintf("%.2f", 
+                                kge)), 
+            color = "black", 
+            size = 3) +
+  theme_bw(base_size=20) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  labs(y = "Year",
+       x='Year Excluded',
+       fill = 'KGE') +
+  theme(
+    axis.text.x = element_text(angle = 45, 
+                               hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 0, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  ) + ggtitle('a. Gridded')
+
+grid_kge_plot
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_grid_basic.png',
+       dpi=600,
+       width = 10,
+       height = 6)
+
+# mean_kge <- mean(flow_plot_updated$kge, na.rm = TRUE)
+# 
+# # Boxplot with mean line
+# boxplot_x <- flow_plot_updated %>%
+#   filter(source == "grid") %>%
+#   ggplot(aes(x=source, y = kge)) +
+#   geom_hline(yintercept = mean_kge, color = "black", linetype = "dashed", size = 0.5) +
+#   geom_boxplot(outliers=F, fill = "grey", color = "black") +
+#   theme_bw(base_size=16) +
+#   theme(
+#     panel.grid = element_blank(),
+#     panel.background = element_rect(fill = "white"),
+#     strip.background = element_blank(),
+#     text = element_text(color = "black"),
+#     axis.title = element_text(color = "black"),
+#     axis.text = element_text(color = "black"),
+#     axis.title.y = element_blank(),
+#     axis.title.x = element_blank(),
+#     axis.text.x = element_blank(),
+#     axis.ticks.x = element_blank(),
+#     plot.margin = margin(t = 10, r = 5, b = 76, l = 5)  # Adjust margins if necessary
+#   ) +
+#    scale_y_continuous(position = "right") 
+# 
+# boxplot_x
+# 
+# plot_grid(grid_kge_plot,boxplot_x, ncol = 2, 
+#           rel_widths = c(3, 0.75))
+# 
+# 
+# ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_grid.png',
+#        dpi=600,
+#        width = 10,
+#        height = 6)
+# 
+# ######
+# 
+# boxplot_yrex <- flow_plot_updated %>%
+#   filter(source == "grid") %>%
+#   ggplot(aes(x=year_excluded, y = kge)) +
+#   geom_boxplot(outliers=F, fill = "grey", 
+#                color = "black",
+#                width = 0.5) +
+#   theme_bw(base_size=20) +
+#   labs(y= 'KGE') +
+#   theme(
+#     panel.grid = element_blank(),
+#     panel.background = element_rect(fill = "white"),
+#     strip.background = element_blank(),
+#     text = element_text(color = "black"),
+#     axis.title = element_text(color = "black"),
+#     axis.text = element_text(color = "black"),
+#     #axis.title.y = element_blank(),
+#     axis.title.x = element_blank(),
+#     axis.text.x = element_blank(),
+#     axis.ticks.x = element_blank(),
+#     plot.margin = margin(t = 10, r = 10, b = 0, l = 24)  # Adjust margins if necessary
+#   )
+#   
+# boxplot_yrex
+# 
+# plot_grid(NULL, boxplot_yrex, NULL, grid_kge_plot, ncol = 1,
+#            rel_heights = c(0.1, 1, -0.00005, 2))
+# 
+# ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_grid_test.png',
+#        dpi=600,
+#        width = 10,
+#        height = 6)
+
+statn_kge_plot <- flow_plot_updated %>%
+  filter(source == 'statn') %>% 
+ggplot(., aes(x = year_excluded, 
+              y = year, 
+              fill = kge_revise_bins)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source) +
+  # scale_fill_manual(values = color_palette) +
+paletteer::scale_fill_paletteer_d("PNWColors::Anemone") +
+  geom_text(aes(label = sprintf("%.2f", 
+                                kge)), 
+            color = "black", 
+            size = 3) +
+  theme_bw(base_size=20) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  labs(y = "Year",
+       x='Year Excluded',
+       fill = 'KGE') +
+  theme(
+    axis.text.x = element_text(angle = 45, 
+                               hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt"),
+    # axis.title.y = element_blank(),
+    # axis.text.y = element_blank(),
+    # axis.ticks.y = element_blank()
   )
 
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap.png',
+statn_kge_plot
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_statn_basic.png',
+       dpi=600,
+       width = 10,
+       height = 6)
+
+# facet wrap the plots
+new_facet_titles <- c(
+  "grid" = "Gridded",
+  "statn" = "Station"
+)
+
+
+both_kge_plot <- flow_plot_updated %>%
+  ggplot(., aes(x = year_excluded, 
+              y = year, 
+              fill = kge_revise_bins)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+paletteer::scale_fill_paletteer_d("PNWColors::Anemone") +
+  geom_text(aes(label = sprintf("%.2f", 
+                                kge)), 
+            color = "black", 
+            size = 3) +
+  theme_bw(base_size=18) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  labs(y = "Year",
+       x='Year excluded',
+       fill = 'KGE') +
+  theme(
+    axis.text.x = element_text(angle = 45, 
+                               hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt"),
+    # axis.title.y = element_blank(),
+    # axis.text.y = element_blank(),
+    # axis.ticks.y = element_blank()
+  )
+
+both_kge_plot
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_both_basic.png',
        dpi=600,
        width = 10,
        height = 6)
@@ -956,7 +1198,7 @@ flow_plot <- flow_year %>%
 
 # add all to the plot below
 pbias_all <- flow_pbias_all %>%
-  mutate(year = 'all years') %>%
+  mutate(year = 'All') %>%
   rename(model_run = name,
          pbias = value)
 
@@ -969,6 +1211,65 @@ ggplot(flow_plot_updated, aes(x = model_run, y = year, fill = pbias)) +
   theme_bw(base_size=20) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(y = "Year")
+
+####
+# pbias figure
+flow_plot_updated <- flow_plot_updated %>% 
+  mutate(source = case_when(
+    grepl("grid", model_run) ~ "grid",
+    grepl("statn", model_run) ~ "statn"),
+    year_excluded = str_extract(model_run, "\\d{4}$")) %>%
+  mutate(year_excluded = if_else(model_run %in% c('gridall',
+                                                       'statnall'),
+                                  'None', year_excluded))
+
+both_pbias_plot <- flow_plot_updated %>%
+  ggplot(., aes(x = year_excluded, 
+              y = year, 
+              fill = pbias)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  #paletteer::scale_fill_paletteer_c("ggthemes::Gold-Purple Diverging") +
+  #paletteer::scale_fill_paletteer_c("grDevices::Red-Green") +
+  #paletteer::scale_fill_paletteer_c("grDevices::Purple-Green") +
+  paletteer::scale_fill_paletteer_c("grDevices::Green-Brown") +
+  #paletteer::scale_fill_paletteer_c("grDevices::Earth") +
+  geom_text(aes(label = sprintf("%.2f", 
+                                pbias)), 
+            color = "black", 
+            size = 2.75) +
+  theme_bw(base_size=18) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  labs(y = "Year",
+       x='Year excluded',
+       fill = 'Pbias') +
+  theme(
+    axis.text.x = element_text(angle = 45, 
+                               hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt"),
+    # axis.title.y = element_blank(),
+    # axis.text.y = element_blank(),
+    # axis.ticks.y = element_blank()
+  )
+
+both_pbias_plot
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/pbias_heatmap_both_basic.png',
+       dpi=600,
+       width = 10,
+       height = 6)
 
 
 ```
@@ -1282,11 +1583,14 @@ ggplot(example,
     strip.background = element_blank(),
     text = element_text(color = "black"),
     axis.title = element_text(color = "black"),
-    axis.text = element_text(color = "black")
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 20, b = 10, l = 10)
   )
 
 ggsave('./figures/2015_flowcumulative.png',
-       dpi=600)
+       dpi=600,
+       width=14,
+       height=8)
 
 ```
 
