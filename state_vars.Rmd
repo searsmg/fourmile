@@ -22,6 +22,7 @@ library(ggplot2); theme_set(theme_bw(base_size = 20))
 library(plotly)
 library(knitr)
 library(kableExtra)
+library(cowplot)
 
 ```
 
@@ -1035,24 +1036,24 @@ ggplotly(swe)
 
 ```{r}
 
-statn_hi <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_19.csv') %>% 
+statn_low <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_19.csv') %>% 
   mutate(date = mdy(time),
          source = 'statn') %>%
   dplyr::select(-time)
 
-grid_hi <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_19.csv') %>%
+grid_low <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_19.csv') %>%
   mutate(date = mdy(time),
          source = 'grid') %>%
   dplyr::select(-time)
 
-both_hi <- bind_rows(statn_hi, grid_hi) %>%
+both_low <- bind_rows(statn_low, grid_low) %>%
   mutate(year = year(date),
          month = month(date)) %>%
   filter(year == 2015,
          month %in% c(4,5,6))
 
 
-temp <- ggplot(both_hi, 
+temp <- ggplot(both_low, 
                aes(date, 
                    tmean,
                    color = source)) +
@@ -1061,7 +1062,7 @@ temp <- ggplot(both_hi,
 
 ggplotly(temp)
 
-swe <- ggplot(both_hi, 
+swe <- ggplot(both_low, 
                aes(date, 
                    snowTotSWE,
                    color = source)) +
@@ -1069,6 +1070,92 @@ swe <- ggplot(both_hi,
   scale_color_manual(values = c("#0047AB", "orange"))
 
 ggplotly(swe)
+
+## combine low and high together
+hi <- both_hi %>%
+  dplyr::select(tmean, snowTotSWE, source, date) %>%
+  mutate(elevation = 'High')
+
+low <- both_low %>%
+  dplyr::select(tmean, snowTotSWE, source, date) %>%
+  mutate(elevation = 'Low')
+
+both <- bind_rows(hi, low) %>%
+  mutate(elev_source =
+           case_when(source == 'statn' & elevation == 'High' ~ 'Station - High',
+                     source == 'statn' & elevation == 'Low' ~ 'Station - Low',
+                     source == 'grid' & elevation == 'High' ~ 'Gridded - High',
+                     source == 'grid' & elevation == 'Low' ~ 'Gridded - Low'))
+
+# figure
+tmean <- ggplot(both,
+       aes(x=date, y = tmean, 
+           color = elev_source,
+           linetype=elev_source)) +
+   geom_line(size=1, alpha=0.8) +  
+    scale_color_manual(values = c("Gridded - High" = "#0047AB", 
+                                  "Gridded - Low" = "#0047AB", 
+                                  "Station - High" = "orange",
+                                  "Station - Low" = "orange")) +
+  scale_linetype_manual(values = c("Gridded - High" = "dashed", 
+                                  "Gridded - Low" = "solid", 
+                                  "Station - High" = "dashed",
+                                  "Station - Low" = "solid")) + 
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Mean temperature (°C)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = "none",
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+    #plot.margin = margin(t = 10, r = 20, b = 10, l = 10)
+  ) 
+
+swe <- ggplot(both,
+       aes(x=date, y = snowTotSWE, 
+           color = elev_source,
+           linetype=elev_source)) +
+   geom_line(size=1, alpha=0.8) +  
+    scale_color_manual(values = c("Gridded - High" = "#0047AB", 
+                                  "Gridded - Low" = "#0047AB", 
+                                  "Station - High" = "orange",
+                                  "Station - Low" = "orange")) +
+  scale_linetype_manual(values = c("Gridded - High" = "dashed", 
+                                  "Gridded - Low" = "solid", 
+                                  "Station - High" = "dashed",
+                                  "Station - Low" = "solid")) + 
+  scale_x_date(date_labels = "%b") +
+  #scale_y_log10() +
+  labs(x = element_blank(),
+       y = 'SWE (mm)') +
+  theme_bw(base_size = 20) +
+  theme(
+    legend.position = c(0.74, 0.85),
+    legend.text = element_text(size = 12),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+    #plot.margin = margin(t = 10, r = 20, b = 10, l = 10)
+  ) 
+
+swe
+
+plot_grid(tmean, swe)
+
+ggsave('./figures/tmean_swe_2015.png',
+       width = 10,
+       height = 5,
+       dpi=600)
 
 ```
 
