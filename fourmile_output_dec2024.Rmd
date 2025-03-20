@@ -1271,6 +1271,51 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/pbias_heatmap_both_ba
        width = 10,
        height = 6)
 
+### #### test
+# Compute max absolute value for symmetric limits
+max_abs <- max(abs(flow_plot_updated$pbias), na.rm = TRUE)
+
+both_pbias_plot <- flow_plot_updated %>%
+  ggplot(aes(x = year_excluded, 
+             y = year, 
+             fill = pbias)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  paletteer::scale_fill_paletteer_c(
+    "grDevices::Green-Brown",
+    limits = c(-max_abs, max_abs),
+    oob = scales::squish
+  ) +
+  geom_text(aes(label = sprintf("%.2f", pbias)), 
+            color = "black", 
+            size = 2.75) +
+  theme_bw(base_size=18) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(2, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  ) +
+  labs(y = "Year",
+       x = 'Year excluded',
+       fill = 'Pbias')
+
+both_pbias_plot
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/pbias_heatmap_both_basic_0center.png',
+       dpi=600,
+       width = 10,
+       height = 6)
+
 
 ```
 
