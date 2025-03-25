@@ -1,0 +1,95 @@
+---
+title: "burn_sev"
+author: "Megan Sears"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(stars)
+library(tidyverse)
+library(mapview)
+
+```
+
+```{r}
+
+# for CPF only
+dnbr <- read_stars('./data/GIS/co4005110538520100906_20100621_20110624_dnbr.tif')
+
+burn_cat <- st_apply(dnbr, 1:2, function(x) case_when(
+  x < -251  ~ 6,
+  x > -250 & x < -101 ~ 7,
+  x > -100 & x < 99 ~ 1,
+  x > 100 & x < 269 ~ 2,
+  x > 270 & x < 439 ~ 3,
+  x > 440 & x < 659 ~ 4,
+  x > 600 ~ 5,
+))
+
+sites <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/Fourmile Watershed.shp')
+
+# need to add area to sites (only some sites have it calculated)
+sites$area_m2 <- st_area(sites)
+  
+sites <- sites %>%  
+  mutate(area_km2 = as.numeric(area_m2) / 1e6) 
+
+burn_cat <- st_transform(burn_cat, st_crs(sites))
+
+burn_cat_poly <- st_as_sf(burn_cat, as_points = F, merge=F)
+
+mapview(burn_cat_poly)
+
+intersect <- st_intersection(burn_cat_poly, sites)
+
+mapview(intersect)
+
+intersect$area_m2 <- st_area(intersect)
+
+intersect_summ <- intersect %>%
+  group_by(co4005110538520100906_20100621_20110624_dnbr.tif) %>%
+  summarize(sum_area = sum(area_m2)) %>%
+  mutate(area_km2 = as.numeric(sum_area) / 1e6) %>%
+  as.data.frame() %>% 
+  dplyr::select(-geometry)
+
+percents <- intersect_summ %>%
+  mutate(frac_catchment = area_km2/67.2218) %>% 
+  mutate(actual_percent = frac_catchment*100)
+
+write_csv(intersect_summ, './data/final_model_inputs/cpf_burncat_percent.csv')
+
+```
+
+# snow persistence
+
+```{r}
+
+sp <- read_stars('/Users/megansears/Documents/Repos/fourmile/data/GIS/SP_mean.tif')
+
+sites <- st_transform(sites, st_crs(sp))
+
+sp <- st_crop(sp, sites)
+
+mapview(sp) + mapview(sites)
+
+sp <- sp %>%
+  as.data.frame() %>%
+  drop_na()
+
+SP_cats <- sp %>%
+  mutate(sp_ct = case_when(
+  SP_mean.tif < 50 ~ "Int",
+  SP_mean.tif < 75 ~ 'Trans',
+  SP_mean.tif >= 75 ~ "Persis"
+  )) %>%
+  group_by(sp_ct) %>%
+  summarize(count = n()) %>%
+  mutate(frac = count/316)
+  
+
+
+```
+
