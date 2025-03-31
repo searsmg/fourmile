@@ -442,280 +442,280 @@ ggsave('./figures/fig1a.png', dpi=600)
 # ggsave("/Users/megansears/Documents/Repos/fourmile/figures/quad_plus_20250329.png", plot = quad_plus, dpi = 600)
 # 
 # 
-# ```
-# 
-# # difference - UPDATE file sources!!
-# 
-# ```{r}
-# 
-# #grid first
-# setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/HRU_output/grid")
-# 
-# read_ages_grid <- function(dataframe){
-#   read_csv(dataframe, skip = 3) %>%
-#   slice(3:n()) %>%
-#   dplyr::select(-starts_with('@'),
-#                 -1) %>%
-#   mutate(time = ymd(time)) %>%
-#   mutate_if(is.character, as.numeric) %>%
-#   mutate(source = 'grid')
-# 
-# }
-# 
-# #pull in all filenames with HRU in the name
-# filenames <- list.files(".", pattern="HRU", full.names=F)
-# 
-# #read all the csvs using read_ages function
-# dataframes <- lapply(filenames, read_ages_grid)
-# 
-# #name all the csvs based on first 6 characters
-# names(dataframes) <- substr(filenames, 1, 6)
-# 
-# #bind all and make 1 df
-# hru_grids <- dataframes %>%
-#   bind_rows()
-# 
-# #statn next
-# setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/HRU_output/statn")
-# 
-# read_ages_statn <- function(dataframe){
-#   read_csv(dataframe, skip = 3) %>%
-#   slice(3:n()) %>%
-#   dplyr::select(-starts_with('@'),
-#                 -1) %>%
-#   mutate(time = ymd(time)) %>%
-#   mutate_if(is.character, as.numeric) %>%
-#   mutate(source = 'statn')
-# 
-# }
-# 
-# #pull in all filenames with HRU in the name
-# filenames <- list.files(".", pattern="HRU", full.names=F)
-# 
-# #read all the csvs using read_ages function
-# dataframes <- lapply(filenames, read_ages_statn)
-# 
-# #name all the csvs based on first 6 characters
-# names(dataframes) <- substr(filenames, 1, 6)
-# 
-# #bind all and make 1 df
-# hru_statn <- dataframes %>%
-#   bind_rows()
-# 
-# #get rid of a bunch of data
-# hru_grid_tmean <- hru_grids %>%
-#   dplyr::select(c(time, ID, tmean)) %>%
-#   rename(tmean_grid = tmean)  %>%
-#   group_by(ID) %>%
-#   summarize(tmean_all_grid = mean(tmean_grid))
-# 
-# hru_statn_tmean <- hru_statn %>%
-#   dplyr::select(c(time, ID, tmean)) %>%
-#   rename(tmean_statn = tmean) %>%
-#   group_by(ID) %>%
-#   summarize(tmean_all_statn = mean(tmean_statn))
-# 
-# tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
-#   mutate(diff = tmean_all_statn - tmean_all_grid) %>%
-#   rename(value = ID)
-# 
-# hrus_map_tmean <- left_join(hru_new, tmean_hrus, by = 'value')
-# 
-# # T max
-# #get rid of a bunch of data
-# hru_grid_tmax <- hru_grids %>%
-#   dplyr::select(c(time, ID, tmax)) %>%
-#   rename(tmax_grid = tmax)  %>%
-#   group_by(ID) %>%
-#   summarize(tmax_all_grid = mean(tmax_grid))
-# 
-# hru_statn_tmax <- hru_statn %>%
-#   dplyr::select(c(time, ID, tmax)) %>%
-#   rename(tmax_statn = tmax) %>%
-#   group_by(ID) %>%
-#   summarize(tmax_all_statn = mean(tmax_statn))
-# 
-# tmax_hrus <- left_join(hru_grid_tmax, hru_statn_tmax, by = c('ID')) %>%
-#   mutate(diff = tmax_all_statn - tmax_all_grid) %>%
-#   rename(value = ID)
-# 
-# hrus_map_tmax <- left_join(hru_new, tmax_hrus, by = 'value')
-# 
-# 
-# # Tmin
-# #get rid of a bunch of data
-# hru_grid_tmin <- hru_grids %>%
-#   dplyr::select(c(time, ID, tmin)) %>%
-#   rename(tmin_grid = tmin)  %>%
-#   group_by(ID) %>%
-#   summarize(tmin_all_grid = mean(tmin_grid))
-# 
-# hru_statn_tmin <- hru_statn %>%
-#   dplyr::select(c(time, ID, tmin)) %>%
-#   rename(tmin_statn = tmin) %>%
-#   group_by(ID) %>%
-#   summarize(tmin_all_statn = mean(tmin_statn))
-# 
-# tmin_hrus <- left_join(hru_grid_tmin, hru_statn_tmin, by = c('ID')) %>%
-#   mutate(diff = tmin_all_statn - tmin_all_grid) %>%
-#   rename(value = ID)
-# 
-# hrus_map_tmin <- left_join(hru_new, tmin_hrus, by = 'value')
-# 
-# setwd("~/Documents/Repos/fourmile")
-# 
-# # Cumulative p
-# hru_grid_precip <- hru_grids %>%
-#   dplyr::select(c(time, ID, precip)) %>%
-#   rename(precip_grid = precip)
-# 
-# hru_statn_precip <- hru_statn %>%
-#   dplyr::select(c(time, ID, precip)) %>%
-#   rename(precip_statn = precip)
-# 
-# precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
-#   mutate(diff = precip_statn - precip_grid,
-#          year = year(time)) %>%
-#   group_by(year, ID) %>%
-#   mutate(total_diff = cumsum(diff)) %>%
-#   filter(time == max(time)) %>%
-#   group_by(ID) %>%
-#   summarize(precip_avg_cumdiff = mean(total_diff)) %>%
-#   rename(value = ID)
-# 
-# hrus_map_precip <- left_join(hru_new, precip_hrus, by = 'value')
-# 
-# 
-# # solar rad
-# hru_grid_solrad <- hru_grids %>%
-#   dplyr::select(c(time, ID, solRad)) %>%
-#   rename(solrad_grid = solRad)  %>%
-#   group_by(ID) %>%
-#   summarize(solrad_all_grid = mean(solrad_grid))
-# 
-# hru_statn_solrad <- hru_statn %>%
-#   dplyr::select(c(time, ID, solRad)) %>%
-#   rename(solrad_statn = solRad) %>%
-#   group_by(ID) %>%
-#   summarize(solrad_all_statn = mean(solrad_statn))
-# 
-# solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
-#   mutate(diff = solrad_all_statn - solrad_all_grid) %>%
-#   rename(value = ID)
-# 
-# hrus_map_solrad <- left_join(hru_new, solrad_hrus, by = 'value')
-# 
-# 
-# # RH
-# #get rid of a bunch of data
-# hru_grid_rh <- hru_grids %>%
-#   dplyr::select(c(time, ID, rhum)) %>%
-#   rename(rh_grid = rhum)  %>%
-#   group_by(ID) %>%
-#   summarize(rh_all_grid = mean(rh_grid))
-# 
-# hru_statn_rh <- hru_statn %>%
-#   dplyr::select(c(time, ID, rhum)) %>%
-#   rename(rh_statn = rhum) %>%
-#   group_by(ID) %>%
-#   summarize(rh_all_statn = mean(rh_statn))
-# 
-# rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
-#   mutate(diff = rh_all_statn - rh_all_grid) %>%
-#   rename(value = ID)
-# 
-# hrus_map_rh <- left_join(hru_new, rh_hrus, by = 'value')
-# 
-# ####
-# rh <- ggplot() +
-#   geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
-#   scale_fill_viridis_c(option = "viridis", name = "RH (%)") +
-#   theme_bw(base_size=15.5) +
-#   theme_void() + bottom_theme
-# 
-# rh
-# 
-# sr <- ggplot() +
-#   geom_sf(data = hrus_map_solrad, aes(fill = diff), color = "black", lwd = 0.2) +
-#   scale_fill_viridis_c(option = "cividis", name = expression("Srad (MJ/m"^"2" * ")")) +
-#   theme_bw(base_size=15.5) +
-#   theme_void() + top_theme
-# 
-# 
-# sr
-# 
-# precip <- ggplot() +
-#   geom_sf(data = hrus_map_precip, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
-#   scale_fill_viridis_c(option = "mako", name = "Cumulative P (mm)") +
-#   theme_bw(base_size=15.5) +
-#   theme_void() + top_theme
-# 
-# precip
-# 
-# tmean <- ggplot() +
-#   geom_sf(data = hrus_map_tmean, aes(fill = diff), color = "black", lwd = 0.2) +
-#   scale_fill_viridis_c(option = "plasma", name = "Tmean (°C)",
-#                        limits = c(-5, 2)) +
-#   theme_bw(base_size=15.5) +
-#   theme_void() + bottom_theme
-# 
-# tmean
-# 
-# 
-# tmin <- ggplot() +
-#   geom_sf(data = hrus_map_tmin, aes(fill = diff), color = "black", lwd = 0.2) +
-#   scale_fill_viridis_c(option = "plasma", name = "Tmin (°C)",
-#                        limits = c(-5, 2)) +
-#   theme_bw(base_size=15.5) +
-#   theme_void() + bottom_theme
-# 
-# tmin
-# 
-# tmax <- ggplot() +
-#   geom_sf(data = hrus_map_tmax, aes(fill = diff), color = "black", lwd = 0.2) +
-#   scale_fill_viridis_c(option = "plasma", name = "Tmax (°C)",
-#                        limits = c(-5, 2)) +
-#   theme_bw(base_size=15.5) +
-#   theme_void() + bottom_theme
-#   
-# tmax
-# 
-# bottom_theme <-   theme(
-#     legend.position = "bottom",
-#     panel.grid.major = element_blank(),
-#     legend.key.width = unit(.75, "cm"),
-#     panel.grid.minor = element_blank(),
-#     axis.title.x = element_blank(),
-#     axis.title.y = element_blank(),
-#     plot.margin = unit(c(-6, 0, 0, 0), "cm"), 
-#     panel.spacing = unit(0, "lines"))
-# 
-# top_theme <-   theme(
-#     legend.position = "bottom",
-#     panel.grid.major = element_blank(),
-#     legend.key.width = unit(.75, "cm"),
-#     panel.grid.minor = element_blank(),
-#     axis.title.x = element_blank(),
-#     axis.title.y = element_blank(),
-#     plot.margin = unit(c(0, 0, -6, 0), "cm"), 
-#     panel.spacing = unit(0, "lines"))
-# 
-# 
-# lots <- ggarrange(
-#   precip, sr, rh, tmean,
-#   heights = 1)
-# 
-# 
-# lots
-# 
-# ggsave("./figures/diff_update2.png", plot = lots, dpi = 600)
-# 
-# ```
-# 
-# # Pgrid vs Pstatn
-# 
-# ```{r}
-# 
+```
+
+# HRU climate diff
+
+```{r}
+
+#grid first
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/HRU_output/grid")
+
+read_ages_grid <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'grid')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_grid)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_grids <- dataframes %>%
+  bind_rows()
+
+#statn next
+setwd("/Users/megansears/Documents/Repos/fourmile/38HRU_sept2013_updates/HRU_output/statn")
+
+read_ages_statn <- function(dataframe){
+  read_csv(dataframe, skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'statn')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files(".", pattern="HRU", full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_statn)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_statn <- dataframes %>%
+  bind_rows()
+
+#get rid of a bunch of data
+hru_grid_tmean <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean <- left_join(hru_new, tmean_hrus, by = 'value')
+
+# T max
+#get rid of a bunch of data
+hru_grid_tmax <- hru_grids %>%
+  dplyr::select(c(time, ID, tmax)) %>%
+  rename(tmax_grid = tmax)  %>%
+  group_by(ID) %>%
+  summarize(tmax_all_grid = mean(tmax_grid))
+
+hru_statn_tmax <- hru_statn %>%
+  dplyr::select(c(time, ID, tmax)) %>%
+  rename(tmax_statn = tmax) %>%
+  group_by(ID) %>%
+  summarize(tmax_all_statn = mean(tmax_statn))
+
+tmax_hrus <- left_join(hru_grid_tmax, hru_statn_tmax, by = c('ID')) %>%
+  mutate(diff = tmax_all_statn - tmax_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmax <- left_join(hru_new, tmax_hrus, by = 'value')
+
+
+# Tmin
+#get rid of a bunch of data
+hru_grid_tmin <- hru_grids %>%
+  dplyr::select(c(time, ID, tmin)) %>%
+  rename(tmin_grid = tmin)  %>%
+  group_by(ID) %>%
+  summarize(tmin_all_grid = mean(tmin_grid))
+
+hru_statn_tmin <- hru_statn %>%
+  dplyr::select(c(time, ID, tmin)) %>%
+  rename(tmin_statn = tmin) %>%
+  group_by(ID) %>%
+  summarize(tmin_all_statn = mean(tmin_statn))
+
+tmin_hrus <- left_join(hru_grid_tmin, hru_statn_tmin, by = c('ID')) %>%
+  mutate(diff = tmin_all_statn - tmin_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmin <- left_join(hru_new, tmin_hrus, by = 'value')
+
+setwd("~/Documents/Repos/fourmile")
+
+# Cumulative p
+hru_grid_precip <- hru_grids %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_grid = precip)
+
+hru_statn_precip <- hru_statn %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_statn = precip)
+
+precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip <- left_join(hru_new, precip_hrus, by = 'value')
+
+
+# solar rad
+hru_grid_solrad <- hru_grids %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_grid = solRad)  %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad <- hru_statn %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_statn = solRad) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad <- left_join(hru_new, solrad_hrus, by = 'value')
+
+
+# RH
+#get rid of a bunch of data
+hru_grid_rh <- hru_grids %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_grid = rhum)  %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh <- hru_statn %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_statn = rhum) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh <- left_join(hru_new, rh_hrus, by = 'value')
+
+####
+rh <- ggplot() +
+  geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "viridis", name = "RH (%)") +
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
+
+rh
+
+sr <- ggplot() +
+  geom_sf(data = hrus_map_solrad, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "cividis", name = expression("Srad (MJ/m"^"2" * ")")) +
+  theme_bw(base_size=15.5) +
+  theme_void() + top_theme
+
+
+sr
+
+precip <- ggplot() +
+  geom_sf(data = hrus_map_precip, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P (mm)") +
+  theme_bw(base_size=15.5) +
+  theme_void() + top_theme
+
+precip
+
+tmean <- ggplot() +
+  geom_sf(data = hrus_map_tmean, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmean (°C)",
+                       limits = c(-5, 2)) +
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
+
+tmean
+
+
+tmin <- ggplot() +
+  geom_sf(data = hrus_map_tmin, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmin (°C)",
+                       limits = c(-5, 2)) +
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
+
+tmin
+
+tmax <- ggplot() +
+  geom_sf(data = hrus_map_tmax, aes(fill = diff), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmax (°C)",
+                       limits = c(-5, 2)) +
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
+
+tmax
+
+bottom_theme <-   theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.margin = unit(c(-6, 0, 0, 0), "cm"),
+    panel.spacing = unit(0, "lines"))
+
+top_theme <-   theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.margin = unit(c(0, 0, -6, 0), "cm"),
+    panel.spacing = unit(0, "lines"))
+
+
+lots <- ggarrange(
+  precip, sr, rh, tmean,
+  heights = 1)
+
+
+lots
+
+ggsave("./figures/diff_update2.png", plot = lots, dpi = 600)
+
+```
+
+# Pgrid vs Pstatn
+
+```{r}
+#
 # statn_catch <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_model/output/4milecreek38HRUs-statnall_#1/out/Catchment.csv',
 #                         skip=3) %>%
 #   slice(3:n()) %>%
@@ -724,7 +724,7 @@ ggsave('./figures/fig1a.png', dpi=600)
 #   mutate(time = ymd(time)) %>%
 #   mutate_if(is.character, as.numeric) %>%
 #   mutate(source = 'statn')
-# 
+#
 # grid_catch <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_model/output/4milecreek38HRUs-gridall_#1/out/Catchment.csv',
 #                        skip=3) %>%
 #   slice(3:n()) %>%
@@ -733,17 +733,17 @@ ggsave('./figures/fig1a.png', dpi=600)
 #   mutate(time = ymd(time)) %>%
 #   mutate_if(is.character, as.numeric) %>%
 #   mutate(source = 'grid')
-#   
+#
 # catchment_p <- bind_rows(statn_catch, grid_catch) %>%
 #   dplyr::select(precip, time, source) %>%
 #   pivot_wider(., names_from=source, values_from=precip)
-# 
+#
 # p_comp <- ggplot(catchment_p, aes(x=statn, y=grid)) + geom_point(size = 3) +
 #   theme_bw(base_size=25) +
 #   labs(x = 'Station precip (mm)',
 #        y = 'Grid precip (mm)') +
-#   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") 
-# 
+#   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red")
+#
 # p_comp
 # ggsave("./figures/p_compare.png", plot = p_comp, dpi = 600)
 
