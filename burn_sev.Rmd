@@ -27,6 +27,8 @@ burn_cat <- st_apply(dnbr, 1:2, function(x) case_when(
   x > 440 & x < 659 ~ 4,
   x > 600 ~ 5,
 ))
+ 
+#mapview(burn_cat) + mapview(sites)
 
 sites <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/Fourmile Watershed.shp')
 
@@ -40,11 +42,11 @@ burn_cat <- st_transform(burn_cat, st_crs(sites))
 
 burn_cat_poly <- st_as_sf(burn_cat, as_points = F, merge=F)
 
-mapview(burn_cat_poly)
+#mapview(burn_cat_poly)
 
 intersect <- st_intersection(burn_cat_poly, sites)
 
-mapview(intersect)
+#mapview(intersect)
 
 intersect$area_m2 <- st_area(intersect)
 
