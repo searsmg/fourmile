@@ -627,6 +627,27 @@ rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
 hrus_map_rh <- left_join(hru_new, rh_hrus, by = 'value')
 
 ####
+
+bottom_theme <-   theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.margin = unit(c(-6, 0, 0, 0), "cm"),
+    panel.spacing = unit(0, "lines"))
+
+top_theme <-   theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.margin = unit(c(0, 0, -6, 0), "cm"),
+    panel.spacing = unit(0, "lines"))
+
 rh <- ggplot() +
   geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
   scale_fill_viridis_c(option = "viridis", name = "RH (%)") +
@@ -680,25 +701,6 @@ tmax <- ggplot() +
 
 tmax
 
-bottom_theme <-   theme(
-    legend.position = "bottom",
-    panel.grid.major = element_blank(),
-    legend.key.width = unit(.75, "cm"),
-    panel.grid.minor = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    plot.margin = unit(c(-6, 0, 0, 0), "cm"),
-    panel.spacing = unit(0, "lines"))
-
-top_theme <-   theme(
-    legend.position = "bottom",
-    panel.grid.major = element_blank(),
-    legend.key.width = unit(.75, "cm"),
-    panel.grid.minor = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    plot.margin = unit(c(0, 0, -6, 0), "cm"),
-    panel.spacing = unit(0, "lines"))
 
 
 lots <- ggarrange(
@@ -810,6 +812,14 @@ flow_plot2
 
 ggsave("/Users/megansears/Documents/Repos/fourmile/figures/flow_obs_plot2.png", dpi = 600, width = 12, height = 4, units = "in")
 
+ggplotly(flow_plot2)
+
+# annual total flow
+flowTotYr <- flow %>%
+  group_by(year) %>%
+  summarize(flow_tot = sum(obs, na.rm=T))
+
+avgAllYr <- mean(flowTotYr$flow_tot)
 
 ```
 
