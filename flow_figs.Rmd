@@ -1,0 +1,44 @@
+---
+title: "hydrograph figures"
+author: "Megan Sears"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(plotly)
+
+```
+
+```{r}
+
+flow <- read_csv('./38HRU_dec2024_updates/discharge_all.csv') %>%
+  replace(.==-9999, NA) %>%
+  rename(date = time) %>%
+  mutate(date = mdy(date))
+
+flow_pivot <- flow %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(year = as.factor(year(date))) %>%
+  filter(cal_run %in% c('grid_all',
+                        'statn_all',
+                        'obs'))
+
+flowEg <- flow_pivot %>%
+  filter(year %in% c(2012, 2016, 2017)) %>%
+  ggplot(., aes(x=date,
+                y=q_m3s, 
+                color = cal_run)) +
+  geom_line() +
+  facet_wrap(~year,
+             scales = 'free_x') +
+  theme_bw(base_size=20)
+
+flowEg
+
+
+```
+
