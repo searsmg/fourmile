@@ -583,28 +583,27 @@ plot
 plot_bottom12 <- compFlip %>%
   filter(flow_type %in% c('statn_res', 'grid_res')) %>%
   mutate(year = year(date)) %>%
-  filter(year %in% c(2012, 2015, 2017)) %>% 
+  filter(year %in% c(2016)) %>% 
   mutate(flow_type = if_else(flow_type == 'grid_res', 
                              "Gridded",
                              "Station")) %>%
   ggplot(aes(x = date, y = flow_cms, color = flow_type)) +  
-  geom_line(size=1, alpha=0.7) + 
+  geom_hline(yintercept = 0, color = "black") +
+  geom_line(size = 1, alpha = 0.7) + 
   scale_color_manual(values = c("#0047AB", "orange")) +
-  facet_wrap(~year, scales="free_x") +
-  labs(x=element_blank(),
-       y='Residuals (cms)') +
+  scale_x_date(date_labels = "%b %Y", 
+               date_breaks = "1 month") +
+  labs(x = element_blank(),
+       y = 'Residuals (cms)') +
+  theme_bw(base_size = 20) +
   theme(
-   legend.position = c(0.93, 0.85),
+    legend.position = c(0.93, 0.85),
     legend.text = element_text(size = 16),
     legend.title = element_blank(),
     panel.grid = element_blank(),
-    panel.background = element_rect(fill = "white"),
-    strip.background = element_blank(),
-    text = element_text(color = "black"),
-    axis.title = element_text(color = "black"),
-    axis.text = element_text(color = "black")
+    panel.background = element_rect(fill = "white")
   )
-  
+
 plot_bottom12
 
 # add 2 above plots together
@@ -655,6 +654,71 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/resids_option2.png',
        height = 8)
 
 ```
+
+## add flow 2016 to fig
+
+```{r}
+
+flow <- read_csv('./discharge_all.csv') %>%
+  replace(.==-9999, NA) %>%
+  rename(date = time) %>%
+  mutate(date = mdy(date)) %>%
+  drop_na()
+
+flow_pivot <- flow %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(year = as.factor(year(date))) %>%
+  filter(cal_run %in% c('grid_all',
+                        'statn_all',
+                        'obs')) %>%
+  mutate(cal_run = case_match(cal_run,
+                            'grid_all' ~ 'Gridded',
+                            'statn_all' ~ 'Station',
+                            'obs' ~ 'Observed'))
+
+flowEg <- flow_pivot %>%
+  filter(year %in% c(2016)) %>%
+  ggplot(aes(x = date,
+             y = q_m3s, 
+             color = cal_run,
+             linetype = cal_run)) + 
+  geom_line(size = 1, alpha = 1) + 
+  theme_bw(base_size = 20) +
+  scale_color_manual(values = c("Gridded" = "#0047AB", 
+                                "Observed" = "black", 
+                                "Station" = "orange")) +
+  scale_linetype_manual(values = c("Gridded" = "solid",
+                                   "Observed" = "dashed", 
+                                   "Station" = "solid")) +
+  labs(x = element_blank(),
+       y = "Streamflow (cms)") +
+   scale_x_date(date_labels = "%b",
+               date_breaks = "1 month") +
+  theme(
+    legend.position = c(0.9, 0.9),
+    legend.text = element_text(size = 16),
+    legend.key.width = unit(2, "lines"),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  )
+
+flowEg
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/2016_flowEg.png',
+       dpi=600,
+       width = 12,
+       height = 8)
+
+plot_grid(plot, flowEg, plot_bottom12, ncol = 1)
+
+```
+
+
 
 ## Cumulative volume
 
@@ -1339,6 +1403,8 @@ pbiasCats <- flow_plot_updated %>%
                                            "Good", 
                                            "Very good")))
 
+write_csv(pbiasCats, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/pbiasCats.csv')
+
 both_pbias_plot <- pbiasCats %>%
   ggplot(aes(x = year_excluded, 
              y = year, 
@@ -1699,7 +1765,7 @@ gw %>%
 
 # look at 2015, high snow year 
 example <- gw %>%
-  filter(year == 2015) %>%
+  filter(year == 2016) %>%
   ungroup() %>% 
   dplyr::select(date, source,
          RD1cumsum,
@@ -1725,10 +1791,11 @@ example_yr <- ggplot(example,
              labeller = labeller(flow_type = facet_labels)) +
    geom_line(size=1, alpha=0.7) +  
   scale_color_manual(values = c("#0047AB", "orange")) +
-  scale_x_date(date_labels = "%b") +
+    scale_x_date(date_labels = "%b %Y", 
+               date_breaks = "2 month") +
   labs(x=element_blank(),
        y='Flow (cms)') +
-  theme_bw(base_size = 20) +
+  theme_bw(base_size = 16) +
   theme(
     legend.position = c(0.94, 0.1),
     legend.text = element_text(size = 12),
@@ -1744,7 +1811,7 @@ example_yr <- ggplot(example,
 
 example_yr
 
-ggsave('./figures/2015_flowcumulative.png',
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/2016_flowcumulative.png',
        dpi=600,
        width=14,
        height=8)
@@ -1937,7 +2004,7 @@ plot_grid(
   label_fontface = "bold"     # Optional: make labels bold
 )
 
-ggsave('./figures/water_partition_combine.png',
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/water_partition_combine.png',
        dpi=600,
        width=12,
        height=12)
