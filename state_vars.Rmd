@@ -31,12 +31,12 @@ library(cowplot)
 statn <- read_csv('./38HRU_dec2024_updates/catchment_output/Catchment_statnall.csv') %>%
   mutate(date = mdy(time),
          source = 'statn') %>%
-  select(-time)
+  dplyr::select(-time)
 
 grid <- read_csv('./38HRU_dec2024_updates/catchment_output/Catchment_gridall.csv') %>%
   mutate(date = mdy(time),
          source = 'grid') %>%
-  select(-time)
+  dplyr::select(-time)
 
 both <- bind_rows(statn, grid)  
   
@@ -1010,7 +1010,7 @@ grid_hi <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_18.csv') %>%
 both_hi <- bind_rows(statn_hi, grid_hi) %>%
   mutate(year = year(date),
          month = month(date)) %>%
-  filter(year == 2015,
+  filter(year == 2016,
          month %in% c(4,5,6))
 
 
@@ -1049,7 +1049,7 @@ grid_low <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_19.csv') %>%
 both_low <- bind_rows(statn_low, grid_low) %>%
   mutate(year = year(date),
          month = month(date)) %>%
-  filter(year == 2015,
+  filter(year == 2016,
          month %in% c(4,5,6))
 
 
@@ -1073,11 +1073,11 @@ ggplotly(swe)
 
 ## combine low and high together
 hi <- both_hi %>%
-  dplyr::select(tmean, snowTotSWE, source, date) %>%
+  dplyr::select(tmean, snowTotSWE, precip, source, date) %>%
   mutate(elevation = 'High')
 
 low <- both_low %>%
-  dplyr::select(tmean, snowTotSWE, source, date) %>%
+  dplyr::select(tmean, snowTotSWE, precip, source, date) %>%
   mutate(elevation = 'Low')
 
 both <- bind_rows(hi, low) %>%
@@ -1105,7 +1105,10 @@ tmean <- ggplot(both,
   labs(x = element_blank(),
        y = 'Mean temperature (°C)') +
   theme_bw(base_size = 20) +
-  theme(legend.position = "none",
+  theme(#legend.position = 'none',
+    legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
     strip.background = element_blank(),
@@ -1115,6 +1118,8 @@ tmean <- ggplot(both,
     legend.key.width = unit(1, "cm")
     #plot.margin = margin(t = 10, r = 20, b = 10, l = 10)
   ) 
+
+tmean
 
 swe <- ggplot(both,
        aes(x=date, y = snowTotSWE, 
@@ -1135,8 +1140,9 @@ swe <- ggplot(both,
        y = 'SWE (mm)') +
   theme_bw(base_size = 20) +
   theme(
-    legend.position = c(0.74, 0.85),
-    legend.text = element_text(size = 12),
+    #legend.position = c(0.89, 0.87),
+    legend.position = 'none',
+    legend.text = element_text(size = 10),
     legend.title = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
@@ -1150,12 +1156,56 @@ swe <- ggplot(both,
 
 swe
 
+p <- both %>%
+  group_by(elev_source) %>%
+  mutate(cumP = cumsum(precip)) %>% 
+  ggplot(.,
+       aes(x=date, y = cumP, 
+           color = elev_source,
+           linetype=elev_source)) +
+   geom_line(size=1, alpha=0.8) +  
+    scale_color_manual(values = c("Gridded - High" = "#0047AB", 
+                                  "Gridded - Low" = "#0047AB", 
+                                  "Station - High" = "orange",
+                                  "Station - Low" = "orange")) +
+  scale_linetype_manual(values = c("Gridded - High" = "dashed", 
+                                  "Gridded - Low" = "solid", 
+                                  "Station - High" = "dashed",
+                                  "Station - Low" = "solid")) + 
+  scale_x_date(date_labels = "%b") +
+  #scale_y_log10() +
+  labs(x = element_blank(),
+       y = 'Precip (mm)') +
+  theme_bw(base_size = 20) +
+  theme(
+    legend.position = 'none',
+    #legend.text = element_text(size = 12),
+    #legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+    #plot.margin = margin(t = 10, r = 20, b = 10, l = 10)
+  ) 
+
+p
+
 plot_grid(tmean, swe)
 
-ggsave('./figures/tmean_swe_2015.png',
+ggsave('./figures/tmean_swe_2016.png',
        width = 10,
        height = 5,
        dpi=600)
+
+plot_grid(tmean, p, swe, nrow=1)
+ggsave('./figures/tmean_swe_p_2016.png',
+       width = 10,
+       height = 5,
+       dpi=600)
+
 
 ```
 
