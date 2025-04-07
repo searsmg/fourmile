@@ -62,7 +62,7 @@ params <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv') %>%
                       'a_snow')) %>% # select params in the top 8 sens that are area weighted
   rename(value = area_weighted_average,
          input_data = source) %>%
-  dplyr::select(param, input_data, value)
+  dplyr::select(param, input_data, year_missing, value)
 
 # params unburned (above is params that needed to be area weighted bc burn/unburn)
 params_unburn <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
@@ -72,13 +72,24 @@ params_unburn <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
                       'baseTemp',
                       't_factor',
                       'soilLatVertLPS')) %>%
-  dplyr::select(param, input_data, value)
+  dplyr::select(param, input_data, year_missing, value)
 
 # join the two to get the top 8 sensitve params
 param_sens <- bind_rows(params, params_unburn) %>% 
   mutate(input_data = if_else(input_data == 'grid',
                               'Gridded',
                               'Station'))
+
+# read in pbias categories
+pbias <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/pbiasCats.csv') %>%
+  filter(year == c('All')) %>%
+  dplyr::select(input_data, year_missing, pbias)
+
+# join pbias to 
+param_sens <- left_join(param_sens, pbias, by = c('input_data', 'year_missing')) %>%
+  mutate(Performance = if_else(abs(pbias) >= 25,
+                               'Unsatisfactory',
+                               'Acceptable'))
 
 # get distribution for signf. test
 ggplot(param_sens, aes(x = value, fill = input_data)) +
