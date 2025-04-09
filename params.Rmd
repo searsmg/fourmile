@@ -55,6 +55,7 @@ join <- join %>%
 # Parameters selected from above
 
 ```{r}
+
 # params area weighted (only for lagSurfaceRunoff, a_rain, a_snow)
 params <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv') %>%
   filter(param %in% c('lagSurfaceRunoff',
@@ -72,24 +73,16 @@ params_unburn <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
                       'baseTemp',
                       't_factor',
                       'soilLatVertLPS')) %>%
-  dplyr::select(param, input_data, year_missing, value)
+  dplyr::select(param, input_data, year_missing, value) %>%
+  mutate(year_missing = if_else(year_missing == 'none',
+                                'all',
+                                year_missing))
 
 # join the two to get the top 8 sensitve params
 param_sens <- bind_rows(params, params_unburn) %>% 
   mutate(input_data = if_else(input_data == 'grid',
                               'Gridded',
                               'Station'))
-
-# read in pbias categories
-pbias <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/pbiasCats.csv') %>%
-  filter(year == c('All')) %>%
-  dplyr::select(input_data, year_missing, pbias)
-
-# join pbias to 
-param_sens <- left_join(param_sens, pbias, by = c('input_data', 'year_missing')) %>%
-  mutate(Performance = if_else(abs(pbias) >= 25,
-                               'Unsatisfactory',
-                               'Acceptable'))
 
 # get distribution for signf. test
 ggplot(param_sens, aes(x = value, fill = input_data)) +
@@ -103,10 +96,39 @@ ggplot(param_sens, aes(x = value, fill = input_data)) +
     legend.position = "bottom"
   )
 
-# boxplots of top 8
+
+# read in pbias categories
+pbias <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/pbiasCats.csv') %>%
+  filter(year == c('All')) %>%
+  dplyr::select(input_data, year_missing, pbias)
+
+nse <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/nseCats.csv') %>%
+  filter(year == c('All')) %>%
+  dplyr::select(input_data, year_missing, nse)
+
+perf <- left_join(nse, pbias, by = c('input_data',
+                                     'year_missing'))
+
+perf <- perf %>%
+  mutate(performance = case_when(
+                                nse < 0.5 & abs(pbias) >= 25 ~ 'Neither',
+                                nse > 0.5 & abs(pbias) >= 25 ~ 'NSE',
+                                nse < 0.5 & abs(pbias) < 25 ~ '% bias',
+                                nse > 0.5 & abs(pbias) < 25 ~ 'NSE + % bias')) %>%
+  mutate(input_data = if_else(input_data == 'grid',
+                              'Gridded', 'Station'),
+         year_missing = if_else(year_missing == 'None',
+                                'all', year_missing))
+
+param_sens <- left_join(param_sens,
+                        perf,
+                        by = c('input_data',
+                               'year_missing'))
+
+# boxplots of top 9
 ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
   geom_boxplot(alpha=0.8,
-                outlier.colour = "black") +
+                outlier.shape=NA) +
   facet_wrap(~param, scales = 'free_y') +
   labs(y=element_blank(),
        x=element_blank()) +
@@ -119,6 +141,16 @@ ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
                      #label.y = 0,
                      #label.x = 1.4,
                      size = 7) +
+  geom_jitter(aes(shape = performance),
+            position = position_jitter(width = 0.15), 
+            size = 2.5, 
+            alpha = 0.6,
+            stroke = 1,
+            color = "black") +
+  scale_shape_manual(values = c(
+  "% bias" = 1,
+  "NSE + % bias" = 16
+)) +
   scale_fill_manual(values = c("#0047AB", "orange")) +
     theme(
     legend.position = 'none',
@@ -135,7 +167,7 @@ ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
   ) +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
 
-ggsave('./figures/param_sensit_boxplots.png',
+ggsave('./figures/param_sensit_boxplots_pts.png',
        dpi=600)
 
 # show rest of params for supplemental
