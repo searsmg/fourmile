@@ -718,8 +718,6 @@ plot_grid(plot, flowEg, plot_bottom12, ncol = 1)
 
 ```
 
-
-
 ## Cumulative volume
 
 ```{r cumq, echo = FALSE, message = FALSE, warning = FALSE}
@@ -782,6 +780,166 @@ htmltools::tagList(cumulative_plots)
 cumulative_plots
 
 ```
+
+## NSE 
+
+```{r}
+
+flow_nse_all <- flow %>%
+  drop_na() %>%
+  summarize(grid2011 = NSE(grid_2011, obs),
+            grid2012 = NSE(grid_2012, obs),
+            grid2013 = NSE(grid_2013, obs),
+            grid2014 = NSE(grid_2014, obs),
+            grid2015 = NSE(grid_2015, obs),
+            grid2016 = NSE(grid_2016, obs),
+            grid2017 = NSE(grid_2017, obs),
+            grid2018 = NSE(grid_2018, obs),
+            grid2019 = NSE(grid_2019, obs),
+            grid2020 = NSE(grid_2020, obs),
+            gridall = NSE(grid_all, obs),
+            statn2011 = NSE(statn_2011, obs),
+            statn2012 = NSE(statn_2012, obs),
+            statn2013 = NSE(statn_2013, obs),
+            statn2014 = NSE(statn_2014, obs),
+            statn2015 = NSE(statn_2015, obs),
+            statn2016 = NSE(statn_2016, obs),
+            statn2017 = NSE(statn_2017, obs),
+            statn2018 = NSE(statn_2018, obs),
+            statn2019 = NSE(statn_2019, obs),
+            statn2020 = NSE(statn_2020, obs),
+            statnall = NSE(statn_all, obs)) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_nse_all <- flow_nse_all %>%
+  pivot_longer(everything()) %>%
+  arrange(value)
+
+# determine nse for each year for every model run
+flow_year <- flow %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarize(
+    grid2011 = NSE(grid_2011, obs),
+            grid2012 = NSE(grid_2012, obs),
+            grid2013 = NSE(grid_2013, obs),
+            grid2014 = NSE(grid_2014, obs),
+            grid2015 = NSE(grid_2015, obs),
+            grid2016 = NSE(grid_2016, obs),
+            grid2017 = NSE(grid_2017, obs),
+            grid2018 = NSE(grid_2018, obs),
+            grid2019 = NSE(grid_2019, obs),
+            grid2020 = NSE(grid_2020, obs),
+            gridall = NSE(grid_all, obs, na.rm = T, method='2012'),
+            statn2011 = NSE(statn_2011, obs),
+            statn2012 = NSE(statn_2012, obs),
+            statn2013 = NSE(statn_2013, obs),
+            statn2014 = NSE(statn_2014, obs),
+            statn2015 = NSE(statn_2015, obs),
+            statn2016 = NSE(statn_2016, obs),
+            statn2017 = NSE(statn_2017, obs),
+            statn2018 = NSE(statn_2018, obs),
+            statn2019 = NSE(statn_2019, obs),
+            statn2020 = NSE(statn_2020, obs),
+            statnall = NSE(statn_all, obs, na.rm=T, method='2012')) %>%
+    mutate_if(is.numeric,
+            round,
+            digits = 2)
+
+flow_nse <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'nse') %>%
+  pivot_wider(names_from = 'year', values_from = 'nse')
+
+flow_plot <- flow_year %>%
+  pivot_longer(!year, names_to = 'model_run', values_to = 'nse') %>%
+  mutate(year = as.factor(year))
+
+# add all to the plot below
+nse_all <- flow_nse_all %>%
+  mutate(year = 'All') %>%
+  rename(model_run = name,
+         nse = value)
+
+flow_plot_updated <- bind_rows(flow_plot, nse_all)
+
+# nse figure
+flow_plot_updated <- flow_plot_updated %>% 
+  mutate(source = case_when(
+    grepl("grid", model_run) ~ "grid",
+    grepl("statn", model_run) ~ "statn"),
+    year_excluded = str_extract(model_run, "\\d{4}$")) %>%
+  mutate(year_excluded = if_else(model_run %in% c('gridall',
+                                                       'statnall'),
+                                  'None', year_excluded))
+
+# put nse into categories
+nseCats <- flow_plot_updated %>%
+  mutate(nseCat = case_when(
+    nse > 0.75 ~ 'Very good',
+    nse > 0.65 & nse <= 0.75 ~ 'Good',
+    nse > 0.5 & nse <= 0.65 ~ 'Satisfactory',
+    nse <= 0.5  ~ 'Unsatisfactory'),
+    nseCat = factor(nseCat, levels = c("Unsatisfactory", 
+                                           "Satisfactory", 
+                                           "Good", 
+                                           "Very good")))
+
+write_csv(nseCats, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/nseCats.csv')
+
+# facet wrap the plots
+new_facet_titles <- c(
+  "grid" = "Gridded",
+  "statn" = "Station"
+)
+
+both_nse_plot <- nseCats %>%
+  ggplot(aes(x = year, 
+             y = year_excluded, 
+             fill = nseCat)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  scale_fill_manual(values = c(
+    "Unsatisfactory" = "#F1F4EEFF", 
+    "Satisfactory" = "#EFDDCFFF",
+    "Good" = "#72E1E1FF",
+    "Very good" = "#009474FF"
+  )) +
+  geom_text(aes(label = sprintf("%.2f", nse)), 
+            color = "black", 
+            size = 2.75) +
+  theme_bw(base_size=18) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  ) +
+  labs(y = "Year excluded",
+       x = 'Year',
+       fill = 'NSE')
+
+both_nse_plot
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/nse_heatmap_both_cats.png',
+       dpi=600,
+       width = 10,
+       height = 6)
+
+
+
+```
+
 
 ## KGE
 
@@ -881,8 +1039,8 @@ kge_all <- flow_kge_all %>%
 
 flow_plot_updated <- bind_rows(flow_plot, kge_all)
 
-flow_plot_updated <- flow_plot_updated %>%
-  mutate(kge_revise = if_else(kge < 0, 0, kge))
+# flow_plot_updated <- flow_plot_updated %>%
+#   mutate(kge_revise = if_else(kge < 0, 0, kge))
 
 flow_plot_updated <- flow_plot_updated %>% 
   mutate(source = case_when(
@@ -954,9 +1112,9 @@ flow_plot_updated <- flow_plot_updated %>%
 
 flow_plot_updated <- flow_plot_updated %>%
   mutate(kge_revise_bins = cut(kge,
-                               breaks = c(-Inf, 0.2, 0.4, 0.6, 0.8, 1),
+                               breaks = c(-Inf, 0.0, 0.2, 0.4, 0.6, 0.8, 1),
                                include.lowest = TRUE,
-                               labels = c("< 0.0", "0.2-0.4", "0.4-0.6", "0.6-0.8", "> 0.8")))
+                               labels = c("< 0.0","0.0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "> 0.8")))
 
 
 # grid_kge_plot <- flow_plot_updated %>%
@@ -1124,12 +1282,24 @@ new_facet_titles <- c(
 
 
 both_kge_plot <- flow_plot_updated %>%
-  ggplot(., aes(x = year_excluded, 
-              y = year, 
+  ggplot(., aes(x = year, 
+              y = year_excluded, 
               fill = kge_revise_bins)) +
   geom_tile(color = "white") +
   facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
-  paletteer::scale_fill_paletteer_d("PNWColors::Anemone") +
+  #paletteer::scale_fill_paletteer_d("PNWColors::Anemone") +
+  # paletteer::scale_fill_paletteer_d(
+  # "PNWColors::Anemone", 
+  # guide = guide_legend(nrow = 1),
+  # direction = -1) +
+   scale_fill_manual(values = c(
+    "< 0.0" = "#DCBE9BFF", 
+    "0.0-0.2" = "#EFDDCFFF",
+    "0.2-0.4" = "#F1F4EEFF",
+    "0.4-0.6" = "#72E1E1FF",
+    "0.6-0.8" = "#11C2B5FF",
+    "> 0.8" = "#009474FF"),
+    guide = guide_legend(nrow = 1)) +
   geom_text(aes(label = sprintf("%.2f", 
                                 kge)), 
             color = "black", 
@@ -1137,8 +1307,8 @@ both_kge_plot <- flow_plot_updated %>%
   theme_bw(base_size=18) +
   theme(axis.text.x = element_text(angle = 45, 
                                    hjust = 1)) +
-  labs(y = "Year",
-       x='Year excluded',
+  labs(y = "Year excluded",
+       x='Year',
        fill = 'KGE') +
   theme(
     axis.text.x = element_text(angle = 45, 
@@ -1146,7 +1316,7 @@ both_kge_plot <- flow_plot_updated %>%
     legend.position = 'bottom',
     legend.text = element_text(size = 14),
     legend.title = element_text(size = 14),
-    legend.key.width = unit(.75, "cm"),
+    legend.key.width = unit(.6, "cm"),
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
     strip.background = element_blank(),
@@ -1155,9 +1325,6 @@ both_kge_plot <- flow_plot_updated %>%
     axis.text = element_text(color = "black"),
     plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
     legend.margin = margin(t = -8, b = -4, unit = "pt"),
-    # axis.title.y = element_blank(),
-    # axis.text.y = element_blank(),
-    # axis.ticks.y = element_blank()
   )
 
 both_kge_plot
@@ -1166,61 +1333,6 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_both_basi
        dpi=600,
        width = 10,
        height = 6)
-
-#####################
-kgeCats <- flow_plot_updated %>%
-  mutate(pbiasCat = case_when(
-    abs(pbias) < 10 ~ 'Very good',
-    abs(pbias) >= 10 & abs(pbias) < 15 ~ 'Good',
-    abs(pbias) >= 15 & abs(pbias) < 25 ~ 'Satisfactory',
-    abs(pbias) >= 25 ~ 'Unsatisfactory'),
-    pbiasCat = factor(pbiasCat, levels = c("Unsatisfactory", 
-                                           "Satisfactory", 
-                                           "Good", 
-                                           "Very good")))
-
-both_pbias_plot <- pbiasCats %>%
-  ggplot(aes(x = year_excluded, 
-             y = year, 
-             fill = pbiasCat)) +
-  geom_tile(color = "white") +
-  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
-  # paletteer::scale_fill_paletteer_c(
-  #   "grDevices::Green-Brown",
-  #   limits = c(-max_abs, max_abs),
-  #   oob = scales::squish
-  # ) +
-  paletteer::scale_fill_paletteer_d("calecopal::lupinus") +
-  geom_text(aes(label = sprintf("%.2f", pbias)), 
-            color = "black", 
-            size = 2.75) +
-  theme_bw(base_size=18) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = 'bottom',
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 14),
-    legend.key.width = unit(1, "cm"),
-    panel.grid = element_blank(),
-    panel.background = element_rect(fill = "white"),
-    strip.background = element_blank(),
-    text = element_text(color = "black"),
-    axis.title = element_text(color = "black"),
-    axis.text = element_text(color = "black"),
-    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
-    legend.margin = margin(t = -8, b = -4, unit = "pt")
-  ) +
-  labs(y = "Year",
-       x = 'Year excluded',
-       fill = '% bias')
-
-both_pbias_plot
-
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/pbias_heatmap_both_cats.png',
-       dpi=600,
-       width = 10,
-       height = 6)
-
 
 ```
 
@@ -1406,18 +1518,17 @@ pbiasCats <- flow_plot_updated %>%
 write_csv(pbiasCats, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/pbiasCats.csv')
 
 both_pbias_plot <- pbiasCats %>%
-  ggplot(aes(x = year_excluded, 
-             y = year, 
+  ggplot(aes(x = year, 
+             y = year_excluded, 
              fill = pbiasCat)) +
   geom_tile(color = "white") +
   facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
-  # paletteer::scale_fill_paletteer_c(
-  #   "grDevices::Green-Brown",
-  #   limits = c(-max_abs, max_abs),
-  #   oob = scales::squish
-  # ) +
-  paletteer::scale_fill_paletteer_d("calecopal::lupinus") +
-  #paletteer::scale_fill_paletteer_d("PNWColors::Anemone") +
+   scale_fill_manual(values = c(
+    "Unsatisfactory" = "#F1F4EEFF", 
+    "Satisfactory" = "#EFDDCFFF",
+    "Good" = "#72E1E1FF",
+    "Very good" = "#009474FF"
+  )) +
   geom_text(aes(label = sprintf("%.2f", pbias)), 
             color = "black", 
             size = 2.75) +
@@ -1437,56 +1548,13 @@ both_pbias_plot <- pbiasCats %>%
     plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
     legend.margin = margin(t = -8, b = -4, unit = "pt")
   ) +
-  labs(y = "Year",
-       x = 'Year excluded',
+  labs(y = "Year excluded",
+       x = 'Year',
        fill = '% bias')
 
 both_pbias_plot
 
 ggsave('/Users/megansears/Documents/Repos/fourmile/figures/pbias_heatmap_both_cats.png',
-       dpi=600,
-       width = 10,
-       height = 6)
-
-# max_abs <- max(abs(flow_plot_updated$pbias), na.rm = TRUE)
-# 
-# both_pbias_plot <- flow_plot_updated %>%
-#   ggplot(aes(x = year_excluded, 
-#              y = year, 
-#              fill = pbias)) +
-#   geom_tile(color = "white") +
-#   facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
-#   paletteer::scale_fill_paletteer_c(
-#     "grDevices::Green-Brown",
-#     limits = c(-max_abs, max_abs),
-#     oob = scales::squish
-#   ) +
-#   geom_text(aes(label = sprintf("%.2f", pbias)), 
-#             color = "black", 
-#             size = 2.75) +
-#   theme_bw(base_size=18) +
-#   theme(
-#     axis.text.x = element_text(angle = 45, hjust = 1),
-#     legend.position = 'bottom',
-#     legend.text = element_text(size = 14),
-#     legend.title = element_text(size = 14),
-#     legend.key.width = unit(2, "cm"),
-#     panel.grid = element_blank(),
-#     panel.background = element_rect(fill = "white"),
-#     strip.background = element_blank(),
-#     text = element_text(color = "black"),
-#     axis.title = element_text(color = "black"),
-#     axis.text = element_text(color = "black"),
-#     plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
-#     legend.margin = margin(t = -8, b = -4, unit = "pt")
-#   ) +
-#   labs(y = "Year",
-#        x = 'Year excluded',
-#        fill = 'Pbias')
-# 
-# both_pbias_plot
-
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/pbias_heatmap_both_basic_0center.png',
        dpi=600,
        width = 10,
        height = 6)
