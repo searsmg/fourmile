@@ -113,8 +113,8 @@ perf <- perf %>%
   mutate(performance = case_when(
                                 nse < 0.5 & abs(pbias) >= 25 ~ 'Neither',
                                 nse > 0.5 & abs(pbias) >= 25 ~ 'NSE',
-                                nse < 0.5 & abs(pbias) < 25 ~ '% bias',
-                                nse > 0.5 & abs(pbias) < 25 ~ 'NSE + % bias')) %>%
+                                nse < 0.5 & abs(pbias) < 25 ~ '% bias satisfactory',
+                                nse > 0.5 & abs(pbias) < 25 ~ 'NSE + % bias satisfactory')) %>%
   mutate(input_data = if_else(input_data == 'grid',
                               'Gridded', 'Station'),
          year_missing = if_else(year_missing == 'None',
@@ -142,18 +142,19 @@ ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
                      #label.x = 1.4,
                      size = 7) +
   geom_jitter(aes(shape = performance),
-            position = position_jitter(width = 0.15), 
+            position = position_jitter(width = 0.1), 
             size = 2.5, 
             alpha = 0.6,
             stroke = 1,
             color = "black") +
   scale_shape_manual(values = c(
-  "% bias" = 1,
-  "NSE + % bias" = 16
+  "% bias satisfactory" = 1,
+  "NSE + % bias satisfactory" = 16
 )) +
-  scale_fill_manual(values = c("#0047AB", "orange")) +
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    guide='none') +
     theme(
-    legend.position = 'none',
+    legend.position = 'bottom',
     #legend.justification = c(0, 1.1), 
     legend.text = element_text(size = 16),
     legend.title = element_blank(), 
@@ -165,7 +166,7 @@ ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
     axis.text = element_text(color = "black"),
     #strip.text = element_blank()
   ) +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.25)))
 
 ggsave('./figures/param_sensit_boxplots_pts.png',
        dpi=600)
@@ -263,54 +264,40 @@ ggplot(combo, aes(x = value, fill = input_data)) +
     legend.position = "bottom"
   )
 
+perf1 <- perf %>%
+  mutate(year_missing = if_else(year_missing == 'all',
+                                'none',
+                                year_missing))
 
-ggplot(combo, aes(x=burn, y=value, fill=input_data)) +
-  geom_boxplot(alpha=0.8,
-                outlier.colour = "black") +
-  geom_text(aes(label = letter)) +
-  # stat_compare_means(aes(group = input_data),
-  #                    method = "wilcox.test", 
-  #                    label = "p.signif",
-  #                    hide.ns = T,
-  #                    paired = F,
-  #                    #label.y = 0,
-  #                    #label.x = 1.4,
-  #                    size = 7) +
-  facet_wrap(~param, scales = 'free_y') +
-  labs(y=element_blank(),
-       x=element_blank()) +
-  theme_bw(base_size=20) +
-  scale_fill_manual(values = c("#0047AB", "orange")) +
-    theme(
-    legend.position = 'bottom',
-    #legend.justification = c(0, 1.1), 
-    legend.text = element_text(size = 16),
-    legend.title = element_blank(), 
-    panel.grid = element_blank(),
-    panel.background = element_rect(fill = "white"),
-    strip.background = element_blank(),
-    text = element_text(color = "black"),
-    axis.title = element_text(color = "black"),
-    axis.text = element_text(color = "black"),
-    #strip.text = element_blank()
-  ) +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
+combo <- left_join(combo,
+                        perf1,
+                        by = c('input_data',
+                               'year_missing'))
 
-ggsave('./figures/burn_unburn_params_tukey.png',
-       dpi=600)
-
-# text above boxplots
+# text above boxplots - this is from Tukey analysis that was already run below then added to params
 combo <- combo %>%
   group_by(param, burn, input_data) %>%
   mutate(y_text = max(value, na.rm = TRUE) * 1.08) %>%  # Slightly above max value
   ungroup()
 
 ggplot(combo, aes(x = burn, y = value, fill = input_data)) +
-  geom_boxplot(alpha = 0.8, outlier.colour = "black") +
+  geom_boxplot(alpha = 0.8, 
+               outliers = F) +
   geom_text(aes(label = letter, y = y_text), 
             position = position_dodge(width = 0.75),  # Align with boxplots
             size = 6, 
             vjust = 0) +  
+  geom_jitter(aes(shape = performance),
+            position = position_jitterdodge(
+    jitter.width = 0.1,
+    dodge.width = 0.75),
+            size = 2.5, 
+            alpha = 0.6,
+            stroke = 1,
+            color = "black") +
+  scale_shape_manual(values = c(
+  "% bias satisfactory" = 1,
+  "NSE + % bias satisfactory" = 16)) +
   facet_wrap(~param, scales = 'free_y') +
   labs(y = element_blank(), x = element_blank()) +
   theme_bw(base_size = 20) +
@@ -328,7 +315,7 @@ ggplot(combo, aes(x = burn, y = value, fill = input_data)) +
   ) +
    scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
 
-ggsave('./figures/burn_unburn_params_tukey.png',
+ggsave('./figures/burn_unburn_params_tukey_pts.png',
        dpi=600,
        width = 12,
        height = 8)
