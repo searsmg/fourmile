@@ -635,7 +635,7 @@ bottom_theme <-   theme(
     panel.grid.minor = element_blank(),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
-    plot.margin = unit(c(-6, 0, 0, 0), "cm"),
+    plot.margin = unit(c(-4, 0, 0, 0), "cm"),
     panel.spacing = unit(0, "lines"))
 
 top_theme <-   theme(
@@ -645,7 +645,7 @@ top_theme <-   theme(
     panel.grid.minor = element_blank(),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
-    plot.margin = unit(c(0, 0, -6, 0), "cm"),
+    plot.margin = unit(c(0, 0, -4, 0), "cm"),
     panel.spacing = unit(0, "lines"))
 
 rh <- ggplot() +
@@ -710,7 +710,25 @@ lots <- ggarrange(
 
 lots
 
-ggsave("./figures/diff_update2.png", plot = lots, dpi = 600)
+#ggsave("./figures/diff_update2.png", plot = lots, dpi = 600)
+
+library(cowplot)
+title <- ggdraw() + 
+  draw_label("Difference = Station - Gridded", 
+             fontface = "bold", 
+             size = 16,
+             x = 0,  # left-aligned
+             hjust = 0) +
+  theme(plot.margin = margin(0, 0, -200,15))  # reduce space between title and plot
+
+# Combine title and the main plot
+final_plot <- plot_grid(title, lots, ncol = 1, rel_heights = c(0.05, 1))
+
+final_plot
+
+ggsave(filename = "./figures/diff_update2_wtitle.png", 
+       plot = final_plot, 
+       dpi = 600)
 
 ```
 
