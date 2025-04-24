@@ -1105,8 +1105,8 @@ tmean <- ggplot(both,
   labs(x = element_blank(),
        y = 'Mean temperature (°C)') +
   theme_bw(base_size = 20) +
-  theme(#legend.position = 'none',
-    legend.position = c(0.24, 0.852), 
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
     legend.text = element_text(size = 10),
     legend.title = element_blank(),
     panel.grid = element_blank(),
@@ -1141,7 +1141,7 @@ swe <- ggplot(both,
   theme_bw(base_size = 20) +
   theme(
     #legend.position = c(0.89, 0.87),
-    legend.position = 'none',
+    legend.position = 'bottom',
     legend.text = element_text(size = 10),
     legend.title = element_blank(),
     panel.grid = element_blank(),
@@ -1178,7 +1178,7 @@ p <- both %>%
        y = 'Precip (mm)') +
   theme_bw(base_size = 20) +
   theme(
-    legend.position = 'none',
+    legend.position = 'bottom',
     #legend.text = element_text(size = 12),
     #legend.title = element_blank(),
     panel.grid = element_blank(),
@@ -1193,19 +1193,44 @@ p <- both %>%
 
 p
 
-plot_grid(tmean, swe)
-
-ggsave('./figures/tmean_swe_2016.png',
-       width = 10,
-       height = 5,
-       dpi=600)
+# plot_grid(tmean, swe)
+# 
+# ggsave('./figures/tmean_swe_2016.png',
+#        width = 10,
+#        height = 5,
+#        dpi=600)
 
 plot_grid(tmean, p, swe, nrow=1)
+
 ggsave('./figures/tmean_swe_p_2016.png',
        width = 10,
        height = 5,
        dpi=600)
 
+library(cowplot)
+
+
+legend <- cowplot::get_plot_component(tmean, "guide-box", return_all = TRUE)[[3]]
+
+tmean_noleg <- tmean + theme(legend.position = "none")
+p_noleg <- p + theme(legend.position = "none")
+swe_noleg <- swe + theme(legend.position = "none")
+
+combined <- plot_grid(tmean_noleg, p_noleg, swe_noleg, nrow = 1)
+final_plot <- plot_grid(combined, legend, ncol = 1, rel_heights = c(1, 0.1))
+final_plot
+
+ggsave('./figures/tmean_swe_p_2016.png',
+       width = 10,
+       height = 5,
+       dpi=600)
+
+# stats for precip, tmean, and swe
+both_avg <- both %>%
+  group_by(elev_source) %>%
+  summarize(mean_temp = mean(tmean),
+            max_swe = max(snowTotSWE),
+            mean_p = mean(precip))
 
 ```
 
