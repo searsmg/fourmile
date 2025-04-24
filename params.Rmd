@@ -125,6 +125,16 @@ param_sens <- left_join(param_sens,
                         by = c('input_data',
                                'year_missing'))
 
+param_sens$param <- factor(param_sens$param, levels = c("snow_trs", 
+                                                        "baseTemp", 
+                                                        "t_factor",
+                                                        "a_rain",
+                                                        "a_snow",
+                                                        "lagSurfaceRunoff",
+                                                        "soilLatVertLPS",
+                                                        "soilOutLPS",
+                                                        "lagInterflow"))
+
 # boxplots of top 9
 ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
   geom_boxplot(alpha=0.8,
