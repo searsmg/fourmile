@@ -837,6 +837,14 @@ flowTotYr <- flow %>%
   group_by(year) %>%
   summarize(flow_tot = sum(obs, na.rm=T))
 
+flowTotYr <- flow %>%
+  group_by(year) %>%
+  summarize(flow_tot = mean(obs, na.rm=T))
+
+flowTotYr <- flow %>%
+  group_by(year) %>%
+  summarize(flow_tot = max(obs, na.rm=T))
+
 avgAllYr <- mean(flowTotYr$flow_tot)
 
 ```
