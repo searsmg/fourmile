@@ -993,7 +993,7 @@ ggplotly(gw2)
 ```
 
 
-# 2015 for low and high HRU
+# 2016 for low and high HRU
 
 ```{r}
 
@@ -1234,21 +1234,23 @@ both_avg <- both %>%
 
 ```
 
-# ANOVA for water partition
+# Burn vs Unburn HRU
 
 ```{r}
 
-flow <- both %>%
-  select(date, 
-         source, 
-         outRG1,
-         outRG2,
-         outRD1, 
-         outRD2,
-         source)
+unburn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_2_unburn.csv') %>%
+  mutate(date = mdy(time),
+         year = year(date),
+         type = 'unburn') %>%
+  filter(year == 2016)
 
-rd1_model <- aov(outRD2 ~ source, data = flow)
-summary(rd1_model)
+burn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_5_burn.csv') %>%
+  mutate(date = mdy(time),
+         year = year(date),
+         type = 'burn') %>%
+  filter(year == 2016)
+
 
 ```
+
 
