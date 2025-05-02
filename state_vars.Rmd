@@ -1242,13 +1242,126 @@ unburn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_2_unburn.csv') %>%
   mutate(date = mdy(time),
          year = year(date),
          type = 'unburn') %>%
-  filter(year == 2016)
+  filter(year == 2011)
 
 burn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_5_burn.csv') %>%
   mutate(date = mdy(time),
          year = year(date),
          type = 'burn') %>%
-  filter(year == 2016)
+  filter(year == 2011)
+
+both <- bind_rows(unburn, burn)
+
+# interception
+inter <- both %>%
+  dplyr::select(date, type, interception)
+
+ggplot(inter,
+       aes(x=date,,
+           y=interception,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+# swe
+swe <- both %>%
+  dplyr::select(date, type, snowTotSWE)
+
+ggplot(swe,
+       aes(x=date,,
+           y=snowTotSWE,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+# swe
+p <- both %>%
+  dplyr::select(date, type, precip)
+
+ggplot(p,
+       aes(x=date,,
+           y=precip,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+
+# surface runoff
+runoff <- both %>%
+  dplyr::select(date, type, outRD1)
+
+ggplot(runoff,
+       aes(x=date,,
+           y=outRD1,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+# interflow
+interflow <- both %>%
+  dplyr::select(date, type, outRD2)
+
+ggplot(interflow,
+       aes(x=date,,
+           y=outRD2,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+
+gw <- both %>%
+  dplyr::select(date, type, outRG1)
+
+ggplot(gw,
+       aes(x=date,,
+           y=outRG1,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+# dps
+dps <- both %>%
+  dplyr::select(date, type, actDPS)
+
+ggplot(dps,
+       aes(x=date,,
+           y=actDPS,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+# mps
+mps <- both %>%
+  dplyr::select(date, type, soilSatMPS)
+
+ggplot(mps,
+       aes(x=date,,
+           y=soilSatMPS,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+# lps
+lps <- both %>%
+  dplyr::select(date, type, soilSatLPS)
+
+ggplot(lps,
+       aes(x=date,,
+           y=soilSatLPS,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+# soil sat
+soilsat <- both %>%
+  dplyr::select(date, type, soilSat)
+
+ggplot(soilsat,
+       aes(x=date,,
+           y=soilSat,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
 
 
 ```
