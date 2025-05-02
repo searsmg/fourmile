@@ -2069,7 +2069,7 @@ flow_box <- ggplot(gw_maxcumsum, aes(x = source, y = flow_cms, fill = source)) +
   theme(
     #legend.position = c(0.94, 0.36),
     legend.position = 'bottom',
-    legend.text = element_text(size = 12),
+    legend.text = element_text(size = 16),
     legend.title = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
@@ -2082,12 +2082,14 @@ flow_box <- ggplot(gw_maxcumsum, aes(x = source, y = flow_cms, fill = source)) +
     legend.margin = margin(t = -8, r = 0, b = -2, l = 0)) +
     #axis.text.x = element_blank(),
     #axis.ticks.x = element_blank()) +
-  scale_y_continuous(expand = expansion(mult = c(0.1, 0.15)))
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.15))) 
 
 flow_box
 
-# ggsave('./figures/water_partition_boxplsource()# ggsave('./figures/water_partition_boxplots.png',
-#        dpi=600)
+ggsave('./figures/water_partition_boxplots.png',
+       dpi=600,
+       width = 12,
+       height = 8)
 
 # cowplot
 plot_grid(
@@ -2162,6 +2164,104 @@ flow_season %>%
   theme_bw() +
   theme(text = element_text(size = 20)) +
   labs(y = 'RD/RG seasonal sums (mm)')
+
+```
+
+# Example year
+
+```{r}
+
+# 2016 hydrograph
+flowEg <- flow_pivot %>%
+  filter(year %in% c(2016)) %>%
+  ggplot(aes(x = date,
+             y = q_m3s, 
+             color = cal_run,
+             linetype = cal_run)) + 
+  geom_line(size = 1, alpha = 1) + 
+  theme_bw(base_size = 20) +
+  scale_color_manual(values = c("Gridded" = "#0047AB", 
+                                "Observed" = "black", 
+                                "Station" = "orange")) +
+  scale_linetype_manual(values = c("Gridded" = "solid",
+                                   "Observed" = "dashed", 
+                                   "Station" = "solid")) +
+  labs(x = element_blank(),
+       y = "Streamflow (cms)") +
+   scale_x_date(date_labels = "%b",
+               date_breaks = "1 month") +
+  theme(
+    legend.position = c(0.9, 0.85),
+    legend.text = element_text(size = 14),
+    legend.key.width = unit(2, "lines"),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 2, r = 20, b = 2, l = 10)
+  )
+
+flowEg
+
+# 2016 flow partition
+example <- gw %>%
+  filter(year == 2016) %>%
+  ungroup() %>% 
+  dplyr::select(date, source,
+         RD1cumsum,
+         RD2cumsum,
+         RG1cumsum,
+         RG2cumsum) %>%
+  pivot_longer(!c(date,source), names_to='flow_type',
+               values_to='flow_cms') %>%
+  mutate(source = if_else(source == 'grid_all',
+                          'Gridded',
+                          'Station'))
+
+facet_labels <- c('yr_cum_RD1' = 'Surface runoff',
+                  'yr_cum_RD2' = 'Interflow',
+                  'yr_cum_RG1' = 'Fast groundwater',
+                  'yr_cum_RG2' = 'Slow groundwater')
+
+example_yr <- ggplot(example,
+       aes(x=date, y = flow_cms, color=source)) +
+  geom_line() +
+  facet_wrap(~flow_type, 
+             scales = 'free_y',
+             labeller = labeller(flow_type = facet_labels)) +
+   geom_line(size=1, alpha=0.7) +  
+  scale_color_manual(values = c("#0047AB", "orange")) +
+    scale_x_date(date_labels = "%b", 
+               date_breaks = "2 month") +
+  labs(x=element_blank(),
+       y='mm of water') +
+  theme_bw(base_size = 16) +
+  theme(
+    legend.position = 'none',
+    legend.text = element_text(size = 12),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 2, r = 20, b = 10, l = 10)
+  )
+
+example_yr
+
+plot_grid(flowEg,
+          example_yr,
+          ncol=1)
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/2016_all_flow.png',
+       dpi=600,
+       width=10,
+       height=8)
 
 ```
 
