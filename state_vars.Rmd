@@ -1010,8 +1010,8 @@ grid_hi <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_18.csv') %>%
 both_hi <- bind_rows(statn_hi, grid_hi) %>%
   mutate(year = year(date),
          month = month(date)) %>%
-  filter(year == 2016,
-         month %in% c(4,5,6))
+  filter(year == 2016) #
+         #month %in% c(4,5,6))
 
 
 temp <- ggplot(both_hi, 
@@ -1242,26 +1242,28 @@ unburn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_2_unburn.csv') %>%
   mutate(date = mdy(time),
          year = year(date),
          type = 'unburn') %>%
-  filter(year == 2011)
+  filter(year == 2016)
 
 burn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_5_burn.csv') %>%
   mutate(date = mdy(time),
          year = year(date),
          type = 'burn') %>%
-  filter(year == 2011)
+  filter(year == 2016)
 
 both <- bind_rows(unburn, burn)
 
 # interception
 inter <- both %>%
-  dplyr::select(date, type, interception)
+  dplyr::select(date, type, intercStorage)
 
-ggplot(inter,
+int_plot <- ggplot(inter,
        aes(x=date,,
-           y=interception,
+           y=intercStorage,
            color=type)) +
   geom_line() +
   theme_bw(base_size=20)
+
+ggplotly(int_plot)
 
 # swe
 swe <- both %>%
@@ -1276,11 +1278,24 @@ ggplot(swe,
 
 # swe
 p <- both %>%
-  dplyr::select(date, type, precip)
+  dplyr::select(date, type, precip) %>%
+  group_by(type) %>%
+  mutate(p_cumu = cumsum(precip))
 
 ggplot(p,
-       aes(x=date,,
-           y=precip,
+       aes(x=date,
+           y=p_cumu,
+           color=type)) +
+  geom_line() +
+  theme_bw(base_size=20)
+
+# soil sat
+soilsat <- both %>%
+  dplyr::select(date, type, soilSat)
+
+ggplot(soilsat,
+       aes(x=date,
+           y=soilSat,
            color=type)) +
   geom_line() +
   theme_bw(base_size=20)
@@ -1299,22 +1314,24 @@ ggplot(runoff,
 
 # interflow
 interflow <- both %>%
-  dplyr::select(date, type, outRD2)
+  dplyr::select(date, type, outRD2) %>%
+  mutate(interflow_cum = cumsum(outRD2))
 
 ggplot(interflow,
        aes(x=date,,
-           y=outRD2,
+           y=interflow_cum,
            color=type)) +
   geom_line() +
   theme_bw(base_size=20)
 
 
 gw <- both %>%
-  dplyr::select(date, type, outRG1)
+  dplyr::select(date, type, outRG1) %>%
+  mutate(gw_cumu = cumsum(outRG1))
 
 ggplot(gw,
        aes(x=date,,
-           y=outRG1,
+           y=gw_cumu,
            color=type)) +
   geom_line() +
   theme_bw(base_size=20)
@@ -1363,6 +1380,200 @@ ggplot(soilsat,
   geom_line() +
   theme_bw(base_size=20)
 
+## make the actual plot
+p_plot <- ggplot(p, aes(x = date,
+                        y = p_cumu, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.8) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Cumulative precipitation (mm)') +
+  theme_bw(base_size = 18) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+p_plot
+
+inter <- inter %>%
+  mutate(type = factor(type, levels = c("unburn", "burn")))
+
+int_plot <- ggplot(inter, aes(x = date,
+                        y = intercStorage, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Interception (mm)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+int_plot
+
+soilsat_plot <- ggplot(soilsat, aes(x = date,
+                        y = soilSat, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Soil saturation') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+soilsat_plot
+
+interflow_plot <- ggplot(interflow, aes(x = date,
+                        y = interflow_cum, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Interflow (L)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+interflow_plot
+
+gw_plot <- ggplot(gw, aes(x = date,
+                        y = gw_cumu, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Shallow groundwater (L)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+gw_plot
+
+swe_plot <- ggplot(swe, aes(x = date,
+                        y = snowTotSWE, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'SWE (mm)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+swe_plot
+
+legend <- cowplot::get_plot_component(p_plot, "guide-box", return_all = TRUE)[[3]]
+
+p_plot <- p_plot + theme(legend.position = "none")
+int_plot <- int_plot + theme(legend.position = "none")
+soilsat_plot <- soilsat_plot + theme(legend.position = "none")
+interflow_plot <- interflow_plot + theme(legend.position = "none")
+gw_plot <- gw_plot + theme(legend.position = "none")
+swe_plot <- swe_plot + theme(legend.position = "none")
+
+
+plots <- plot_grid(p_plot,
+          int_plot,
+          swe_plot,
+          soilsat_plot,
+          interflow_plot,
+          gw_plot,
+          ncol = 3)
+
+final_plot <- plot_grid(
+  plots,
+  legend,
+  ncol = 1,
+  rel_heights = c(1, 0.07)  # Adjust height of legend
+)
+
+final_plot
+
+ggsave('./figures/burn_unburn_eg.png')
+
+soilsat_mean <- soilsat %>% 
+  group_by(type) %>% 
+  summarize(mean_ss = mean(soilSat))
+
+soilsat_mean
+
+intercep_mean <- inter %>% 
+  group_by(type) %>% 
+  summarize(mean_inter = mean(intercStorage))
+
+intercep_mean
 
 ```
 
