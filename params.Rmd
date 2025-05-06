@@ -284,6 +284,14 @@ combo <- left_join(combo,
                         by = c('input_data',
                                'year_missing'))
 
+# reorder the params
+combo$param <- factor(combo$param, levels = c("a_snow",
+                                                        "a_rain",
+                                                        "soilMaxInfSummer",
+                                                        "soilMaxDPS",
+                                                        "lagSurfaceRunoff",
+                                                        "soilDistMPSLPS"))
+
 # text above boxplots - this is from Tukey analysis that was already run below then added to params
 combo <- combo %>%
   group_by(param, burn, input_data) %>%
@@ -325,7 +333,7 @@ ggplot(combo, aes(x = burn, y = value, fill = input_data)) +
   ) +
    scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
 
-ggsave('./figures/burn_unburn_params_tukey_pts.png',
+ggsave('./figures/burn_unburn_params_tukey_pts_reoder.png',
        dpi=600,
        width = 12,
        height = 8)
