@@ -1719,41 +1719,41 @@ gw <- bind_rows(
          year = year(date)) %>%
   arrange(date)
 
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=catchmentRD1_w), size =1) +
-  facet_wrap(~year, scales="free", ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('RD1') +
-  theme(text = element_text(size = 20)) +
-  labs(y = 'RD1 (mm)') +
-  theme_bw(base_size=20)
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=catchmentRD2_w), size =1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('RD2') +
-  theme(text = element_text(size = 20))+
-  labs(y = 'RD2 (mm)')+
-  theme_bw(base_size=20)
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=catchmentRG1_w), size =1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('RG1') +
-  theme(text = element_text(size = 20)) +
-  labs(y = 'RG1 (mm)')+
-  theme_bw(base_size=20)
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=catchmentRG2_w), size =1) +
-  facet_wrap(~year, scales = 'free', ncol=2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('RG2') +
-  theme(text = element_text(size = 20))+
-  labs(y = 'RG2 (mm)')+
-  theme_bw(base_size=20)
+# ggplot(gw, aes(x=date, color = source)) +
+#   geom_line(aes(y=catchmentRD1_w), size =1) +
+#   facet_wrap(~year, scales="free", ncol = 2) +
+#   scale_x_date(labels = date_format("%b")) +
+#   ggtitle('RD1') +
+#   theme(text = element_text(size = 20)) +
+#   labs(y = 'RD1 (mm)') +
+#   theme_bw(base_size=20)
+# 
+# ggplot(gw, aes(x=date, color = source)) +
+#   geom_line(aes(y=catchmentRD2_w), size =1) +
+#   facet_wrap(~year, scales = 'free', ncol = 2) +
+#   scale_x_date(labels = date_format("%b")) +
+#   ggtitle('RD2') +
+#   theme(text = element_text(size = 20))+
+#   labs(y = 'RD2 (mm)')+
+#   theme_bw(base_size=20)
+# 
+# ggplot(gw, aes(x=date, color = source)) +
+#   geom_line(aes(y=catchmentRG1_w), size =1) +
+#   facet_wrap(~year, scales = 'free', ncol = 2) +
+#   scale_x_date(labels = date_format("%b")) +
+#   ggtitle('RG1') +
+#   theme(text = element_text(size = 20)) +
+#   labs(y = 'RG1 (mm)')+
+#   theme_bw(base_size=20)
+# 
+# ggplot(gw, aes(x=date, color = source)) +
+#   geom_line(aes(y=catchmentRG2_w), size =1) +
+#   facet_wrap(~year, scales = 'free', ncol=2) +
+#   scale_x_date(labels = date_format("%b")) +
+#   ggtitle('RG2') +
+#   theme(text = element_text(size = 20))+
+#   labs(y = 'RG2 (mm)')+
+#   theme_bw(base_size=20)
 
 gw <- gw %>%
   arrange(date) %>%
@@ -1763,37 +1763,37 @@ gw <- gw %>%
          RG1cumsum = cumsum(catchmentRG1_w),
          RG2cumsum = cumsum(catchmentRG2_w))
 
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RD1cumsum), size =1) +
-  facet_wrap(~year, scales = 'free', ncol=2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RD1 (mm)') +
-  theme(text = element_text(size = 20)) +
-  theme_bw(base_size=20)
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RD2cumsum), size = 1) +
-  facet_wrap(~year, scales = 'free', ncol=2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RD2 (mm)') +
-  theme(text = element_text(size = 20))+
-  theme_bw(base_size=20)
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RG1cumsum), size  = 1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RG1 (mm)') +
-  theme(text = element_text(size = 20))+
-  theme_bw(base_size=20)
-
-ggplot(gw, aes(x=date, color = source)) +
-  geom_line(aes(y=RG2cumsum), size =1) +
-  facet_wrap(~year, scales = 'free', ncol = 2) +
-  scale_x_date(labels = date_format("%b")) +
-  ggtitle('Cumulative RG2 (mm)') +
-  theme(text = element_text(size = 20))+
-  theme_bw(base_size=20)
+# ggplot(gw, aes(x=date, color = source)) +
+#   geom_line(aes(y=RD1cumsum), size =1) +
+#   facet_wrap(~year, scales = 'free', ncol=2) +
+#   scale_x_date(labels = date_format("%b")) +
+#   ggtitle('Cumulative RD1 (mm)') +
+#   theme(text = element_text(size = 20)) +
+#   theme_bw(base_size=20)
+# 
+# ggplot(gw, aes(x=date, color = source)) +
+#   geom_line(aes(y=RD2cumsum), size = 1) +
+#   facet_wrap(~year, scales = 'free', ncol=2) +
+#   scale_x_date(labels = date_format("%b")) +
+#   ggtitle('Cumulative RD2 (mm)') +
+#   theme(text = element_text(size = 20))+
+#   theme_bw(base_size=20)
+# 
+# ggplot(gw, aes(x=date, color = source)) +
+#   geom_line(aes(y=RG1cumsum), size  = 1) +
+#   facet_wrap(~year, scales = 'free', ncol = 2) +
+#   scale_x_date(labels = date_format("%b")) +
+#   ggtitle('Cumulative RG1 (mm)') +
+#   theme(text = element_text(size = 20))+
+#   theme_bw(base_size=20)
+# 
+# ggplot(gw, aes(x=date, color = source)) +
+#   geom_line(aes(y=RG2cumsum), size =1) +
+#   facet_wrap(~year, scales = 'free', ncol = 2) +
+#   scale_x_date(labels = date_format("%b")) +
+#   ggtitle('Cumulative RG2 (mm)') +
+#   theme(text = element_text(size = 20))+
+#   theme_bw(base_size=20)
 
 ```
 
@@ -1974,6 +1974,12 @@ ggplot(gw_maxcumsum, aes(x = flow_cms, fill = source)) +
     axis.title = element_text(color = "black"),
     axis.text = element_text(color = "black")
   )
+
+flow_summ <- gw_maxcumsum %>%
+  #filter(!year == 2013) %>%
+  group_by(source, flow_type) %>%
+  summarize(min = min(flow_cms),
+            max = max(flow_cms))
 
 ```
 
