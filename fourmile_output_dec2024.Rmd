@@ -1002,7 +1002,7 @@ flow_year <- flow %>%
             grid2018 = KGE(grid_2018, obs),
             grid2019 = KGE(grid_2019, obs),
             grid2020 = KGE(grid_2020, obs),
-            gridall = KGE(grid_all, obs, na.rm = T, method='2012'),
+            gridall = KGE(grid_all, obs, na.rm = T),
             statn2011 = KGE(statn_2011, obs),
             statn2012 = KGE(statn_2012, obs),
             statn2013 = KGE(statn_2013, obs),
@@ -1013,7 +1013,7 @@ flow_year <- flow %>%
             statn2018 = KGE(statn_2018, obs),
             statn2019 = KGE(statn_2019, obs),
             statn2020 = KGE(statn_2020, obs),
-            statnall = KGE(statn_all, obs, na.rm=T, method='2012')) %>%
+            statnall = KGE(statn_all, obs, na.rm=T)) %>%
     mutate_if(is.numeric,
             round,
             digits = 2)
@@ -1030,6 +1030,9 @@ flow_kge %>%
 flow_plot <- flow_year %>%
   pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
   mutate(year = as.factor(year))
+
+write_csv(flow_plot,
+          '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/all_kge.csv')
 
 # add all to the plot below
 kge_all <- flow_kge_all %>%
@@ -2271,3 +2274,30 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/2016_all_flow.png',
 
 ```
 
+1:1 performance metrics
+
+```{r}
+
+
+perf <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/all_kge.csv') %>%
+  dplyr::select(year, model_run, value, metric)
+
+perf <- perf %>%
+  pivot_wider(names_from=metric,
+               values_from=value)
+
+nse_kge <- ggplot(perf, aes(x=kge, y=nse)) + 
+  geom_point(size=1) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  theme_bw(base_size=20) # +
+  # ylim(-0,1) +
+  # xlim(0,1)
+
+ggplotly(nse_kge)
+
+ggplot(perf, aes(x=kge, y=pbias)) + 
+  geom_point(size=1) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") 
+
+
+```
