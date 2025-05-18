@@ -1026,10 +1026,17 @@ flow_kge %>%
   kable(.) %>%
   kable_styling()
 
-
 flow_plot <- flow_year %>%
   pivot_longer(!year, names_to = 'model_run', values_to = 'kge') %>%
   mutate(year = as.factor(year))
+
+# add all to the plot below
+kge_all <- flow_kge_all %>%
+  mutate(year = 'All') %>%
+  rename(model_run = name,
+         kge = value)
+
+flow_plot <- bind_rows(flow_plot, kge_all)
 
 write_csv(flow_plot,
           '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/all_kge.csv')
@@ -2274,30 +2281,79 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/2016_all_flow.png',
 
 ```
 
-1:1 performance metrics
+# 1:1 performance metrics
 
 ```{r}
 
 
-perf <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/all_kge.csv') %>%
-  dplyr::select(year, model_run, value, metric)
+perf <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/perf_metrics.csv')
 
 perf <- perf %>%
   pivot_wider(names_from=metric,
-               values_from=value)
+               values_from=value) %>%
+  filter(year == 'All')
 
-nse_kge <- ggplot(perf, aes(x=kge, y=nse)) + 
-  geom_point(size=1) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  theme_bw(base_size=20) # +
-  # ylim(-0,1) +
-  # xlim(0,1)
+perf1 <- perf %>%
+  mutate(type = case_when(
+    str_detect(model_run, "grid") ~ "Gridded",
+    str_detect(model_run, "statn") ~ "Station"))
 
-ggplotly(nse_kge)
+nse_kge <- ggplot(perf1, aes(x=KGE, y=NSE, color=type)) + 
+  geom_point(size=4, alpha=0.8) +
+  theme_bw(base_size=20) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
+  theme(
+    legend.position = 'bottom',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    panel.grid.major.x = element_blank()  # remove vertical major grid lines
+   # panel.grid.minor.x = element_blank(),
+    #panel.grid.minor = element_blank()      # remove all minor grid lines
+    
+  )
 
-ggplot(perf, aes(x=kge, y=pbias)) + 
-  geom_point(size=1) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") 
+nse_kge
+
+
+pbias_kge <- ggplot(perf1, aes(x=KGE, y=pbias, color=type)) + 
+  geom_point(size=4, alpha=0.8) +
+  theme_bw(base_size=20) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
+  labs(y = '% bias') +
+  theme(
+    legend.position = 'bottom',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    panel.grid.major.x = element_blank()  # remove vertical major grid lines
+   # panel.grid.minor.x = element_blank(),
+    #panel.grid.minor = element_blank()      # remove all minor grid lines
+    
+  )
+
+pbias_kge
+
+library(patchwork)
+
+combined_plot <- nse_kge + pbias_kge + 
+  plot_layout(ncol = 2, guides = "collect") & 
+  theme(legend.position = 'bottom')
+
+combined_plot
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_nse_pbias.png',
+       dpi=600,
+       width=10,
+       height=6)
 
 
 ```
