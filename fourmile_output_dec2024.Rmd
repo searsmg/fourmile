@@ -2299,7 +2299,8 @@ perf1 <- perf %>%
     str_detect(model_run, "statn") ~ "Station"))
 
 nse_kge <- ggplot(perf1, aes(x=KGE, y=NSE, color=type)) + 
-  geom_point(size=4, alpha=0.8) +
+  #geom_point(size=4, alpha=0.7) +
+   geom_jitter(size = 4, alpha = 0.7, width = 0.05, height = 0.05) +
   theme_bw(base_size=20) +
   scale_color_manual(values = c("#0047AB", "orange")) +
   theme(
@@ -2321,7 +2322,8 @@ nse_kge
 
 
 pbias_kge <- ggplot(perf1, aes(x=KGE, y=pbias, color=type)) + 
-  geom_point(size=4, alpha=0.8) +
+  #geom_point(size=4, alpha=0.8) +
+  geom_jitter(size = 4, alpha = 0.7, width = 0.001, height = 0.001) +
   theme_bw(base_size=20) +
   scale_color_manual(values = c("#0047AB", "orange")) +
   labs(y = '% bias') +
