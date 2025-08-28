@@ -626,6 +626,10 @@ rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
 
 hrus_map_rh <- left_join(hru_new, rh_hrus, by = 'value')
 
+# get the location of the stream gauge
+gauge <- locations %>%
+  filter(display == 'stream')
+
 ####
 
 bottom_theme <-   theme(
@@ -650,6 +654,7 @@ top_theme <-   theme(
 
 rh <- ggplot() +
   geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
+  geom_sf(data=gauge, shape=3, size=2, stroke=2) +
   scale_fill_viridis_c(option = "viridis", name = "RH (%)") +
   theme_bw(base_size=15.5) +
   theme_void() + bottom_theme
@@ -658,6 +663,7 @@ rh
 
 sr <- ggplot() +
   geom_sf(data = hrus_map_solrad, aes(fill = diff), color = "black", lwd = 0.2) +
+  geom_sf(data=gauge, shape=3, size=2, stroke=2) +
   scale_fill_viridis_c(option = "cividis", name = expression("Srad (MJ/m"^"2" * ")")) +
   theme_bw(base_size=15.5) +
   theme_void() + top_theme
@@ -667,6 +673,7 @@ sr
 
 precip <- ggplot() +
   geom_sf(data = hrus_map_precip, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  geom_sf(data=gauge, shape=3, size=2, stroke=2) +
   scale_fill_viridis_c(option = "mako", name = "Cumulative P (mm)") +
   theme_bw(base_size=15.5) +
   theme_void() + top_theme
@@ -675,6 +682,7 @@ precip
 
 tmean <- ggplot() +
   geom_sf(data = hrus_map_tmean, aes(fill = diff), color = "black", lwd = 0.2) +
+  geom_sf(data=gauge, shape=3, size=2, stroke=2) +
   scale_fill_viridis_c(option = "plasma", name = "Tmean (°C)",
                        limits = c(-5, 2)) +
   theme_bw(base_size=15.5) +
@@ -726,9 +734,13 @@ final_plot <- plot_grid(title, lots, ncol = 1, rel_heights = c(0.05, 1))
 
 final_plot
 
-ggsave(filename = "./figures/diff_update2_wtitle.png", 
-       plot = final_plot, 
-       dpi = 600)
+ggsave(filename = "./figures/diff_update2_wtitle&gauge.png",
+       plot = final_plot,
+       dpi = 800,
+       bg = 'white',
+       width = 12,
+       height = 8,
+       limitsize = FALSE)
 
 ```
 
@@ -816,6 +828,10 @@ flow_plot2 <- ggplot(flow, aes(x = date, y = obs)) +
   theme_bw(base_size = 20) +
   labs(y = 'Discharge (cms)',
          x = element_blank()) +
+    scale_x_date(
+    date_breaks = "1 year",          # one tick per year
+    date_labels = "%Y"               # show only the year
+  ) +
    theme(
     legend.position = "none",
     panel.grid = element_blank(),
@@ -828,7 +844,7 @@ flow_plot2 <- ggplot(flow, aes(x = date, y = obs)) +
 
 flow_plot2
 
-ggsave("/Users/megansears/Documents/Repos/fourmile/figures/flow_obs_plot2.png", dpi = 600, width = 12, height = 4, units = "in")
+ggsave("/Users/megansears/Documents/Repos/fourmile/figures/flow_obs_plot2_eachyrlabel.png", dpi = 600, width = 12, height = 4, units = "in")
 
 ggplotly(flow_plot2)
 
@@ -888,10 +904,10 @@ catchment_mo_sum <- all %>%
   mutate(month = month(date),
          year = year(date)) %>%
   group_by(month, year, site) %>%
-  summarize(p_sum = sum(precip)) %>%
-  group_by(month, site) %>%
-  summarize(avg_p = mean(p_sum),
-          sd_p = sd(p_sum))
+  summarize(p_sum = sum(precip)) # %>%
+  # group_by(month, site) %>%
+  # summarize(avg_p = mean(p_sum),
+  #         sd_p = sd(p_sum))
   
 
 catchment_mo_sd <- all %>%
@@ -915,23 +931,36 @@ catchment_mo2 <- catchment_mo %>%
                                         'Jul', 'Aug', 'Sep',
                                         'Oct', 'Nov', 'Dec')))
 
+catchment_mo_sum2 <- catchment_mo_sum %>%
+  mutate(month_name = month.abb[month]) %>%
+  mutate(month_name = factor(month_name, 
+                             levels = c('Jan', 'Feb', 'Mar',
+                                        'Apr', 'May', 'Jun',
+                                        'Jul', 'Aug', 'Sep',
+                                        'Oct', 'Nov', 'Dec')))
 
-p_cols <- catchment_mo2 %>% 
+
+p_box <- catchment_mo_sum2 %>% 
   filter(month_name %in% c('Jun','Jul','Aug', 'Sep')) %>%
-  ggplot(., aes(x = month_name, y = avg_p,
-                                    color = site, fill = site)) +
-  geom_col(position = 'dodge') +
-  geom_errorbar(aes(ymin = 0, ymax = avg_p + sd_p), 
-                position = position_dodge(width = 0.6), width = 0.2) +
-  scale_color_manual(values = c("#0047AB", "orange"),
-                     labels = c("Gridded", "Station")) +  # Rename color legend items
+  ggplot(., aes(x = month_name, y = p_sum, fill = site)) +
+  geom_boxplot() +
+  ylim(0,150) +
+  # geom_errorbar(aes(ymin = 0, ymax = avg_p + sd_p), 
+  #               position = position_dodge(width = 0.6), width = 0.2) +
+  # scale_color_manual(values = c("#0047AB", "orange"),
+  #                    labels = c("Gridded", "Station")) +  # Rename color legend items
   scale_fill_manual(values = c("#0047AB", "orange"),
                     labels = c("Gridded", "Station")) +   # Rename fill legend items
   theme_bw(base_size = 20) +
   labs(y = 'Precipitation (mm)',
        x = element_blank()) +
-  guides(color = guide_legend(title = NULL),
-         fill = guide_legend(title = NULL)) +
+  # guides(color = guide_legend(title = NULL),
+  #        fill = guide_legend(title = NULL)) +
+    guides(
+    fill = guide_legend(
+      title = NULL,
+      override.aes = list(shape = NA, linetype = 0)  # remove boxplot look
+    )) +
     theme(
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
@@ -942,9 +971,9 @@ p_cols <- catchment_mo2 %>%
   ) 
 
 
-p_cols
+p_box
 
-ggsave("/Users/megansears/Documents/Repos/fourmile/figures/precip.png", plot = p_cols, width = 8, height = 6, dpi = 300)
+ggsave("/Users/megansears/Documents/Repos/fourmile/figures/precip_box.png", plot = p_cols, width = 8, height = 6, dpi = 300)
 
 # Temperature plot
 t_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = tmean_mean, 
@@ -1014,7 +1043,7 @@ rh_moplot <- ggplot(catchment_mo2, aes(x = month_name, y = rh_mean,
 
 library(ggpubr)
 
-quad <- ggarrange(p_cols, 
+quad <- ggarrange(p_box, 
           t_moplot,
           sol_moplot,
           rh_moplot,
@@ -1026,14 +1055,21 @@ quad <- ggarrange(p_cols,
           #ncol= 0)
 quad
 
-ggsave("/Users/megansears/Documents/Repos/fourmile/figures/quad_20250329.png", plot = quad, dpi = 600)
+ggsave("/Users/megansears/Documents/Repos/fourmile/figures/quad_20250329_timEdits.png", plot = quad, dpi = 600)
 
 
-quad_plus <- ggarrange(flow_plot2,quad,
-                       nrow=2)
+quad_plus <- ggarrange(
+  flow_plot2, quad,
+  nrow = 2,
+  heights = c(1, 2)   # first row gets 1 part, second gets 2 parts
+)
+
 quad_plus
 
-ggsave("/Users/megansears/Documents/Repos/fourmile/figures/quad_plus_20250329.png", plot = quad_plus, dpi = 600)
+ggsave("/Users/megansears/Documents/Repos/fourmile/figures/quad_plus_timEdits.png", plot = quad_plus, dpi = 600,
+       width = 14,
+       height = 12,
+       bg='white')
 
 
 ```
