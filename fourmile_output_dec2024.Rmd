@@ -886,7 +886,7 @@ nseCats <- flow_plot_updated %>%
                                            "Good", 
                                            "Very good")))
 
-write_csv(nseCats, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/nseCats.csv')
+#write_csv(nseCats, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/nseCats.csv')
 
 # facet wrap the plots
 new_facet_titles <- c(
@@ -936,7 +936,52 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/nse_heatmap_both_cats
        width = 10,
        height = 6)
 
+both_nse_plot <- nseCats %>%
+  ggplot(aes(x = year, 
+             y = year_excluded, 
+             fill = nseCat)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  scale_fill_manual(values = c(
+    "Unsatisfactory" = "#F1F4EEFF", 
+    "Satisfactory"  = "#EFDDCFFF",
+    "Good"          = "#72E1E1FF",
+    "Very good"     = "#009474FF"
+  )) +
+  geom_text(aes(label = sprintf("%.2f", nse), color = nseCat), 
+            size = 2.75) +
+  scale_color_manual(values = c(
+    "Unsatisfactory" = "black",
+    "Satisfactory"   = "black",
+    "Good"           = "black",
+    "Very good"      = "white"
+  ), guide = "none") +
+  theme_bw(base_size=18) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  ) +
+  labs(y = "Year excluded",
+       x = 'Year',
+       fill = 'NSE')
 
+both_nse_plot
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/nse_heatmap_both_cats_whiteft.png',
+       dpi=600,
+       width = 10,
+       height = 6)
 
 ```
 
@@ -1038,8 +1083,8 @@ kge_all <- flow_kge_all %>%
 
 flow_plot <- bind_rows(flow_plot, kge_all)
 
-write_csv(flow_plot,
-          '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/all_kge.csv')
+# write_csv(flow_plot,
+#           '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/all_kge.csv')
 
 # add all to the plot below
 kge_all <- flow_kge_all %>%
@@ -1297,11 +1342,6 @@ both_kge_plot <- flow_plot_updated %>%
               fill = kge_revise_bins)) +
   geom_tile(color = "white") +
   facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
-  #paletteer::scale_fill_paletteer_d("PNWColors::Anemone") +
-  # paletteer::scale_fill_paletteer_d(
-  # "PNWColors::Anemone", 
-  # guide = guide_legend(nrow = 1),
-  # direction = -1) +
    scale_fill_manual(values = c(
     "< 0.0" = "#DCBE9BFF", 
     "0.0-0.2" = "#EFDDCFFF",
@@ -1310,10 +1350,21 @@ both_kge_plot <- flow_plot_updated %>%
     "0.6-0.8" = "#11C2B5FF",
     "> 0.8" = "#009474FF"),
     guide = guide_legend(nrow = 1)) +
-  geom_text(aes(label = sprintf("%.2f", 
-                                kge)), 
-            color = "black", 
+  # geom_text(aes(label = sprintf("%.2f", 
+  #                               kge)), 
+  #           color = "black", 
+  #           size = 3) +
+    geom_text(aes(label = sprintf("%.2f", kge), 
+                color = kge_revise_bins), 
             size = 3) +
+  scale_color_manual(values = c(
+    "< 0.0"   = "black",
+    "0.0-0.2" = "black",
+    "0.2-0.4" = "black",
+    "0.4-0.6" = "black",
+    "0.6-0.8" = "black",
+    "> 0.8"   = "white"
+  ), guide = "none") +
   theme_bw(base_size=18) +
   theme(axis.text.x = element_text(angle = 45, 
                                    hjust = 1)) +
@@ -1339,10 +1390,12 @@ both_kge_plot <- flow_plot_updated %>%
 
 both_kge_plot
 
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_both_basic.png',
-       dpi=600,
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_heatmap_whiteft.png',
+       dpi=800,
        width = 10,
        height = 6)
+
+
 
 ```
 
@@ -1525,7 +1578,7 @@ pbiasCats <- flow_plot_updated %>%
                                            "Good", 
                                            "Very good")))
 
-write_csv(pbiasCats, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/pbiasCats.csv')
+#write_csv(pbiasCats, '/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/pbiasCats.csv')
 
 both_pbias_plot <- pbiasCats %>%
   ggplot(aes(x = year, 
@@ -1538,10 +1591,21 @@ both_pbias_plot <- pbiasCats %>%
     "Satisfactory" = "#EFDDCFFF",
     "Good" = "#72E1E1FF",
     "Very good" = "#009474FF"
-  )) +
-  geom_text(aes(label = sprintf("%.2f", pbias)), 
-            color = "black", 
+  ),
+  #guide = guide_legend(ncol = 1)
+  ) +
+  # geom_text(aes(label = sprintf("%.2f", pbias)), 
+  #           color = "black", 
+  #           size = 2.75) +
+  geom_text(aes(label = sprintf("%0.1f", pbias),   # one decimal place
+                color = pbiasCat), 
             size = 2.75) +
+  scale_color_manual(values = c(
+    "Unsatisfactory" = "black",
+    "Satisfactory"   = "black",
+    "Good"           = "black",
+    "Very good"      = "white"
+  ), guide = "none") + 
   theme_bw(base_size=18) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
@@ -1564,11 +1628,86 @@ both_pbias_plot <- pbiasCats %>%
 
 both_pbias_plot
 
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/pbias_heatmap_both_cats.png',
-       dpi=600,
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/pbias_heatmap_whiteft.png',
+       dpi=800,
        width = 10,
        height = 6)
 
+
+plot_grid(both_kge_plot,
+          both_pbias_plot,
+          both_nse_plot,
+          ncol=1,
+          labels = c("a) KGE", 
+                     "b) Bias", 
+                     "c) NSE"),
+          label_size = 18,
+          label_fontface = "bold",
+          label_x = 0.02,
+          label_y = 0.98
+)
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/heatmap_metrics.png',
+       dpi=800,
+       width = 10,
+       height = 14)
+
+########
+
+# Top plot
+top_plot <- both_kge_plot +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "none",
+    plot.margin = margin(5, 5, 5, 40)   # add space on the left
+  )
+
+# Middle plot
+middle_plot <- both_pbias_plot +
+  theme(
+    strip.text = element_blank(),
+    axis.title.x = element_blank(),
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "none",
+    plot.margin = margin(5, 5, 5, 40)   # add space on the left
+  )
+
+# Bottom plot
+bottom_plot <- both_nse_plot +
+  theme(
+    strip.text = element_blank(),
+    legend.position = "none",
+    plot.margin = margin(5, 5, 5, 40)   # add space on the left
+  )
+
+# Combine plots
+final_grid <- plot_grid(
+  top_plot,
+  middle_plot,
+  bottom_plot,
+  ncol = 1,
+  labels = c("a) KGE", "b) Bias", "c) NSE"),
+  label_size = 16,
+  label_fontface = "bold",
+  label_x = -0.03,
+  label_y = 1.04,
+  rel_heights = c(1.1, 1, 1.2),
+  align = "v",
+  axis = "l"
+) 
+
+final_grid_add <- final_grid +
+  theme(plot.margin = margin(20, 5, 5, 5))
+  
+
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/heatmap_metrics.pdf',
+       dpi=800,
+       width = 10,
+       height = 14,
+       bg='white')
 
 ```
 
