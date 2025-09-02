@@ -1,0 +1,1054 @@
+---
+title: "Manuscript figures"
+author: "Megan Sears"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = F,
+  message = F, 
+  warning  = F)
+
+library(tidyverse)
+library(plotly)
+library(kableExtra)
+library(hydroGOF)
+library(here)
+library(scales)
+library(tmap)
+library(ggpubr)
+library(gridExtra)
+library(stringr)
+library(cowplot)
+
+```
+
+# Figure 1
+
+```{r}
+
+# this is a spatial map that was started in R and moved to Arc
+# put the paths to files below **
+
+```
+
+# Figure 2
+
+Streamflow and climate overview
+
+4 panel met first
+
+```{r}
+# Note, it is OK these are pulling from the sept2013 udpate and not dec2024
+# because the climate outputs will not change due to changed  obs streamflow (removed 2013 flood Q)
+grid <- read_csv("./38HRU_sept2013_updates/grid_all_Catchment.csv",
+                 skip=3) %>%
+   slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(date = ymd(time)) %>%
+  dplyr::select(-time) %>%
+  mutate_if(is.character, as.numeric) %>% 
+  mutate(site = 'grid')
+
+statn <- read_csv('./38HRU_sept2013_updates/statn_all_Catchment.csv',
+                 skip=3) %>%
+   slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(date = ymd(time)) %>%
+  dplyr::select(-time) %>%
+  mutate_if(is.character, as.numeric) %>% 
+  mutate(site = 'statn')
+
+all <- bind_rows(grid, statn) %>%
+  arrange(date)
+
+catchment_mo_mean <- all %>%
+  mutate(month = month(date)) %>%
+  group_by(site, month) %>%
+  summarise(across(tmean:solRad, ~ mean(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month, tmean_mean = tmean, 
+                solrad_mean = solRad, rh_mean = rhum)
+
+# sum is for P only
+catchment_mo_sum <- all %>%
+  dplyr::select(date, precip, site) %>%
+  mutate(month = month(date),
+         year = year(date)) %>%
+  group_by(month, year, site) %>%
+  summarize(p_sum = sum(precip))
+
+catchment_mo_sd <- all %>%
+  mutate(month = month(date)) %>%
+  group_by(site, month) %>%
+  summarise(across(tmean:solRad, ~ sd(.x, na.rm = TRUE))) %>%
+  dplyr::select(site, month, tmean_sd = tmean, 
+                solrad_sd = solRad, rh_sd = rhum)
+
+
+catchment_mo <- left_join(catchment_mo_mean, catchment_mo_sd, 
+                          by = c('month', 'site'))
+
+catchment_mo <- left_join(catchment_mo, catchment_mo_sum)
+
+catchment_mo2 <- catchment_mo %>%
+  mutate(month_name = month.abb[month]) %>%
+  mutate(month_name = factor(month_name, 
+                             levels = c('Jan', 'Feb', 'Mar',
+                                        'Apr', 'May', 'Jun',
+                                        'Jul', 'Aug', 'Sep',
+                                        'Oct', 'Nov', 'Dec')))
+# add month for P
+catchment_mo_sum2 <- catchment_mo_sum %>%
+  mutate(month_name = month.abb[month]) %>%
+  mutate(month_name = factor(month_name, 
+                             levels = c('Jan', 'Feb', 'Mar',
+                                        'Apr', 'May', 'Jun',
+                                        'Jul', 'Aug', 'Sep',
+                                        'Oct', 'Nov', 'Dec')))
+
+# changed P to boxplot per TG comment (instead of cols)
+p_box <- catchment_mo_sum2 %>% 
+  filter(month_name %in% c('Jun','Jul','Aug', 'Sep')) %>%
+  ggplot(., aes(x = month_name, y = p_sum, fill = site)) +
+  geom_boxplot() +
+  ylim(0,150) + # remove the 2013 flood outliers
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    labels = c("Gridded", "Station")) +
+  theme_bw(base_size = 20) +
+  labs(y = 'Precipitation (mm)',
+       x = element_blank()) +
+    guides(
+    fill = guide_legend(
+      title = NULL,
+      override.aes = list(shape = NA, linetype = 0)  # remove boxplot look on legend
+    )) +
+    theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank()) 
+
+p_box
+
+# Temperature plot
+t_moplot <- ggplot(catchment_mo2, aes(x = month_name, 
+                                      y = tmean_mean, 
+                                      color = site, 
+                                      group = site)) +
+  geom_ribbon(aes(ymin = tmean_mean - tmean_sd, 
+                  ymax = tmean_mean + tmean_sd, 
+                  fill = site), 
+              alpha = 0.6) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("#0047AB", "orange"),
+                     labels = c("Gridded", "Station")) +
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    labels = c("Gridded", "Station")) +
+  theme_bw(base_size=20) +
+  labs(y = expression("Air temperature " ( degree~C)),
+       x = element_blank()) +
+  labs(color = NULL, fill = NULL) +
+      theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank())
+
+# Solar radiation plot
+sol_moplot <- ggplot(catchment_mo2, 
+                     aes(x = month_name, y = solrad_mean, 
+                                         color = site, group = site)) +
+  geom_ribbon(aes(ymin = solrad_mean - solrad_sd, 
+                  ymax = solrad_mean + solrad_sd, 
+                  fill = site), 
+              alpha = 0.6) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("#0047AB", "orange"),
+                     labels = c("Gridded", "Station")) +
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    labels = c("Gridded", "Station")) +
+  theme_bw(base_size = 20) +
+  labs(y = expression("Solar radiation (MJ/m"^"2" * ")"),
+       x = element_blank()) +
+  labs(color = NULL, fill = NULL) +
+      theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank())
+
+# Relative humidity plot
+rh_moplot <- ggplot(catchment_mo2, 
+                    aes(x = month_name, 
+                        y = rh_mean, 
+                        color = site, 
+                        group = site)) +
+  geom_ribbon(aes(ymin = rh_mean - rh_sd, 
+                  ymax = rh_mean + rh_sd, 
+                  fill = site), 
+              alpha = 0.6) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("#0047AB", "orange"),
+                     labels = c("Gridded", "Station")) +
+  scale_fill_manual(values = c("#0047AB", "orange"),
+                    labels = c("Gridded", "Station")) +
+  theme_bw(base_size = 20) +
+  labs(y = 'RH (%)', x= element_blank()) +
+  labs(color = NULL, fill = NULL) +
+      theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_blank())
+
+# pull met panels together
+quad <- ggarrange(p_box, 
+          t_moplot,
+          sol_moplot,
+          rh_moplot,
+          common.legend = T,
+          legend = 'bottom',
+          ncol=2,
+          nrow=2) 
+
+quad
+
+ggsave("./figures/quad_20250329_timEdits.png", 
+       plot = quad, 
+       dpi = 600)
+
+
+```
+
+Add in streamflow to 4 panel met
+
+```{r}
+
+flow <- read_csv('./38HRU_dec2024_updates/discharge_all.csv') %>%
+  replace(.==-9999, NA) %>%
+  rename(date = time) %>%
+  mutate(date = mdy(date)) %>%
+  dplyr::select(date, obs) %>%
+  mutate(year = year(date),
+         DOY = yday(date)) #%>%
+  #drop_na(obs)
+
+flow_plot2 <- ggplot(flow, aes(x = date, y = obs)) + 
+  geom_line(size = 1.1) +
+  theme_bw(base_size = 20) +
+  labs(y = 'Discharge (cms)',
+         x = element_blank()) +
+    scale_x_date(
+    date_breaks = "1 year",          # one tick per year
+    date_labels = "%Y"               # show only the year
+  ) +
+   theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_text(color = "black"))
+
+flow_plot2
+
+ggsave("./figures/flow_obs_plot2_eachyrlabel.png", 
+       dpi = 600, 
+       width = 12, 
+       height = 4, 
+       units = "in")
+
+# stats for manuscript text
+# annual total flow
+flowTotYr <- flow %>%
+  group_by(year) %>%
+  summarize(flow_tot = sum(obs, na.rm=T))
+
+flowTotYr <- flow %>%
+  group_by(year) %>%
+  summarize(flow_tot = mean(obs, na.rm=T))
+
+flowTotYr <- flow %>%
+  group_by(year) %>%
+  summarize(flow_tot = max(obs, na.rm=T))
+
+avgAllYr <- mean(flowTotYr$flow_tot)
+
+```
+
+Add together streamflow and 4 panel met
+
+```{r}
+
+# add streamflow to the top of the met 4 panel
+quad_plus <- ggarrange(
+  flow_plot2, 
+  quad,
+  nrow = 2,
+  heights = c(1, 2)   # first row gets 1 part, second gets 2 parts
+)
+
+quad_plus
+
+ggsave("./figures/figure2.png", 
+       plot = quad_plus, 
+       dpi = 600,
+       width = 14,
+       height = 12,
+       bg='white')
+
+```
+
+# Figure 3
+
+```{r}
+
+# get HRU shp for maps
+hru_new <- st_read('./data/GIS/hrus_final.shp')
+
+# grid first
+read_ages_grid <- function(filename){
+  read_csv(file.path("./38HRU_sept2013_updates/HRU_output/grid/", 
+                     filename), skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'grid')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files("./38HRU_sept2013_updates/HRU_output/grid/", 
+                        pattern="HRU", 
+                        full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_grid)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_grids <- dataframes %>%
+  bind_rows()
+
+# statn next
+read_ages_statn <- function(filename){
+  read_csv(file.path("./38HRU_sept2013_updates/HRU_output/statn/", 
+                     filename), skip = 3) %>%
+  slice(3:n()) %>%
+  dplyr::select(-starts_with('@'),
+                -1) %>%
+  mutate(time = ymd(time)) %>%
+  mutate_if(is.character, as.numeric) %>%
+  mutate(source = 'statn')
+
+}
+
+#pull in all filenames with HRU in the name
+filenames <- list.files("./38HRU_sept2013_updates/HRU_output/statn/", 
+                        pattern="HRU", 
+                        full.names=F)
+
+#read all the csvs using read_ages function
+dataframes <- lapply(filenames, read_ages_statn)
+
+#name all the csvs based on first 6 characters
+names(dataframes) <- substr(filenames, 1, 6)
+
+#bind all and make 1 df
+hru_statn <- dataframes %>%
+  bind_rows()
+
+# Tmean
+hru_grid_tmean <- hru_grids %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_grid = tmean)  %>%
+  group_by(ID) %>%
+  summarize(tmean_all_grid = mean(tmean_grid))
+
+hru_statn_tmean <- hru_statn %>%
+  dplyr::select(c(time, ID, tmean)) %>%
+  rename(tmean_statn = tmean) %>%
+  group_by(ID) %>%
+  summarize(tmean_all_statn = mean(tmean_statn))
+
+tmean_hrus <- left_join(hru_grid_tmean, hru_statn_tmean, by = c('ID')) %>%
+  mutate(diff = tmean_all_statn - tmean_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_tmean <- left_join(hru_new, tmean_hrus, by = 'value')
+
+# Cumulative p
+hru_grid_precip <- hru_grids %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_grid = precip)
+
+hru_statn_precip <- hru_statn %>%
+  dplyr::select(c(time, ID, precip)) %>%
+  rename(precip_statn = precip)
+
+precip_hrus <- left_join(hru_grid_precip, hru_statn_precip, by = c('time', 'ID')) %>%
+  mutate(diff = precip_statn - precip_grid,
+         year = year(time)) %>%
+  group_by(year, ID) %>%
+  mutate(total_diff = cumsum(diff)) %>%
+  filter(time == max(time)) %>%
+  group_by(ID) %>%
+  summarize(precip_avg_cumdiff = mean(total_diff)) %>%
+  rename(value = ID)
+
+hrus_map_precip <- left_join(hru_new, precip_hrus, by = 'value')
+
+# Solar rad
+hru_grid_solrad <- hru_grids %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_grid = solRad)  %>%
+  group_by(ID) %>%
+  summarize(solrad_all_grid = mean(solrad_grid))
+
+hru_statn_solrad <- hru_statn %>%
+  dplyr::select(c(time, ID, solRad)) %>%
+  rename(solrad_statn = solRad) %>%
+  group_by(ID) %>%
+  summarize(solrad_all_statn = mean(solrad_statn))
+
+solrad_hrus <- left_join(hru_grid_solrad, hru_statn_solrad, by = c('ID')) %>%
+  mutate(diff = solrad_all_statn - solrad_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_solrad <- left_join(hru_new, solrad_hrus, by = 'value')
+
+# RH
+hru_grid_rh <- hru_grids %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_grid = rhum)  %>%
+  group_by(ID) %>%
+  summarize(rh_all_grid = mean(rh_grid))
+
+hru_statn_rh <- hru_statn %>%
+  dplyr::select(c(time, ID, rhum)) %>%
+  rename(rh_statn = rhum) %>%
+  group_by(ID) %>%
+  summarize(rh_all_statn = mean(rh_statn))
+
+rh_hrus <- left_join(hru_grid_rh, hru_statn_rh, by = c('ID')) %>%
+  mutate(diff = rh_all_statn - rh_all_grid) %>%
+  rename(value = ID)
+
+hrus_map_rh <- left_join(hru_new, rh_hrus, by = 'value')
+
+# get the location of the stream gauge
+locations <- read_csv('/Users/megansears/Documents/Repos/fourmile/data/GIS/locations_all.csv')
+
+locations <- locations %>%
+  st_as_sf(., coords=c('lon','lat'), crs = 4326)
+
+gauge <- locations %>%
+  filter(display == 'stream')
+
+# bottom theme for panel fig
+bottom_theme <-   theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.margin = unit(c(-4, 0, 0, 0), "cm"),
+    panel.spacing = unit(0, "lines"))
+
+# top theme for panel fig
+top_theme <-   theme(
+    legend.position = "bottom",
+    panel.grid.major = element_blank(),
+    legend.key.width = unit(.75, "cm"),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.margin = unit(c(0, 0, -4, 0), "cm"),
+    panel.spacing = unit(0, "lines"))
+
+# RH panel
+rh <- ggplot() +
+  geom_sf(data = hrus_map_rh, aes(fill = diff), color = "black", lwd = 0.2) +
+  geom_sf(data=gauge, shape=3, size=2, stroke=2) +
+  scale_fill_viridis_c(option = "viridis", name = "RH (%)") +
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
+
+rh
+
+# Solar rad panel
+sr <- ggplot() +
+  geom_sf(data = hrus_map_solrad, aes(fill = diff), color = "black", lwd = 0.2) +
+  geom_sf(data=gauge, shape=3, size=2, stroke=2) +
+  scale_fill_viridis_c(option = "cividis", name = expression("Srad (MJ/m"^"2" * ")")) +
+  theme_bw(base_size=15.5) +
+  theme_void() + top_theme
+
+sr
+
+# P panel
+precip <- ggplot() +
+  geom_sf(data = hrus_map_precip, aes(fill = precip_avg_cumdiff), color = "black", lwd = 0.2) +
+  geom_sf(data=gauge, shape=3, size=2, stroke=2) +
+  scale_fill_viridis_c(option = "mako", name = "Cumulative P (mm)") +
+  theme_bw(base_size=15.5) +
+  theme_void() + top_theme
+
+precip
+
+# Tmean panel
+tmean <- ggplot() +
+  geom_sf(data = hrus_map_tmean, aes(fill = diff), color = "black", lwd = 0.2) +
+  geom_sf(data=gauge, shape=3, size=2, stroke=2) +
+  scale_fill_viridis_c(option = "plasma", name = "Tmean (°C)",
+                       limits = c(-5, 2)) +
+  theme_bw(base_size=15.5) +
+  theme_void() + bottom_theme
+
+tmean
+
+# add the 4 panels togther
+lots <- ggarrange(
+  precip, 
+  sr, 
+  rh, 
+  tmean,
+  heights = 1)
+
+lots
+
+# add ttile
+title <- ggdraw() + 
+  draw_label("Difference = Station - Gridded", 
+             fontface = "bold", 
+             size = 16,
+             x = 0,  # left-aligned
+             hjust = 0) +
+  theme(plot.margin = margin(0, 0, -200,15))  # reduce space between title and plot
+
+# Combine title and the main plot
+final_plot <- plot_grid(title, 
+                        lots, 
+                        ncol = 1, 
+                        rel_heights = c(0.05, 1))
+
+final_plot
+
+ggsave(filename = "./figures/figure3.pdf",
+       plot = final_plot,
+       dpi = 800,
+       bg = 'white',
+       width = 12,
+       height = 8,
+       limitsize = FALSE)
+
+```
+
+# Figure 4
+
+## KGE 
+
+```{r}
+
+# read in KGE values (all_kge also has nse and bias even tho name says otherwise)
+flow_plot <- read_csv('./38HRU_dec2024_updates/all_kge.csv') %>%
+  filter(metric == 'KGE') %>%
+  dplyr::select(-metric) %>%
+  rename(kge = value)
+
+# split model run to source and year
+# create kge bins for fig
+flow_plot_updated <- flow_plot %>% 
+  mutate(source = case_when(
+    grepl("grid", model_run) ~ "grid",
+    grepl("statn", model_run) ~ "statn"),
+    year_excluded = str_extract(model_run, "\\d{4}$")) %>%
+  mutate(year_excluded = if_else(model_run %in% c('gridall',
+                                                       'statnall'),
+                                  'None', year_excluded)) %>%
+  mutate(kge_revise_bins = cut(kge,
+                               breaks = c(-Inf, 0.0, 0.2, 0.4, 0.6, 0.8, 1),
+                               include.lowest = TRUE,
+                               labels = c("< 0.0","0.0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "> 0.8")))
+
+# facet wrap titles
+new_facet_titles <- c(
+  "grid" = "Gridded",
+  "statn" = "Station"
+)
+
+# kge plot
+both_kge_plot <- flow_plot_updated %>%
+  ggplot(., aes(x = year, 
+              y = year_excluded, 
+              fill = kge_revise_bins)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+   scale_fill_manual(values = c(
+    "< 0.0" = "#DCBE9BFF", 
+    "0.0-0.2" = "#EFDDCFFF",
+    "0.2-0.4" = "#F1F4EEFF",
+    "0.4-0.6" = "#72E1E1FF",
+    "0.6-0.8" = "#11C2B5FF",
+    "> 0.8" = "#009474FF"),
+    guide = guide_legend(nrow = 1)) +
+    geom_text(aes(label = sprintf("%.2f", kge), 
+                color = kge_revise_bins), 
+            size = 3) +
+  scale_color_manual(values = c(
+    "< 0.0"   = "black",
+    "0.0-0.2" = "black",
+    "0.2-0.4" = "black",
+    "0.4-0.6" = "black",
+    "0.6-0.8" = "black",
+    "> 0.8"   = "white"
+  ), 
+  guide = "none") +
+  theme_bw(base_size=18) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  labs(y = "Year excluded",
+       x='Year',
+       fill = 'KGE') +
+  theme(
+    axis.text.x = element_text(angle = 45, 
+                               hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(.6, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  )
+
+both_kge_plot
+
+# ggsave('./figures/kge_heatmap_whiteft.png',
+#        dpi=800,
+#        width = 10,
+#        height = 6)
+
+```
+
+### KGE legend
+
+```{r}
+
+# kge legend
+kge_legend <- flow_plot_updated %>%
+  ggplot(., aes(x = year, 
+              y = year_excluded, 
+              fill = kge_revise_bins)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+   scale_fill_manual(values = c(
+    "< 0.0" = "#DCBE9BFF", 
+    "0.0-0.2" = "#EFDDCFFF",
+    "0.2-0.4" = "#F1F4EEFF",
+    "0.4-0.6" = "#72E1E1FF",
+    "0.6-0.8" = "#11C2B5FF",
+    "> 0.8" = "#009474FF"),
+    guide = guide_legend(ncol = 1)) +
+    geom_text(aes(label = sprintf("%.2f", kge), 
+                color = kge_revise_bins), 
+            size = 3) +
+  scale_color_manual(values = c(
+    "< 0.0"   = "black",
+    "0.0-0.2" = "black",
+    "0.2-0.4" = "black",
+    "0.4-0.6" = "black",
+    "0.6-0.8" = "black",
+    "> 0.8"   = "white"
+  ), 
+  guide = "none") +
+  theme_bw(base_size=18) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  labs(y = "Year excluded",
+       x='Year',
+       fill = 'KGE') +
+  theme(
+    axis.text.x = element_text(angle = 45, 
+                               hjust = 1),
+    legend.position = 'right',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(.6, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  )
+
+kge_legend
+
+# Extract the legend
+leg <- ggpubr::get_legend(kge_legend)
+
+# Convert to ggplot
+leg_gg <- ggpubr::as_ggplot(leg)
+
+# Plot it
+print(leg_gg)
+
+ggsave('./figures/figure4_kgeLegend.png',
+       dpi=800,
+       width = 12,
+       height = 8,
+       bg = 'white')
+
+```
+
+## Bias
+
+```{r}
+
+pbiasCats <- read_csv('./38HRU_dec2024_updates/pbiasCats.csv') %>%
+  rename(source = input_data)
+
+# plot
+both_pbias_plot <- pbiasCats %>%
+  ggplot(aes(x = year, 
+             y = year_missing, 
+             fill = pbiasCat)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+   scale_fill_manual(values = c(
+    "Unsatisfactory" = "#F1F4EEFF", 
+    "Satisfactory" = "#EFDDCFFF",
+    "Good" = "#72E1E1FF",
+    "Very good" = "#009474FF"
+  )) +
+  geom_text(aes(label = sprintf("%0.1f", pbias),   # one decimal place
+                color = pbiasCat), 
+            size = 2.75) +
+  scale_color_manual(values = c(
+    "Unsatisfactory" = "black",
+    "Satisfactory"   = "black",
+    "Good"           = "black",
+    "Very good"      = "white"
+  ), guide = "none") + 
+  theme_bw(base_size=18) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  ) +
+  labs(y = "Year excluded",
+       x = 'Year',
+       fill = '% bias')
+
+both_pbias_plot
+
+# ggsave('./figures/pbias_heatmap_whiteft.png',
+#        dpi=800,
+#        width = 10,
+#        height = 6)
+
+```
+
+### Bias legend
+
+```{r}
+
+# plot
+bias_leg <- pbiasCats %>%
+  ggplot(aes(x = year, 
+             y = year_missing, 
+             fill = pbiasCat)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+   scale_fill_manual(values = c(
+    "Unsatisfactory" = "#F1F4EEFF", 
+    "Satisfactory" = "#EFDDCFFF",
+    "Good" = "#72E1E1FF",
+    "Very good" = "#009474FF"
+  )) +
+  geom_text(aes(label = sprintf("%0.1f", pbias),   # one decimal place
+                color = pbiasCat), 
+            size = 2.75) +
+  scale_color_manual(values = c(
+    "Unsatisfactory" = "black",
+    "Satisfactory"   = "black",
+    "Good"           = "black",
+    "Very good"      = "white"
+  ), guide = "none") + 
+  theme_bw(base_size=18) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'right',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  ) +
+  labs(y = "Year excluded",
+       x = 'Year',
+       fill = 'Bias')
+
+bias_leg
+
+# Extract the legend
+leg <- ggpubr::get_legend(bias_leg)
+
+# Convert to ggplot
+leg_gg <- ggpubr::as_ggplot(leg)
+
+# Plot it
+print(leg_gg)
+
+ggsave('./figures/figure4_biasLegend.png',
+       dpi=800,
+       width = 12,
+       height = 8,
+       bg = 'white')
+
+```
+
+## NSE
+
+```{r}
+
+nseCats <- read_csv('./38HRU_dec2024_updates/nseCats.csv') %>%
+  rename(source = input_data)
+
+both_nse_plot <- nseCats %>%
+  ggplot(aes(x = year, 
+             y = year_missing, 
+             fill = nseCat)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  scale_fill_manual(values = c(
+    "Unsatisfactory" = "#F1F4EEFF", 
+    "Satisfactory"  = "#EFDDCFFF",
+    "Good"          = "#72E1E1FF",
+    "Very good"     = "#009474FF"
+  )) +
+  geom_text(aes(label = sprintf("%.2f", nse), color = nseCat), 
+            size = 2.75) +
+  scale_color_manual(values = c(
+    "Unsatisfactory" = "black",
+    "Satisfactory"   = "black",
+    "Good"           = "black",
+    "Very good"      = "white"
+  ), guide = "none") +
+  theme_bw(base_size=18) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  ) +
+  labs(y = "Year excluded",
+       x = 'Year',
+       fill = 'NSE')
+
+both_nse_plot
+
+# ggsave('./figures/nse_heatmap_both_cats_whiteft.png',
+#        dpi=600,
+#        width = 10,
+#        height = 6)
+
+```
+
+### NSE legend
+
+```{r}
+
+nse_leg <- nseCats %>%
+  ggplot(aes(x = year, 
+             y = year_missing, 
+             fill = nseCat)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  scale_fill_manual(values = c(
+    "Unsatisfactory" = "#F1F4EEFF", 
+    "Satisfactory"  = "#EFDDCFFF",
+    "Good"          = "#72E1E1FF",
+    "Very good"     = "#009474FF"
+  )) +
+  geom_text(aes(label = sprintf("%.2f", nse), color = nseCat), 
+            size = 2.75) +
+  scale_color_manual(values = c(
+    "Unsatisfactory" = "black",
+    "Satisfactory"   = "black",
+    "Good"           = "black",
+    "Very good"      = "white"
+  ), guide = "none") +
+  theme_bw(base_size=18) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'right',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+    legend.margin = margin(t = -8, b = -4, unit = "pt")
+  ) +
+  labs(y = "Year excluded",
+       x = 'Year',
+       fill = 'NSE')
+
+nse_leg
+
+# Extract the legend
+leg <- ggpubr::get_legend(nse_leg)
+
+# Convert to ggplot
+leg_gg <- ggpubr::as_ggplot(leg)
+
+# Plot it
+print(leg_gg)
+
+ggsave('./figures/figure4_nseLegend.png',
+       dpi=800,
+       width = 12,
+       height = 8,
+       bg = 'white')
+
+```
+
+
+## Combine
+
+```{r}
+
+# Top plot - KGE
+top_plot <- both_kge_plot +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "none",
+    plot.margin = margin(5, 5, 5, 40)   # add space on the left
+  )
+
+# Middle plot - Bias
+middle_plot <- both_pbias_plot +
+  theme(
+    strip.text = element_blank(),
+    axis.title.x = element_blank(),
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "none",
+    plot.margin = margin(5, 5, 5, 40)   # add space on the left
+  )
+
+# Bottom plot - NSE
+bottom_plot <- both_nse_plot +
+  theme(
+    strip.text = element_blank(),
+    legend.position = "none",
+    plot.margin = margin(5, 5, 5, 40)   # add space on the left
+  )
+
+# Combine plots
+final_grid <- plot_grid(
+  top_plot,
+  middle_plot,
+  bottom_plot,
+  ncol = 1,
+  labels = c("a) KGE", "b) Bias", "c) NSE"),
+  label_size = 16,
+  label_fontface = "bold",
+  label_x = -0.03,
+  label_y = 1.04,
+  rel_heights = c(1.1, 1, 1.2),
+  align = "v",
+  axis = "l"
+) 
+
+final_grid_add <- final_grid +
+  theme(plot.margin = margin(20, 5, 5, 5))
+  
+# ggsave('./figures/figure4_main.pdf',
+#        dpi=800,
+#        width = 10,
+#        height = 14,
+#        bg='white')
+
+```
+
+# Figure 5
+
+```{r}
+
+```
+
+# Figure 6
+
+# Figure 7
+
+# Figure 8
+
+# Figure 9
+
+# Figure 10
+
+# Figure 11
+
