@@ -1497,6 +1497,10 @@ stats <- gw %>%
 
 # Figure 7
 
+HRU low and high for 2016
+HRU high = 18
+HRU low = 19
+
 ```{r}
 
 statn_hi <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_18.csv') %>% 
@@ -1672,12 +1676,546 @@ ggsave('./figures/figure7.png',
 
 ```
 
-
 # Figure 8
+
+```{r}
+
+flow <- read_csv('./38HRU_dec2024_updates/discharge_all.csv') %>%
+  replace(.==-9999, NA) %>%
+  rename(date = time) %>%
+  mutate(date = mdy(date)) %>%
+  drop_na()
+
+flow_pivot <- flow %>%
+  pivot_longer(!date, names_to = 'cal_run', values_to = 'q_m3s') %>%
+  mutate(year = as.factor(year(date))) %>%
+  filter(cal_run %in% c('grid_all',
+                        'statn_all',
+                        'obs'
+                        #'statn_2016',
+                        #'grid_2016'
+                        )) %>%
+  mutate(cal_run = case_match(cal_run,
+                            'grid_all' ~ 'Gridded',
+                            'statn_all' ~ 'Station',
+                            'obs' ~ 'Observed'
+                          # 'statn_2016' ~ 'statn_2016',
+                          #  'grid_2016' ~ 'grid_2016'
+  ))
+
+# 2016 hydrograph
+flowEg <- flow_pivot %>%
+  filter(year %in% c(2016)) %>%
+  ggplot(aes(x = date,
+             y = q_m3s, 
+             color = cal_run,
+             linetype = cal_run)) + 
+  geom_line(size = 1, alpha = 1) + 
+  theme_bw(base_size = 20) +
+  scale_color_manual(values = c("Gridded" = "#0047AB", 
+                                "Observed" = "black", 
+                                "Station" = "orange"
+                               # 'statn_2016' = 'orange',
+                              #  'grid_2016' = '#0047AB'
+                                )) +
+  scale_linetype_manual(values = c("Gridded" = "solid",
+                                   "Observed" = "dashed", 
+                                   "Station" = "solid"
+                                   #'statn_2016' = 'twodash',
+                               #'grid_2016' = 'twodash'
+)) +
+  labs(x = element_blank(),
+       y = "Streamflow (cms)") +
+   scale_x_date(date_labels = "%b",
+               date_breaks = "1 month") +
+  theme(
+    legend.position = c(0.9, 0.85),
+    legend.text = element_text(size = 14),
+    legend.key.width = unit(2, "lines"),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 2, r = 20, b = 2, l = 10)
+  )
+
+flowEg
+
+# 2016 flow partition
+gw_gridall <- read_csv(here('38HRU_dec2024_updates/catchment_output/grid_all.csv'), skip = 3) %>%
+  slice(-c(1,2)) %>%
+  dplyr::select(time,
+                catchmentRD1_w, 
+                catchmentRD2_w, 
+                catchmentRG1_w, 
+                catchmentRG2_w) %>%
+  mutate(source = 'grid_all') %>%
+  mutate(across(c(catchmentRD1_w, 
+                  catchmentRD2_w, 
+                  catchmentRG1_w, 
+                  catchmentRG2_w), 
+                as.numeric))
+
+gw_statnall <- read_csv(here('38HRU_dec2024_updates/catchment_output/statn_all.csv'), skip = 3) %>%
+  slice(-c(1,2)) %>%
+  dplyr::select(time, 
+                catchmentRD1_w, 
+                catchmentRD2_w, 
+                catchmentRG1_w, 
+                catchmentRG2_w) %>%
+  mutate(source = 'statn_all') %>%
+  mutate(across(c(catchmentRD1_w, 
+                  catchmentRD2_w, 
+                  catchmentRG1_w, 
+                  catchmentRG2_w), 
+                as.numeric))
+
+# combine the two above
+gw <- bind_rows(
+  gw_gridall, gw_statnall) %>%
+  mutate(date = mdy(time),
+         year = year(date)) %>%
+  arrange(date) %>%
+  group_by(year, source) %>%
+  mutate(RD1cumsum = cumsum(catchmentRD1_w),
+         RD2cumsum = cumsum(catchmentRD2_w),
+         RG1cumsum = cumsum(catchmentRG1_w),
+         RG2cumsum = cumsum(catchmentRG2_w))
+
+example <- gw %>%
+  filter(year == 2016) %>%
+  ungroup() %>% 
+  dplyr::select(date, source,
+         RD1cumsum,
+         RD2cumsum,
+         RG1cumsum,
+         RG2cumsum) %>%
+  pivot_longer(!c(date,source), names_to='flow_type',
+               values_to='flow_cms') %>%
+  mutate(source = if_else(source == 'grid_all',
+                          'Gridded',
+                          'Station'))
+
+# some 2016 stats
+flow16Stats <- example %>%
+  filter(date == '2016-12-31') %>%
+  group_by(source) %>%
+  mutate(sum = sum(flow_cms)) %>%
+  mutate(percTot = (flow_cms/sum)*100) %>%
+  mutate(percTot = round(percTot, 2))
+  
+
+facet_labels <- c('yr_cum_RD1' = 'Surface runoff',
+                  'yr_cum_RD2' = 'Interflow',
+                  'yr_cum_RG1' = 'Fast groundwater',
+                  'yr_cum_RG2' = 'Slow groundwater')
+
+example_yr <- ggplot(example,
+       aes(x=date, y = flow_cms, color=source)) +
+  geom_line() +
+  facet_wrap(~flow_type, 
+             scales = 'free_y',
+             labeller = labeller(flow_type = facet_labels)) +
+   geom_line(size=1, alpha=0.7) +  
+  scale_color_manual(values = c("#0047AB", "orange")) +
+    scale_x_date(date_labels = "%b", 
+               date_breaks = "2 month") +
+  labs(x=element_blank(),
+       y='mm of water') +
+  theme_bw(base_size = 16) +
+  theme(
+    legend.position = 'none',
+    legend.text = element_text(size = 12),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(t = 2, r = 20, b = 10, l = 10)
+  )
+
+example_yr
+
+plot_grid(flowEg,
+          example_yr,
+          ncol=1)
+
+ggsave('./figures/figure8.png',
+       dpi=800,
+       width=10,
+       height=8)
+
+
+```
 
 # Figure 9
 
+```{r}
+
+# params that were cal w/ burned areas
+combo <- read_csv('./38HRU_dec2024_updates/params_burn_unburn.csv')
+
+# read in pbias and nse cats
+pbias <- read_csv('./38HRU_dec2024_updates/pbiasCats.csv') %>%
+  filter(year == c('All')) %>%
+  dplyr::select(input_data, year_missing, pbias)
+
+nse <- read_csv('./38HRU_dec2024_updates/nseCats.csv') %>%
+  filter(year == c('All')) %>%
+  dplyr::select(input_data, year_missing, nse)
+
+perf <- left_join(nse, pbias, by = c('input_data',
+                                     'year_missing'))
+
+# assign categories
+perf <- perf %>%
+  mutate(performance = case_when(
+                                nse < 0.5 & abs(pbias) >= 25 ~ 'Neither',
+                                nse > 0.5 & abs(pbias) >= 25 ~ 'NSE',
+                                nse < 0.5 & abs(pbias) < 25 ~ '% bias satisfactory',
+                                nse > 0.5 & abs(pbias) < 25 ~ 'NSE + % bias satisfactory')) %>%
+  mutate(input_data = if_else(input_data == 'grid',
+                              'Gridded', 'Station'),
+         year_missing = if_else(year_missing == 'None',
+                                'all', year_missing))
+perf1 <- perf %>%
+  mutate(year_missing = if_else(year_missing == 'all',
+                                'none',
+                                year_missing))
+
+combo <- left_join(combo,
+                        perf1,
+                        by = c('input_data',
+                               'year_missing'))
+
+# reorder the params
+# combo$param <- factor(combo$param, levels = c("a_snow",
+#                                                         "a_rain",
+#                                                         "soilMaxInfSummer",
+#                                                         "soilMaxDPS",
+#                                                         "lagSurfaceRunoff",
+#                                                         "soilDistMPSLPS"))
+combo <- combo %>%
+  mutate(param = fct_recode(param,
+    "a_rain (mm)" = "a_rain",
+    "a_snow (mm)" = "a_snow",
+    "soilMaxInfSummer (mm/day)" = "soilMaxInfSummer",
+    "soilMaxDPS (mm)" = "soilMaxDPS",
+    "lagSurfaceRunoff" = "lagSurfaceRunoff",
+    "soilDistMPSLPS" = "soilDistMPSLPS"
+  ))
+
+# text above boxplots - this is from Tukey analysis that was already run below then added to params
+combo <- combo %>%
+  group_by(param, burn, input_data) %>%
+  mutate(y_text = max(value, na.rm = TRUE) * 1.08) %>%  # Slightly above max value
+  ungroup()
+
+ggplot(combo, aes(x = burn, y = value, fill = input_data)) +
+  geom_boxplot(alpha = 0.8, 
+               outliers = F) +
+  geom_text(aes(label = letter, y = y_text), 
+            position = position_dodge(width = 0.75),  # Align with boxplots
+            size = 6, 
+            vjust = 0) +  
+  geom_jitter(aes(shape = performance),
+            position = position_jitterdodge(
+    jitter.width = 0.1,
+    dodge.width = 0.75),
+            size = 2.5, 
+            alpha = 0.6,
+            stroke = 1,
+            color = "black") +
+  scale_shape_manual(values = c(
+  "% bias satisfactory" = 1,
+  "NSE + % bias satisfactory" = 16)) +
+  facet_wrap(~param, 
+             scales = 'free_y',
+             strip.position = 'left') +
+  labs(y = element_blank(), x = element_blank()) +
+  theme_bw(base_size = 20) +
+  scale_fill_manual(values = c("#0047AB", "orange")) +
+  theme(
+    legend.position = 'bottom',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.placement = 'outside',
+    axis.title.y = element_blank()
+  ) +
+   scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
+
+ggsave('./figures/figure9.png',
+       dpi=800,
+       width = 12,
+       height = 8)
+
+
+```
+
 # Figure 10
 
-# Figure 11
+```{r}
+
+
+unburn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_2_unburn.csv') %>%
+  mutate(date = mdy(time),
+         year = year(date),
+         type = 'unburn') %>%
+  filter(year == 2016)
+
+burn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_5_burn.csv') %>%
+  mutate(date = mdy(time),
+         year = year(date),
+         type = 'burn') %>%
+  filter(year == 2016)
+
+both <- bind_rows(unburn, burn)
+
+# interception
+inter <- both %>%
+  dplyr::select(date, type, intercStorage)
+
+# swe
+swe <- both %>%
+  dplyr::select(date, type, snowTotSWE)
+
+p <- both %>%
+  dplyr::select(date, type, precip) %>%
+  group_by(type) %>%
+  mutate(p_cumu = cumsum(precip))
+
+# soil sat
+soilsat <- both %>%
+  dplyr::select(date, type, soilSat)
+
+# surface runoff
+runoff <- both %>%
+  dplyr::select(date, type, outRD1)
+
+# interflow
+interflow <- both %>%
+  dplyr::select(date, type, outRD2) %>%
+  mutate(interflow_cum = cumsum(outRD2))
+
+gw <- both %>%
+  dplyr::select(date, type, outRG1) %>%
+  mutate(gw_cumu = cumsum(outRG1))
+
+# dps
+dps <- both %>%
+  dplyr::select(date, type, actDPS)
+
+# mps
+mps <- both %>%
+  dplyr::select(date, type, soilSatMPS)
+
+# lps
+lps <- both %>%
+  dplyr::select(date, type, soilSatLPS)
+
+# soil sat
+soilsat <- both %>%
+  dplyr::select(date, type, soilSat)
+
+## make the actual plot
+p_plot <- ggplot(p, aes(x = date,
+                        y = p_cumu, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.8) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Precipitation (mm)') +
+  theme_bw(base_size = 18) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 12),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+p_plot
+
+inter <- inter %>%
+  mutate(type = factor(type, levels = c("unburn", "burn")))
+
+int_plot <- ggplot(inter, aes(x = date,
+                        y = intercStorage, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Interception (mm)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+int_plot
+
+soilsat_plot <- ggplot(soilsat, aes(x = date,
+                        y = soilSat, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Soil saturation') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+soilsat_plot
+
+interflow_plot <- ggplot(interflow, aes(x = date,
+                        y = interflow_cum, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Interflow (L)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+interflow_plot
+
+gw_plot <- ggplot(gw, aes(x = date,
+                        y = gw_cumu, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'Shallow groundwater (L)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+gw_plot
+
+swe_plot <- ggplot(swe, aes(x = date,
+                        y = snowTotSWE, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'SWE (mm)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+swe_plot
+
+legend <- cowplot::get_plot_component(p_plot, "guide-box", return_all = TRUE)[[3]]
+
+p_plot <- p_plot + theme(legend.position = "none")
+int_plot <- int_plot + theme(legend.position = "none")
+soilsat_plot <- soilsat_plot + theme(legend.position = "none")
+interflow_plot <- interflow_plot + theme(legend.position = "none")
+gw_plot <- gw_plot + theme(legend.position = "none")
+swe_plot <- swe_plot + theme(legend.position = "none")
+
+
+plots <- plot_grid(p_plot,
+          int_plot,
+          swe_plot,
+          soilsat_plot,
+          interflow_plot,
+          gw_plot,
+          ncol = 3)
+
+final_plot <- plot_grid(
+  plots,
+  legend,
+  ncol = 1,
+  rel_heights = c(1, 0.07)  # Adjust height of legend
+)
+
+final_plot
+
+ggsave('./figures/figure10.png',
+       dpi=800,
+       bg='white',
+       height=8,
+       width=12)
+
+
+```
+
 
