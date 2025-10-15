@@ -1256,16 +1256,16 @@ ggsave('./figures/figure5_wlimits.png',
 
 # show rest of params for supplemental
 # first take area weighted params (except lagSurfaceRunoff, a_rain, a_snow since that is already shown in main fig)
-otherParamsWeighted <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv') %>%
+otherParamsWeighted <- read_csv('./38HRU_dec2024_updates/updated_wranges/params_weighted_dec2024_ranges.csv') %>%
   filter(!param %in% c('lagSurfaceRunoff',
                        'a_rain',
                        'a_snow')) %>%
   rename(value = area_weighted_average,
          input_data = source) %>%
-  dplyr::select(param, input_data, value)
+  dplyr::select(param, input_data, value, min, max)
   
 # params that were not affected by burn
-otherParams <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
+otherParams <- read_csv('./38HRU_dec2024_updates/updated_wranges/params_unburn_ranges.csv') %>%
   filter(!param %in% c('soilOutLPS',
                        'snow_trs',
                        'lagInterflow',
@@ -1276,13 +1276,23 @@ otherParams <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
                        'a_snow',
                        'soilLatVertLPS')) %>% # these are the ones already shown
   filter(!param %in% otherParamsWeighted$param) %>% # there are the ones that need to be area weighted
-  dplyr::select(param, input_data, value)
+  dplyr::select(param, input_data, value, min, max)
 
 # now join the area weighted other to the other params
 otherParams <- bind_rows(otherParams, otherParamsWeighted)
 
-# plot the remaning params for catchment
-ggplot(otherParams, aes(x=input_data, y=value, fill=input_data)) +
+# Create a summary dataframe for hlines
+lines_df <- otherParams %>%
+  dplyr::group_by(param) %>%
+  dplyr::summarize(min_val = min(value, na.rm = TRUE),
+                   max_val = max(value, na.rm = TRUE))
+
+# supp info plot
+ggplot(otherParams, aes(x = input_data, y = value, fill = input_data)) +
+  geom_hline(data = lines_df, aes(yintercept = min_val), 
+             linetype = "dashed", color = "grey70") +
+  geom_hline(data = lines_df, aes(yintercept = max_val), 
+             linetype = "dashed", color = "grey70") +
   geom_boxplot(alpha=0.8,
                 outlier.colour = "black") +
   facet_wrap(~param, scales = 'free_y',
@@ -1312,7 +1322,7 @@ ggplot(otherParams, aes(x=input_data, y=value, fill=input_data)) +
     axis.text = element_text(color = "black"),
     #strip.text = element_blank()
   ) +
-  scale_y_continuous(expand = expansion(mult = c(0.001, 0.3)))
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) 
 
 ggsave('./figures/remainingparams_boxplots_SUPP.png',
        dpi=600,
@@ -2218,4 +2228,80 @@ ggsave('./figures/figure10.png',
 
 ```
 
+# Figure 11
+
+```{r}
+
+perf <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/perf_metrics.csv')
+
+perf <- perf %>%
+  pivot_wider(names_from=metric,
+               values_from=value) %>%
+  filter(year == 'All')
+
+perf1 <- perf %>%
+  mutate(type = case_when(
+    str_detect(model_run, "grid") ~ "Gridded",
+    str_detect(model_run, "statn") ~ "Station"))
+
+nse_kge <- ggplot(perf1, aes(x=KGE, y=NSE, color=type)) + 
+  #geom_point(size=4, alpha=0.7) +
+   geom_jitter(size = 4, alpha = 0.7, width = 0.05, height = 0.05) +
+  theme_bw(base_size=20) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
+  theme(
+    legend.position = 'bottom',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    panel.grid.major.x = element_blank()  # remove vertical major grid lines
+   # panel.grid.minor.x = element_blank(),
+    #panel.grid.minor = element_blank()      # remove all minor grid lines
+    
+  )
+
+nse_kge
+
+
+pbias_kge <- ggplot(perf1, aes(x=KGE, y=pbias, color=type)) + 
+  #geom_point(size=4, alpha=0.8) +
+  geom_jitter(size = 4, alpha = 0.7, width = 0.001, height = 0.001) +
+  theme_bw(base_size=20) +
+  scale_color_manual(values = c("#0047AB", "orange")) +
+  labs(y = '% bias') +
+  theme(
+    legend.position = 'bottom',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    panel.grid.major.x = element_blank()  # remove vertical major grid lines
+   # panel.grid.minor.x = element_blank(),
+    #panel.grid.minor = element_blank()      # remove all minor grid lines
+    
+  )
+
+pbias_kge
+
+library(patchwork)
+
+combined_plot <- nse_kge + pbias_kge + 
+  plot_layout(ncol = 2, guides = "collect") & 
+  theme(legend.position = 'bottom')
+
+combined_plot
+
+# ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_nse_pbias.png',
+#        dpi=600,
+#        width=10,
+#        height=6)
+
+```
 
