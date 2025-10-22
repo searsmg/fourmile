@@ -1,0 +1,190 @@
+---
+title: "precip_statn"
+author: "Megan Sears"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+
+```
+
+# Precip gauges
+GH, LM, SE, SP, ST were missing 2016-2020 so that is in next chunk
+
+```{r}
+
+prec <- read_csv('/Users/megansears/Documents/Repos/fourmile/data/Archive/files_to_edit/precipAll_statn.csv')
+
+#daily precip
+precall <- prec %>%
+  mutate(date = dmy(date),
+         doy = yday(date)) %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
+  filter(year > 2009) %>% 
+  mutate_at(c('Gordon_South', 'Gordon_North',
+              'GH', 'LM', 'SE', 'SP', 'ST', 'NADP_SL'),
+            ~(ifelse(!month %in% c(6:9),
+                               NA, .))) # make NA if not in 6:9 month
+
+# need to add betasso
+bet_rain <- bet_met %>%
+  dplyr::select(c(5,6)) %>%
+  rename(Betasso_rain = 1) %>%
+  mutate(date = as.Date(DATE_TIME)) %>%
+  group_by(date) %>%
+  summarize(Betasso = sum(Betasso_rain)) %>%
+  filter(date > '2009-12-31') %>%
+  mutate(month = month(date)) %>%
+  mutate(Betasso = if_else(!month %in% 6:9, NA_real_, Betasso)) # make NA if not in 6:9 month
+
+
+precall <- full_join(precall, bet_rain, by = 'date')
+# precall includes all the precip gauges now
+# it also has filtered the TBs out for months !6:9
+# but the TBs are missing 2016 - 2020 data which is in updated_precip_2016to2020.xlsx
+
+# formatting to get ready for Ages
+precallFormat <- precall %>%
+  select(-c(doy, year, month.x, month.y)) %>%
+  mutate(across(everything(), ~ replace_na(., as.integer(-9999)))) %>%
+  mutate(date = format(date, '%d.%m.%Y'))
+  
+write.csv(precallFormat, 
+          '/Users/megansears/Documents/Repos/fourmile/data/Archive/files_to_edit/precipStatn_noWinterTB_TBmissing16&20.csv')
+
+```
+
+# TBs that were missing 2016-2020
+
+```{r}
+
+missingP <- read_csv('./data/Archive/files_to_edit/updated_precip_2016to20_mm.csv')
+
+# for TBs: "(two records a day if no precipitation, but additional data if there was precipitation- one record for each tip of the tipping bucket)"
+# above is from Sheila Murphy in the UCFCD directions (saved in this folder)
+
+gh <- missingP %>%
+  select(date = GH_date, GH) %>%
+  mutate(date = mdy(date)) %>%
+  arrange(date) %>%
+  group_by(date) %>% # group by date since several tips per day can happen
+  summarize(GH = sum(GH)) %>% # sum by day
+  filter(date < '2021-01-01') %>% # filter anything later than 1 Jan 2021
+  complete(date =
+             seq.Date(min(date), 
+                      max(ymd('2020-12-31')), 
+                      by = "day")) # fill in missing dates
+
+lm <- missingP %>%
+  select(date = LM_date, LM) %>%
+  mutate(date = mdy(date)) %>%
+  arrange(date) %>%
+  group_by(date) %>%
+  summarize(LM = sum(LM)) %>%
+  filter(date < '2021-01-01') %>%
+  complete(date =
+             seq.Date(min(date), 
+                      max(ymd('2020-12-31')), 
+                      by = "day"))
+
+se <- missingP %>%
+  select(date = SE_date, SE) %>%
+  mutate(date = mdy(date)) %>%
+  arrange(date) %>%
+  group_by(date) %>%
+  summarize(SE = sum(SE)) %>%
+  filter(date < '2021-01-01') %>%
+  complete(date =
+             seq.Date(min(date), 
+                      max(ymd('2020-12-31')), 
+                      by = "day"))
+
+sp <- missingP %>%
+  select(date = SP_date, SP) %>%
+  mutate(date = mdy(date)) %>%
+  arrange(date) %>%
+  group_by(date) %>%
+  summarize(SP = sum(SP)) %>%
+  filter(date < '2021-01-01') %>%
+  complete(date =
+             seq.Date(min(date), 
+                      max(ymd('2020-12-31')), 
+                      by = "day"))
+
+st <- missingP %>%
+  select(date = ST_date, ST) %>%
+  mutate(date = mdy(date)) %>%
+  arrange(date) %>%
+  group_by(date) %>%
+  summarize(ST = sum(ST)) %>%
+  filter(date < '2021-01-01') %>%
+  complete(date =
+             seq.Date(min(date), 
+                      max(ymd('2020-12-31')), 
+                      by = "day"))
+
+# combine as all TBs as 1 df
+dfs <- list(gh,
+            lm,
+            se,
+            sp,
+            st)
+
+# Perform left joins in sequence
+tbAll <- reduce(dfs, 
+                left_join, 
+                by = "date")
+
+# tbAll is GH,LM,SE,SP,ST tipping buckets for 2016-2020
+# after looking at a summary of tbAll the following TBs have too high readings randomly
+# GH, SP ST
+# LM and and SE maxes were 26 and 27 mm per day
+# GH had two readings at 949 and 403 - the next smallest max was 29.5 so filtered it by 30
+# SP had one reading at 1208, next smallest max was 25.4 so filtered by 26
+# ST had many readings greater than 30 (some very large), if there was no precip at any of the other gauges
+# and it was larger than ~25 then I assumed it was not real so used 24.5 as filter 
+# since the next max that also occurred when other gauges had readings
+
+tbAllFormat <- tbAll %>%
+  mutate(GH = if_else(GH > 30.0, NA, GH),
+         SP = if_else(SP > 26.0, NA, SP),
+         ST = if_else(ST > 24.5, NA, ST))
+
+# now start to format for Ages inputs
+# -9999 for NA
+# date should be dd.mm.yyyy
+tbAllFormat <- tbAllFormat %>%
+  mutate(across(everything(), ~ replace_na(., as.integer(-9999)))) %>%
+  mutate(month = month(date)) %>%
+  mutate(
+    across(2:6, ~ if_else(!month %in% 6:9, -9999, .))) %>%
+  select(-month) %>% 
+  mutate(date = format(date, '%d.%m.%Y'))
+
+write.csv(tbAllFormat,
+          '/Users/megansears/Documents/Repos/fourmile/data/Archive/files_to_edit/tb16to20_formatted.csv')
+
+
+```
+
+# Prism supplement
+
+```{r}
+
+prismSupp <- read_csv('/Users/megansears/Documents/Repos/fourmile/data/Archive/files_to_edit/prismForStatn.csv') %>%
+  mutate(date = dmy(date)) %>%
+  mutate(month = month(date)) %>%
+  mutate(
+    across(2:8, ~ if_else(month %in% 6:9, -9999, .))) %>%
+  select(-month) %>%
+  mutate(date = format(date, '%d.%m.%Y'))
+
+write.csv(prismSupp,
+          '/Users/megansears/Documents/Repos/fourmile/data/Archive/files_to_edit/prismForStatn_formatted.csv')
+
+```
+
