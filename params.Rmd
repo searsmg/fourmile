@@ -253,15 +253,15 @@ ggsave('./figures/remainingparams_boxplots.png',
 
 ```{r}
 
-combo <- read_csv('./38HRU_dec2024_updates/params_burn_unburn.csv') %>%
+combo <- read_csv('./38HRU_oct2025_updates/params_burn_unburn.csv') %>%
   mutate(burn = if_else(burn == "yes", "Burned", "Unburned"),
          input_data = if_else(input_data =='grid', 
                               'Gridded',
                               'Station'))
 
 
-#write_csv(combo, './38HRU_dec2024_updates/params_burn_unburn.csv')
-combo <- read_csv('./38HRU_dec2024_updates/params_burn_unburn.csv')
+#write_csv(combo, './38HRU_oct2025_updates/params_burn_unburn.csv')
+combo <- read_csv('./38HRU_oct2025_updates/params_burn_unburn.csv')
 
 ggplot(combo, aes(x = value, fill = input_data)) +
   geom_density(alpha = 0.6) +
