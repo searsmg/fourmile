@@ -610,7 +610,7 @@ plot_bottom12
 plot_grid(plot, plot_bottom12, ncol = 1)
 
 # export
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/resids.png',
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/resids_oct2025.png',
        dpi=600,
        width = 12,
        height = 8)
@@ -659,7 +659,7 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/resids_option2.png',
 
 ```{r}
 
-flow <- read_csv('./discharge_all.csv') %>%
+flow <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_oct2025_updates/discharge_all.csv') %>%
   replace(.==-9999, NA) %>%
   rename(date = time) %>%
   mutate(date = mdy(date)) %>%
