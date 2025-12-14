@@ -16,6 +16,7 @@ library(plotly)
 library(kableExtra)
 library(hydroGOF)
 library(here)
+library(sf)
 library(scales)
 library(tmap)
 library(ggpubr)
@@ -43,7 +44,7 @@ Streamflow and climate overview
 ```{r}
 # Note, it is OK these are pulling from the sept2013 udpate and not dec2024
 # because the climate outputs will not change due to changed  obs streamflow (removed 2013 flood Q)
-grid <- read_csv("./38HRU_sept2013_updates/grid_all_Catchment.csv",
+grid <- read_csv("./38HRU_oct2025_updates/grid_all_Catchment.csv",
                  skip=3) %>%
    slice(3:n()) %>%
   dplyr::select(-starts_with('@'),
@@ -53,7 +54,7 @@ grid <- read_csv("./38HRU_sept2013_updates/grid_all_Catchment.csv",
   mutate_if(is.character, as.numeric) %>% 
   mutate(site = 'grid')
 
-statn <- read_csv('./38HRU_sept2013_updates/statn_all_Catchment.csv',
+statn <- read_csv('./38HRU_oct2025_updates/statn_all_Catchment.csv',
                  skip=3) %>%
    slice(3:n()) %>%
   dplyr::select(-starts_with('@'),
@@ -239,7 +240,7 @@ Add in streamflow to 4 panel met
 
 ```{r}
 
-flow <- read_csv('./38HRU_dec2024_updates/discharge_all.csv') %>%
+flow <- read_csv('./38HRU_oct2025_updates/discharge_all.csv') %>%
   replace(.==-9999, NA) %>%
   rename(date = time) %>%
   mutate(date = mdy(date)) %>%
@@ -325,7 +326,7 @@ hru_new <- st_read('./data/GIS/hrus_final.shp')
 
 # grid first
 read_ages_grid <- function(filename){
-  read_csv(file.path("./38HRU_sept2013_updates/HRU_output/grid/", 
+  read_csv(file.path("./38HRU_oct2025_updates/HRU_output/grid/", 
                      filename), skip = 3) %>%
   slice(3:n()) %>%
   dplyr::select(-starts_with('@'),
@@ -337,7 +338,7 @@ read_ages_grid <- function(filename){
 }
 
 #pull in all filenames with HRU in the name
-filenames <- list.files("./38HRU_sept2013_updates/HRU_output/grid/", 
+filenames <- list.files("./38HRU_oct2025_updates/HRU_output/grid/", 
                         pattern="HRU", 
                         full.names=F)
 
@@ -353,7 +354,7 @@ hru_grids <- dataframes %>%
 
 # statn next
 read_ages_statn <- function(filename){
-  read_csv(file.path("./38HRU_sept2013_updates/HRU_output/statn/", 
+  read_csv(file.path("./38HRU_oct2025_updates/HRU_output/statn/", 
                      filename), skip = 3) %>%
   slice(3:n()) %>%
   dplyr::select(-starts_with('@'),
@@ -365,7 +366,7 @@ read_ages_statn <- function(filename){
 }
 
 #pull in all filenames with HRU in the name
-filenames <- list.files("./38HRU_sept2013_updates/HRU_output/statn/", 
+filenames <- list.files("./38HRU_oct2025_updates/HRU_output/statn/", 
                         pattern="HRU", 
                         full.names=F)
 
@@ -556,7 +557,7 @@ final_plot <- plot_grid(title,
 
 final_plot
 
-ggsave(filename = "./figures/figure3.pdf",
+ggsave(filename = "./figures/figure3_oct25.pdf",
        plot = final_plot,
        dpi = 800,
        bg = 'white',
@@ -573,7 +574,7 @@ ggsave(filename = "./figures/figure3.pdf",
 ```{r}
 
 # read in KGE values (all_kge also has nse and bias even tho name says otherwise)
-flow_plot <- read_csv('./38HRU_dec2024_updates/all_kge.csv') %>%
+flow_plot <- read_csv('./all_kge.csv') %>%
   filter(metric == 'KGE') %>%
   dplyr::select(-metric) %>%
   rename(kge = value)
@@ -735,8 +736,8 @@ ggsave('./figures/figure4_kgeLegend.png',
 
 ```{r}
 
-pbiasCats <- read_csv('./38HRU_dec2024_updates/pbiasCats.csv') %>%
-  rename(source = input_data)
+pbiasCats <- read_csv('./pbiasCats.csv') #%>%
+  #rename(source = input_data)
 
 # plot
 both_pbias_plot <- pbiasCats %>%
@@ -800,12 +801,15 @@ bias_leg <- pbiasCats %>%
              fill = pbiasCat)) +
   geom_tile(color = "white") +
   facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
-   scale_fill_manual(values = c(
+scale_fill_manual(
+  breaks = c("Very good", "Good", "Satisfactory", "Unsatisfactory"),
+  values = c(
     "Unsatisfactory" = "#F1F4EEFF", 
-    "Satisfactory" = "#EFDDCFFF",
-    "Good" = "#72E1E1FF",
-    "Very good" = "#009474FF"
-  )) +
+    "Satisfactory"  = "#EFDDCFFF",
+    "Good"          = "#72E1E1FF",
+    "Very good"     = "#009474FF"
+  )
+)+
   geom_text(aes(label = sprintf("%0.1f", pbias),   # one decimal place
                 color = pbiasCat), 
             size = 2.75) +
@@ -846,7 +850,7 @@ leg_gg <- ggpubr::as_ggplot(leg)
 # Plot it
 print(leg_gg)
 
-ggsave('./figures/figure4_biasLegend.png',
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure4_biasLegend.png',
        dpi=800,
        width = 12,
        height = 8,
@@ -858,8 +862,8 @@ ggsave('./figures/figure4_biasLegend.png',
 
 ```{r}
 
-nseCats <- read_csv('./38HRU_dec2024_updates/nseCats.csv') %>%
-  rename(source = input_data)
+nseCats <- read_csv('./nseCats.csv') #%>%
+  #rename(source = input_data)
 
 both_nse_plot <- nseCats %>%
   ggplot(aes(x = year, 
@@ -920,12 +924,15 @@ nse_leg <- nseCats %>%
              fill = nseCat)) +
   geom_tile(color = "white") +
   facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
-  scale_fill_manual(values = c(
+scale_fill_manual(
+  breaks = c("Very good", "Good", "Satisfactory", "Unsatisfactory"),
+  values = c(
     "Unsatisfactory" = "#F1F4EEFF", 
     "Satisfactory"  = "#EFDDCFFF",
     "Good"          = "#72E1E1FF",
     "Very good"     = "#009474FF"
-  )) +
+  )
+)+
   geom_text(aes(label = sprintf("%.2f", nse), color = nseCat), 
             size = 2.75) +
   scale_color_manual(values = c(
@@ -965,14 +972,13 @@ leg_gg <- ggpubr::as_ggplot(leg)
 # Plot it
 print(leg_gg)
 
-ggsave('./figures/figure4_nseLegend.png',
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure4_nseLegend.png',
        dpi=800,
        width = 12,
        height = 8,
        bg = 'white')
 
 ```
-
 
 ## Combine
 
@@ -1025,12 +1031,14 @@ final_grid <- plot_grid(
 
 final_grid_add <- final_grid +
   theme(plot.margin = margin(20, 5, 5, 5))
+
+final_grid_add
   
-# ggsave('./figures/figure4_main.pdf',
-#        dpi=800,
-#        width = 10,
-#        height = 14,
-#        bg='white')
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure4_main_oct2025.pdf',
+       dpi=800,
+       width = 10,
+       height = 14,
+       bg='white')
 
 ```
 
@@ -1039,7 +1047,7 @@ final_grid_add <- final_grid +
 ```{r}
 
 # params area weighted (only for lagSurfaceRunoff, a_rain, a_snow)
-params <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv') %>%
+params <- read_csv('./38HRU_oct2025_updates/params_weighted_oct2025.csv') %>%
   filter(param %in% c('lagSurfaceRunoff',
                       'a_rain',
                       'a_snow')) %>% # select params in the top 8 sens that are area weighted
@@ -1048,7 +1056,7 @@ params <- read_csv('./38HRU_dec2024_updates/params_weighted_dec2024.csv') %>%
   dplyr::select(param, input_data, year_missing, value)
 
 # params unburned (above is params that needed to be area weighted bc burn/unburn)
-params_unburn <- read_csv('./38HRU_dec2024_updates/params_unburn.csv') %>%
+params_unburn <- read_csv('./38HRU_oct2025_updates/params_unburn.csv') %>%
   filter(param %in% c('soilOutLPS',
                       'snow_trs',
                       'lagInterflow',
@@ -1067,15 +1075,15 @@ param_sens <- bind_rows(params, params_unburn) %>%
                               'Station'))
 
 # read in pbias categories
-pbias <- read_csv('./38HRU_dec2024_updates/pbiasCats.csv') %>%
+pbias <- read_csv('./38HRU_oct2025_updates/pbiasCats.csv') %>%
   filter(year == c('All')) %>%
-  dplyr::select(input_data, year_missing, pbias)
+  dplyr::select(source, year_missing, pbias)
 
-nse <- read_csv('./38HRU_dec2024_updates/nseCats.csv') %>%
+nse <- read_csv('./38HRU_oct2025_updates/nseCats.csv') %>%
   filter(year == c('All')) %>%
-  dplyr::select(input_data, year_missing, nse)
+  dplyr::select(source, year_missing, nse)
 
-perf <- left_join(nse, pbias, by = c('input_data',
+perf <- left_join(nse, pbias, by = c('source',
                                      'year_missing'))
 
 perf <- perf %>%
@@ -1084,7 +1092,7 @@ perf <- perf %>%
                                 nse > 0.5 & abs(pbias) >= 25 ~ 'NSE',
                                 nse < 0.5 & abs(pbias) < 25 ~ '% bias satisfactory',
                                 nse > 0.5 & abs(pbias) < 25 ~ 'NSE + % bias satisfactory')) %>%
-  mutate(input_data = if_else(input_data == 'grid',
+  mutate(input_data = if_else(source == 'grid',
                               'Gridded', 'Station'),
          year_missing = if_else(year_missing == 'None',
                                 'all', year_missing))
@@ -1162,7 +1170,7 @@ ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
     axis.title.y = element_blank()) +
   scale_y_continuous(expand = expansion(mult = c(0.1, 0.25)))
 
-ggsave('./figures/figure5.png',
+ggsave('./figures/figure5_oct2025.png',
        dpi=600,
        width=12,
        height=8,
@@ -1242,7 +1250,7 @@ ggplot(param_sens, aes(x=input_data, y=value, fill=input_data)) +
     axis.title.y = element_blank()) +
   scale_y_continuous(expand = expansion(mult = c(0.1, 0.25)))
 
-ggsave('./figures/figure5_wlimits.png',
+ggsave('./figures/figure5_wlimits_oct2025.png',
        dpi=600,
        width=12,
        height=8,
@@ -1256,16 +1264,16 @@ ggsave('./figures/figure5_wlimits.png',
 
 # show rest of params for supplemental
 # first take area weighted params (except lagSurfaceRunoff, a_rain, a_snow since that is already shown in main fig)
-otherParamsWeighted <- read_csv('./38HRU_dec2024_updates/updated_wranges/params_weighted_dec2024_ranges.csv') %>%
+otherParamsWeighted <- read_csv('./38HRU_oct2025_updates/updated_wranges/params_weighted_oct2025_ranges.csv') %>%
   filter(!param %in% c('lagSurfaceRunoff',
                        'a_rain',
                        'a_snow')) %>%
   rename(value = area_weighted_average,
          input_data = source) %>%
-  dplyr::select(param, input_data, value, min, max)
+  dplyr::select(param, input_data, value)
   
 # params that were not affected by burn
-otherParams <- read_csv('./38HRU_dec2024_updates/updated_wranges/params_unburn_ranges.csv') %>%
+otherParams <- read_csv('./38HRU_oct2025_updates/updated_wranges/params_unburn_ranges.csv') %>%
   filter(!param %in% c('soilOutLPS',
                        'snow_trs',
                        'lagInterflow',
@@ -1324,7 +1332,7 @@ ggplot(otherParams, aes(x = input_data, y = value, fill = input_data)) +
   ) +
   scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) 
 
-ggsave('./figures/remainingparams_boxplots_SUPP.png',
+ggsave('./figures/remainingparams_boxplots_SUPP_oct2025.png',
        dpi=600,
        height=16,
        width=10)
@@ -1335,7 +1343,7 @@ ggsave('./figures/remainingparams_boxplots_SUPP.png',
 
 ```{r}
 
-gw_gridall <- read_csv(here('38HRU_dec2024_updates/catchment_output/grid_all.csv'), skip = 3) %>%
+gw_gridall <- read_csv(here('38HRU_oct2025_updates/catchment_output/grid_all.csv'), skip = 3) %>%
   slice(-c(1,2)) %>%
   dplyr::select(time,
                 catchmentRD1_w, 
@@ -1349,7 +1357,7 @@ gw_gridall <- read_csv(here('38HRU_dec2024_updates/catchment_output/grid_all.csv
                   catchmentRG2_w), 
                 as.numeric))
 
-gw_statnall <- read_csv(here('38HRU_dec2024_updates/catchment_output/statn_all.csv'), skip = 3) %>%
+gw_statnall <- read_csv(here('38HRU_oct2025_updates/catchment_output/statn_all.csv'), skip = 3) %>%
   slice(-c(1,2)) %>%
   dplyr::select(time, 
                 catchmentRD1_w, 
@@ -1366,7 +1374,7 @@ gw_statnall <- read_csv(here('38HRU_dec2024_updates/catchment_output/statn_all.c
 # combine the two above
 gw <- bind_rows(
   gw_gridall, gw_statnall) %>%
-  mutate(date = mdy(time),
+  mutate(date = ymd(time),
          year = year(date)) %>%
   arrange(date) %>%
   group_by(year, source) %>%
@@ -1408,7 +1416,7 @@ facet_labels <- c('yr_cum_RD1' = 'Surface runoff',
                   'yr_cum_RG1' = 'Fast groundwater',
                   'yr_cum_RG2' = 'Slow groundwater')
 
-perf <- read_csv('./38HRU_dec2024_updates/nse_pbias_grid_statn_all.csv') %>%
+perf <- read_csv('./38HRU_oct2025_updates/nse_pbias_grid_statn_all.csv') %>%
   mutate(year = as.factor(year))
 
 gw_maxcumsum <- left_join(gw_maxcumsum,
@@ -1418,7 +1426,7 @@ gw_maxcumsum <- left_join(gw_maxcumsum,
 
 gw_maxcumsum <- gw_maxcumsum %>%
   mutate(flow_cms = if_else(flow_type == 'yr_cum_RD1' &
-                                flow_cms > 48,
+                                flow_cms > 25,
                               NA,
                               flow_cms))
 
@@ -1475,11 +1483,11 @@ flow_box <- ggplot(gw_maxcumsum, aes(x = source, y = flow_cms, fill = source)) +
     legend.margin = margin(t = -8, r = 0, b = -2, l = 0)) +
     #axis.text.x = element_blank(),
     #axis.ticks.x = element_blank()) +
-  scale_y_continuous(expand = expansion(mult = c(0.1, 0.15))) 
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) 
 
 flow_box
 
-ggsave('./figures/figure6.png',
+ggsave('./figures/figure6_oct2025.png',
        dpi=600,
        width = 12,
        height = 8)
@@ -1499,7 +1507,7 @@ stats <- gw %>%
   group_by(source, year) %>%
   mutate(totFlow = sum(flow_cms)) %>%
   group_by(source, year) %>%
-  mutate(fracFlow = (flow_cms/totFlow)*100) #%>%
+  mutate(fracFlow = (flow_cms/totFlow)*100) %>%
   group_by(source, flow_type) %>% 
   summarize(meanPercFlow = mean(fracFlow))
 
@@ -1513,12 +1521,12 @@ HRU low = 19
 
 ```{r}
 
-statn_hi <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_18.csv') %>% 
+statn_hi <- read_csv('./38HRU_oct2025_updates/HRU/statn_HRU_18.csv') %>% 
   mutate(date = mdy(time),
          source = 'statn') %>%
   dplyr::select(-time)
 
-grid_hi <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_18.csv') %>%
+grid_hi <- read_csv('./38HRU_oct2025_updates/HRU/grid_HRU_18.csv') %>%
   mutate(date = mdy(time),
          source = 'grid') %>%
   dplyr::select(-time)
@@ -1529,12 +1537,12 @@ both_hi <- bind_rows(statn_hi, grid_hi) %>%
   filter(year == 2016,
          month %in% c(4,5,6))
 
-statn_low <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_19.csv') %>% 
+statn_low <- read_csv('./38HRU_oct2025_updates/HRU/statn_HRU_19.csv') %>% 
   mutate(date = mdy(time),
          source = 'statn') %>%
   dplyr::select(-time)
 
-grid_low <- read_csv('./38HRU_dec2024_updates/HRU/grid_HRU_19.csv') %>%
+grid_low <- read_csv('./38HRU_oct2025_updates/HRU/grid_HRU_19.csv') %>%
   mutate(date = mdy(time),
          source = 'grid') %>%
   dplyr::select(-time)
@@ -1677,7 +1685,7 @@ combined <- plot_grid(tmean_noleg, p_noleg, swe_noleg, nrow = 1)
 final_plot <- plot_grid(combined, legend, ncol = 1, rel_heights = c(1, 0.1))
 final_plot
 
-ggsave('./figures/figure7.png',
+ggsave('./figures/figure7_oct2025.png',
        width = 10,
        height = 5,
        dpi=800,
@@ -1690,7 +1698,7 @@ ggsave('./figures/figure7.png',
 
 ```{r}
 
-flow <- read_csv('./38HRU_dec2024_updates/discharge_all.csv') %>%
+flow <- read_csv('./38HRU_oct2025_updates/discharge_all.csv') %>%
   replace(.==-9999, NA) %>%
   rename(date = time) %>%
   mutate(date = mdy(date)) %>%
@@ -1755,7 +1763,7 @@ flowEg <- flow_pivot %>%
 flowEg
 
 # 2016 flow partition
-gw_gridall <- read_csv(here('38HRU_dec2024_updates/catchment_output/grid_all.csv'), skip = 3) %>%
+gw_gridall <- read_csv(here('38HRU_oct2025_updates/catchment_output/grid_all.csv'), skip = 3) %>%
   slice(-c(1,2)) %>%
   dplyr::select(time,
                 catchmentRD1_w, 
@@ -1769,7 +1777,7 @@ gw_gridall <- read_csv(here('38HRU_dec2024_updates/catchment_output/grid_all.csv
                   catchmentRG2_w), 
                 as.numeric))
 
-gw_statnall <- read_csv(here('38HRU_dec2024_updates/catchment_output/statn_all.csv'), skip = 3) %>%
+gw_statnall <- read_csv(here('38HRU_oct2025_updates/catchment_output/statn_all.csv'), skip = 3) %>%
   slice(-c(1,2)) %>%
   dplyr::select(time, 
                 catchmentRD1_w, 
@@ -1786,7 +1794,7 @@ gw_statnall <- read_csv(here('38HRU_dec2024_updates/catchment_output/statn_all.c
 # combine the two above
 gw <- bind_rows(
   gw_gridall, gw_statnall) %>%
-  mutate(date = mdy(time),
+  mutate(date = ymd(time),
          year = year(date)) %>%
   arrange(date) %>%
   group_by(year, source) %>%
@@ -1816,12 +1824,11 @@ flow16Stats <- example %>%
   mutate(sum = sum(flow_cms)) %>%
   mutate(percTot = (flow_cms/sum)*100) %>%
   mutate(percTot = round(percTot, 2))
-  
 
-facet_labels <- c('yr_cum_RD1' = 'Surface runoff',
-                  'yr_cum_RD2' = 'Interflow',
-                  'yr_cum_RG1' = 'Fast groundwater',
-                  'yr_cum_RG2' = 'Slow groundwater')
+facet_labels <- c('RD1cumsum' = 'Surface runoff',
+                  'RD2cumsum' = 'Interflow',
+                  'RG1cumsum' = 'Fast groundwater',
+                  'RG2cumsum' = 'Slow groundwater')
 
 example_yr <- ggplot(example,
        aes(x=date, y = flow_cms, color=source)) +
@@ -1855,7 +1862,7 @@ plot_grid(flowEg,
           example_yr,
           ncol=1)
 
-ggsave('./figures/figure8.png',
+ggsave('./figures/figure8_oct2025.png',
        dpi=800,
        width=10,
        height=8)
@@ -1868,17 +1875,16 @@ ggsave('./figures/figure8.png',
 ```{r}
 
 # params that were cal w/ burned areas
-combo <- read_csv('./38HRU_dec2024_updates/params_burn_unburn.csv')
+combo <- read_csv('./38HRU_oct2025_updates/params_burn_unburn.csv')
 
 # read in pbias and nse cats
-pbias <- read_csv('./38HRU_dec2024_updates/pbiasCats.csv') %>%
+pbias <- read_csv('./38HRU_oct2025_updates/pbiasCats.csv') %>%
   filter(year == c('All')) %>%
-  dplyr::select(input_data, year_missing, pbias)
+  dplyr::select(source, year_missing, pbias)
 
-nse <- read_csv('./38HRU_dec2024_updates/nseCats.csv') %>%
+nse <- read_csv('./38HRU_oct2025_updates/nseCats.csv') %>%
   filter(year == c('All')) %>%
   dplyr::select(input_data, year_missing, nse)
-
 perf <- left_join(nse, pbias, by = c('input_data',
                                      'year_missing'))
 
@@ -1965,7 +1971,7 @@ ggplot(combo, aes(x = burn, y = value, fill = input_data)) +
   ) +
    scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
 
-ggsave('./figures/figure9.png',
+ggsave('./figures/figure9_oct2025.png',
        dpi=800,
        width = 12,
        height = 8)

@@ -85,3 +85,23 @@ ggplotly(hydrograph)
 
 ```
 
+# Performance
+Above is old
+
+```{r}
+
+flow <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_oct2025_updates/discharge_table2.csv') %>%
+  filter(!obs == -9999) %>%
+  summarize(KGE_grid19_statnin = KGE(obs, grid2019_statninput),
+            KGE_statnall_gridin = KGE(obs, statnall_gridinput),
+            pbias_grid19_statnin = pbias(obs, grid2019_statninput),
+            pbias_statnall_gridin = pbias(obs, statnall_gridinput),
+            NSE_grid19_statnin = NSE(obs, grid2019_statninput),
+            NSE_statnall_gridin = NSE(obs, statnall_gridinput),
+            )
+
+flow
+
+```
+
+
