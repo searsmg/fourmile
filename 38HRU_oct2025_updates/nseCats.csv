@@ -1,0 +1,243 @@
+year,year_missing,nse,source,year_excluded,nseCat
+2011,2011,0.22,grid,2011,Unsatisfactory
+2011,2012,0.74,grid,2012,Good
+2011,2013,-1.96,grid,2013,Unsatisfactory
+2011,2014,0.21,grid,2014,Unsatisfactory
+2011,2015,0.86,grid,2015,Very good
+2011,2016,0.75,grid,2016,Good
+2011,2017,0.69,grid,2017,Good
+2011,2018,0.26,grid,2018,Unsatisfactory
+2011,2019,0.71,grid,2019,Good
+2011,2020,0.88,grid,2020,Very good
+2011,None,0.39,grid,None,Unsatisfactory
+2011,2011,-1.28,statn,2011,Unsatisfactory
+2011,2012,-0.65,statn,2012,Unsatisfactory
+2011,2013,0.17,statn,2013,Unsatisfactory
+2011,2014,0.28,statn,2014,Unsatisfactory
+2011,2015,0.49,statn,2015,Unsatisfactory
+2011,2016,-0.01,statn,2016,Unsatisfactory
+2011,2017,-0.26,statn,2017,Unsatisfactory
+2011,2018,0.05,statn,2018,Unsatisfactory
+2011,2019,-1.01,statn,2019,Unsatisfactory
+2011,2020,-0.53,statn,2020,Unsatisfactory
+2011,None,0.17,statn,None,Unsatisfactory
+2012,2011,-4.41,grid,2011,Unsatisfactory
+2012,2012,-2.69,grid,2012,Unsatisfactory
+2012,2013,-25.09,grid,2013,Unsatisfactory
+2012,2014,-2.71,grid,2014,Unsatisfactory
+2012,2015,-1.03,grid,2015,Unsatisfactory
+2012,2016,-3.56,grid,2016,Unsatisfactory
+2012,2017,-4.03,grid,2017,Unsatisfactory
+2012,2018,-3.21,grid,2018,Unsatisfactory
+2012,2019,-3.77,grid,2019,Unsatisfactory
+2012,2020,-2.35,grid,2020,Unsatisfactory
+2012,None,-3.12,grid,None,Unsatisfactory
+2012,2011,-20.25,statn,2011,Unsatisfactory
+2012,2012,-18.5,statn,2012,Unsatisfactory
+2012,2013,-16.62,statn,2013,Unsatisfactory
+2012,2014,-19.85,statn,2014,Unsatisfactory
+2012,2015,-12.4,statn,2015,Unsatisfactory
+2012,2016,-20.05,statn,2016,Unsatisfactory
+2012,2017,-18.15,statn,2017,Unsatisfactory
+2012,2018,-18.37,statn,2018,Unsatisfactory
+2012,2019,-10.6,statn,2019,Unsatisfactory
+2012,2020,-15.93,statn,2020,Unsatisfactory
+2012,None,-15.74,statn,None,Unsatisfactory
+2013,2011,-16.97,grid,2011,Unsatisfactory
+2013,2012,-17.33,grid,2012,Unsatisfactory
+2013,2013,-55.34,grid,2013,Unsatisfactory
+2013,2014,-16.5,grid,2014,Unsatisfactory
+2013,2015,-16.3,grid,2015,Unsatisfactory
+2013,2016,-16.59,grid,2016,Unsatisfactory
+2013,2017,-16.65,grid,2017,Unsatisfactory
+2013,2018,-16.39,grid,2018,Unsatisfactory
+2013,2019,-16.92,grid,2019,Unsatisfactory
+2013,2020,-16.32,grid,2020,Unsatisfactory
+2013,None,-16.3,grid,None,Unsatisfactory
+2013,2011,0.56,statn,2011,Satisfactory
+2013,2012,0.48,statn,2012,Unsatisfactory
+2013,2013,0.37,statn,2013,Unsatisfactory
+2013,2014,0.32,statn,2014,Unsatisfactory
+2013,2015,0.78,statn,2015,Very good
+2013,2016,0.48,statn,2016,Unsatisfactory
+2013,2017,0.53,statn,2017,Satisfactory
+2013,2018,0.57,statn,2018,Satisfactory
+2013,2019,0.79,statn,2019,Very good
+2013,2020,0.54,statn,2020,Satisfactory
+2013,None,0.7,statn,None,Good
+2014,2011,0.51,grid,2011,Satisfactory
+2014,2012,0.56,grid,2012,Satisfactory
+2014,2013,0.17,grid,2013,Unsatisfactory
+2014,2014,0.4,grid,2014,Unsatisfactory
+2014,2015,0.45,grid,2015,Unsatisfactory
+2014,2016,0.57,grid,2016,Satisfactory
+2014,2017,0.63,grid,2017,Satisfactory
+2014,2018,0.51,grid,2018,Satisfactory
+2014,2019,0.57,grid,2019,Satisfactory
+2014,2020,0.34,grid,2020,Unsatisfactory
+2014,None,0.56,grid,None,Satisfactory
+2014,2011,0.49,statn,2011,Unsatisfactory
+2014,2012,0.46,statn,2012,Unsatisfactory
+2014,2013,0.42,statn,2013,Unsatisfactory
+2014,2014,0.33,statn,2014,Unsatisfactory
+2014,2015,0.62,statn,2015,Satisfactory
+2014,2016,0.37,statn,2016,Unsatisfactory
+2014,2017,0.46,statn,2017,Unsatisfactory
+2014,2018,0.51,statn,2018,Satisfactory
+2014,2019,0.53,statn,2019,Satisfactory
+2014,2020,0.54,statn,2020,Satisfactory
+2014,None,0.47,statn,None,Unsatisfactory
+2015,2011,0.66,grid,2011,Good
+2015,2012,0.62,grid,2012,Satisfactory
+2015,2013,0.7,grid,2013,Good
+2015,2014,0.68,grid,2014,Good
+2015,2015,0.31,grid,2015,Unsatisfactory
+2015,2016,0.61,grid,2016,Satisfactory
+2015,2017,0.61,grid,2017,Satisfactory
+2015,2018,0.61,grid,2018,Satisfactory
+2015,2019,0.62,grid,2019,Satisfactory
+2015,2020,0.35,grid,2020,Unsatisfactory
+2015,None,0.57,grid,None,Satisfactory
+2015,2011,0.77,statn,2011,Very good
+2015,2012,0.76,statn,2012,Very good
+2015,2013,0.76,statn,2013,Very good
+2015,2014,0.76,statn,2014,Very good
+2015,2015,0.55,statn,2015,Satisfactory
+2015,2016,0.72,statn,2016,Good
+2015,2017,0.73,statn,2017,Good
+2015,2018,0.77,statn,2018,Very good
+2015,2019,0.74,statn,2019,Good
+2015,2020,0.78,statn,2020,Very good
+2015,None,0.77,statn,None,Very good
+2016,2011,0.71,grid,2011,Good
+2016,2012,0.69,grid,2012,Good
+2016,2013,0.51,grid,2013,Satisfactory
+2016,2014,0.67,grid,2014,Good
+2016,2015,0.7,grid,2015,Good
+2016,2016,0.65,grid,2016,Satisfactory
+2016,2017,0.7,grid,2017,Good
+2016,2018,0.74,grid,2018,Good
+2016,2019,0.73,grid,2019,Good
+2016,2020,0.7,grid,2020,Good
+2016,None,0.73,grid,None,Good
+2016,2011,0.54,statn,2011,Satisfactory
+2016,2012,0.63,statn,2012,Satisfactory
+2016,2013,0.69,statn,2013,Good
+2016,2014,0.59,statn,2014,Satisfactory
+2016,2015,0.67,statn,2015,Good
+2016,2016,0.55,statn,2016,Satisfactory
+2016,2017,0.52,statn,2017,Satisfactory
+2016,2018,0.79,statn,2018,Very good
+2016,2019,0.53,statn,2019,Satisfactory
+2016,2020,0.62,statn,2020,Satisfactory
+2016,None,0.79,statn,None,Very good
+2017,2011,0.68,grid,2011,Good
+2017,2012,0.71,grid,2012,Good
+2017,2013,0.2,grid,2013,Unsatisfactory
+2017,2014,0.73,grid,2014,Good
+2017,2015,0.6,grid,2015,Satisfactory
+2017,2016,0.78,grid,2016,Very good
+2017,2017,0.54,grid,2017,Satisfactory
+2017,2018,0.65,grid,2018,Satisfactory
+2017,2019,0.74,grid,2019,Good
+2017,2020,0.61,grid,2020,Satisfactory
+2017,None,0.64,grid,None,Satisfactory
+2017,2011,0.75,statn,2011,Good
+2017,2012,0.77,statn,2012,Very good
+2017,2013,0.78,statn,2013,Very good
+2017,2014,0.78,statn,2014,Very good
+2017,2015,0.61,statn,2015,Satisfactory
+2017,2016,0.81,statn,2016,Very good
+2017,2017,0.73,statn,2017,Good
+2017,2018,0.76,statn,2018,Very good
+2017,2019,0.84,statn,2019,Very good
+2017,2020,0.77,statn,2020,Very good
+2017,None,0.76,statn,None,Very good
+2018,2011,0.81,grid,2011,Very good
+2018,2012,0.76,grid,2012,Very good
+2018,2013,0.52,grid,2013,Satisfactory
+2018,2014,0.81,grid,2014,Very good
+2018,2015,0.7,grid,2015,Good
+2018,2016,0.81,grid,2016,Very good
+2018,2017,0.67,grid,2017,Good
+2018,2018,0.76,grid,2018,Very good
+2018,2019,0.78,grid,2019,Very good
+2018,2020,0.74,grid,2020,Good
+2018,None,0.62,grid,None,Satisfactory
+2018,2011,0.62,statn,2011,Satisfactory
+2018,2012,0.78,statn,2012,Very good
+2018,2013,0.73,statn,2013,Good
+2018,2014,0.66,statn,2014,Good
+2018,2015,0.65,statn,2015,Satisfactory
+2018,2016,0.78,statn,2016,Very good
+2018,2017,0.73,statn,2017,Good
+2018,2018,0.73,statn,2018,Good
+2018,2019,0.42,statn,2019,Unsatisfactory
+2018,2020,0.82,statn,2020,Very good
+2018,None,0.72,statn,None,Good
+2019,2011,0.71,grid,2011,Good
+2019,2012,0.7,grid,2012,Good
+2019,2013,0.24,grid,2013,Unsatisfactory
+2019,2014,0.52,grid,2014,Satisfactory
+2019,2015,0.72,grid,2015,Good
+2019,2016,0.75,grid,2016,Good
+2019,2017,0.68,grid,2017,Good
+2019,2018,0.65,grid,2018,Satisfactory
+2019,2019,0.66,grid,2019,Good
+2019,2020,0.73,grid,2020,Good
+2019,None,0.68,grid,None,Good
+2019,2011,0.65,statn,2011,Satisfactory
+2019,2012,0.66,statn,2012,Good
+2019,2013,0.68,statn,2013,Good
+2019,2014,0.65,statn,2014,Satisfactory
+2019,2015,0.7,statn,2015,Good
+2019,2016,0.65,statn,2016,Satisfactory
+2019,2017,0.48,statn,2017,Unsatisfactory
+2019,2018,0.67,statn,2018,Good
+2019,2019,0.06,statn,2019,Unsatisfactory
+2019,2020,0.78,statn,2020,Very good
+2019,None,0.73,statn,None,Good
+2020,2011,0.64,grid,2011,Satisfactory
+2020,2012,0.64,grid,2012,Satisfactory
+2020,2013,0.24,grid,2013,Unsatisfactory
+2020,2014,0.58,grid,2014,Satisfactory
+2020,2015,0.84,grid,2015,Very good
+2020,2016,0.8,grid,2016,Very good
+2020,2017,0.66,grid,2017,Good
+2020,2018,0.64,grid,2018,Satisfactory
+2020,2019,0.61,grid,2019,Satisfactory
+2020,2020,0.69,grid,2020,Good
+2020,None,0.7,grid,None,Good
+2020,2011,0.75,statn,2011,Good
+2020,2012,0.52,statn,2012,Satisfactory
+2020,2013,0.53,statn,2013,Satisfactory
+2020,2014,0.52,statn,2014,Satisfactory
+2020,2015,0.69,statn,2015,Good
+2020,2016,0.54,statn,2016,Satisfactory
+2020,2017,0.59,statn,2017,Satisfactory
+2020,2018,0.61,statn,2018,Satisfactory
+2020,2019,0.63,statn,2019,Satisfactory
+2020,2020,0.59,statn,2020,Satisfactory
+2020,None,0.58,statn,None,Satisfactory
+All,2013,-2.62,grid,2013,Unsatisfactory
+All,2015,-0.43,grid,2015,Unsatisfactory
+All,2020,-0.42,grid,2020,Unsatisfactory
+All,2012,-0.32,grid,2012,Unsatisfactory
+All,2017,-0.31,grid,2017,Unsatisfactory
+All,None,-0.31,grid,None,Unsatisfactory
+All,2011,-0.3,grid,2011,Unsatisfactory
+All,2019,-0.3,grid,2019,Unsatisfactory
+All,2018,-0.29,grid,2018,Unsatisfactory
+All,2014,-0.28,grid,2014,Unsatisfactory
+All,2016,-0.28,grid,2016,Unsatisfactory
+All,2015,0.61,statn,2015,Satisfactory
+All,2017,0.63,statn,2017,Satisfactory
+All,2011,0.64,statn,2011,Satisfactory
+All,2014,0.64,statn,2014,Satisfactory
+All,2016,0.64,statn,2016,Satisfactory
+All,2012,0.65,statn,2012,Satisfactory
+All,2019,0.66,statn,2019,Good
+All,2013,0.67,statn,2013,Good
+All,2020,0.68,statn,2020,Good
+All,2018,0.7,statn,2018,Good
+All,None,0.71,statn,None,Good

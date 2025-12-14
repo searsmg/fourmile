@@ -1,0 +1,243 @@
+year,year_missing,pbias,source,year_excluded,pbiasCat
+2011,2011,33.2,grid,2011,Unsatisfactory
+2011,2012,12.9,grid,2012,Good
+2011,2013,34.8,grid,2013,Unsatisfactory
+2011,2014,19.7,grid,2014,Satisfactory
+2011,2015,8.7,grid,2015,Very good
+2011,2016,14.5,grid,2016,Good
+2011,2017,14.6,grid,2017,Good
+2011,2018,31.5,grid,2018,Unsatisfactory
+2011,2019,12.7,grid,2019,Good
+2011,2020,10.1,grid,2020,Good
+2011,None,31.7,grid,None,Unsatisfactory
+2011,2011,55.9,statn,2011,Unsatisfactory
+2011,2012,49.6,statn,2012,Unsatisfactory
+2011,2013,43.5,statn,2013,Unsatisfactory
+2011,2014,35.9,statn,2014,Unsatisfactory
+2011,2015,39.4,statn,2015,Unsatisfactory
+2011,2016,47.3,statn,2016,Unsatisfactory
+2011,2017,56,statn,2017,Unsatisfactory
+2011,2018,41.3,statn,2018,Unsatisfactory
+2011,2019,51.8,statn,2019,Unsatisfactory
+2011,2020,44.7,statn,2020,Unsatisfactory
+2011,None,40.5,statn,None,Unsatisfactory
+2012,2011,52.4,grid,2011,Unsatisfactory
+2012,2012,50.4,grid,2012,Unsatisfactory
+2012,2013,45.3,grid,2013,Unsatisfactory
+2012,2014,29,grid,2014,Unsatisfactory
+2012,2015,59,grid,2015,Unsatisfactory
+2012,2016,46,grid,2016,Unsatisfactory
+2012,2017,70.5,grid,2017,Unsatisfactory
+2012,2018,63.4,grid,2018,Unsatisfactory
+2012,2019,57.7,grid,2019,Unsatisfactory
+2012,2020,54.5,grid,2020,Unsatisfactory
+2012,None,75.4,grid,None,Unsatisfactory
+2012,2011,112,statn,2011,Unsatisfactory
+2012,2012,125.3,statn,2012,Unsatisfactory
+2012,2013,116.7,statn,2013,Unsatisfactory
+2012,2014,79.8,statn,2014,Unsatisfactory
+2012,2015,92,statn,2015,Unsatisfactory
+2012,2016,111.1,statn,2016,Unsatisfactory
+2012,2017,114.4,statn,2017,Unsatisfactory
+2012,2018,105.7,statn,2018,Unsatisfactory
+2012,2019,44.6,statn,2019,Unsatisfactory
+2012,2020,99.5,statn,2020,Unsatisfactory
+2012,None,101.1,statn,None,Unsatisfactory
+2013,2011,50.2,grid,2011,Unsatisfactory
+2013,2012,56.5,grid,2012,Unsatisfactory
+2013,2013,83.7,grid,2013,Unsatisfactory
+2013,2014,39.2,grid,2014,Unsatisfactory
+2013,2015,36.8,grid,2015,Unsatisfactory
+2013,2016,47.6,grid,2016,Unsatisfactory
+2013,2017,52.4,grid,2017,Unsatisfactory
+2013,2018,51.3,grid,2018,Unsatisfactory
+2013,2019,47.6,grid,2019,Unsatisfactory
+2013,2020,29.9,grid,2020,Unsatisfactory
+2013,None,47.1,grid,None,Unsatisfactory
+2013,2011,1.5,statn,2011,Very good
+2013,2012,-3.1,statn,2012,Very good
+2013,2013,-8.8,statn,2013,Very good
+2013,2014,-16.2,statn,2014,Satisfactory
+2013,2015,-1.5,statn,2015,Very good
+2013,2016,-9.1,statn,2016,Very good
+2013,2017,-1.8,statn,2017,Very good
+2013,2018,-1.2,statn,2018,Very good
+2013,2019,16.2,statn,2019,Satisfactory
+2013,2020,-3.8,statn,2020,Very good
+2013,None,1,statn,None,Very good
+2014,2011,-39.4,grid,2011,Unsatisfactory
+2014,2012,-35.8,grid,2012,Unsatisfactory
+2014,2013,-38.8,grid,2013,Unsatisfactory
+2014,2014,-45.9,grid,2014,Unsatisfactory
+2014,2015,-38.7,grid,2015,Unsatisfactory
+2014,2016,-36.9,grid,2016,Unsatisfactory
+2014,2017,-29.9,grid,2017,Unsatisfactory
+2014,2018,-39.6,grid,2018,Unsatisfactory
+2014,2019,-35.2,grid,2019,Unsatisfactory
+2014,2020,-41.7,grid,2020,Unsatisfactory
+2014,None,-33,grid,None,Unsatisfactory
+2014,2011,-35.8,statn,2011,Unsatisfactory
+2014,2012,-34.4,statn,2012,Unsatisfactory
+2014,2013,-43.9,statn,2013,Unsatisfactory
+2014,2014,-44.6,statn,2014,Unsatisfactory
+2014,2015,-31.1,statn,2015,Unsatisfactory
+2014,2016,-43.2,statn,2016,Unsatisfactory
+2014,2017,-38.4,statn,2017,Unsatisfactory
+2014,2018,-39.5,statn,2018,Unsatisfactory
+2014,2019,-37,statn,2019,Unsatisfactory
+2014,2020,-37.2,statn,2020,Unsatisfactory
+2014,None,-38,statn,None,Unsatisfactory
+2015,2011,-20.9,grid,2011,Satisfactory
+2015,2012,-26.4,grid,2012,Unsatisfactory
+2015,2013,-16.8,grid,2013,Satisfactory
+2015,2014,-29.3,grid,2014,Unsatisfactory
+2015,2015,-40.2,grid,2015,Unsatisfactory
+2015,2016,-28.7,grid,2016,Unsatisfactory
+2015,2017,-26.3,grid,2017,Unsatisfactory
+2015,2018,-25.2,grid,2018,Unsatisfactory
+2015,2019,-27.6,grid,2019,Unsatisfactory
+2015,2020,-37.9,grid,2020,Unsatisfactory
+2015,None,-27.5,grid,None,Unsatisfactory
+2015,2011,-6.8,statn,2011,Very good
+2015,2012,-7.2,statn,2012,Very good
+2015,2013,-9.8,statn,2013,Very good
+2015,2014,-10,statn,2014,Good
+2015,2015,-8.2,statn,2015,Very good
+2015,2016,-8.9,statn,2016,Very good
+2015,2017,-6.5,statn,2017,Very good
+2015,2018,-5.2,statn,2018,Very good
+2015,2019,-16.1,statn,2019,Satisfactory
+2015,2020,-7.2,statn,2020,Very good
+2015,None,-7,statn,None,Very good
+2016,2011,-11.7,grid,2011,Good
+2016,2012,-3.6,grid,2012,Very good
+2016,2013,-9.1,grid,2013,Very good
+2016,2014,-22.1,grid,2014,Satisfactory
+2016,2015,-18.9,grid,2015,Satisfactory
+2016,2016,-12,grid,2016,Good
+2016,2017,-2.8,grid,2017,Very good
+2016,2018,-12,grid,2018,Good
+2016,2019,-7,grid,2019,Very good
+2016,2020,-20.5,grid,2020,Satisfactory
+2016,None,-6.5,grid,None,Very good
+2016,2011,-7.7,statn,2011,Very good
+2016,2012,-7.5,statn,2012,Very good
+2016,2013,-6.8,statn,2013,Very good
+2016,2014,-16.1,statn,2014,Satisfactory
+2016,2015,-7.3,statn,2015,Very good
+2016,2016,-8.6,statn,2016,Very good
+2016,2017,-5.1,statn,2017,Very good
+2016,2018,-10.6,statn,2018,Good
+2016,2019,-13.2,statn,2019,Good
+2016,2020,-6.6,statn,2020,Very good
+2016,None,-15.4,statn,None,Satisfactory
+2017,2011,46.7,grid,2011,Unsatisfactory
+2017,2012,44.1,grid,2012,Unsatisfactory
+2017,2013,52.7,grid,2013,Unsatisfactory
+2017,2014,24,grid,2014,Satisfactory
+2017,2015,18.4,grid,2015,Satisfactory
+2017,2016,20.5,grid,2016,Satisfactory
+2017,2017,50.8,grid,2017,Unsatisfactory
+2017,2018,40.3,grid,2018,Unsatisfactory
+2017,2019,39.4,grid,2019,Unsatisfactory
+2017,2020,16.9,grid,2020,Satisfactory
+2017,None,42.2,grid,None,Unsatisfactory
+2017,2011,40.6,statn,2011,Unsatisfactory
+2017,2012,38.1,statn,2012,Unsatisfactory
+2017,2013,32.5,statn,2013,Unsatisfactory
+2017,2014,27,statn,2014,Unsatisfactory
+2017,2015,20.1,statn,2015,Satisfactory
+2017,2016,33,statn,2016,Unsatisfactory
+2017,2017,41,statn,2017,Unsatisfactory
+2017,2018,38.9,statn,2018,Unsatisfactory
+2017,2019,28.3,statn,2019,Unsatisfactory
+2017,2020,41.1,statn,2020,Unsatisfactory
+2017,None,31.8,statn,None,Unsatisfactory
+2018,2011,35.3,grid,2011,Unsatisfactory
+2018,2012,25.2,grid,2012,Unsatisfactory
+2018,2013,-8.6,grid,2013,Very good
+2018,2014,12.3,grid,2014,Good
+2018,2015,18.2,grid,2015,Satisfactory
+2018,2016,25.1,grid,2016,Unsatisfactory
+2018,2017,33.1,grid,2017,Unsatisfactory
+2018,2018,37,grid,2018,Unsatisfactory
+2018,2019,27.2,grid,2019,Unsatisfactory
+2018,2020,24.1,grid,2020,Satisfactory
+2018,None,29.8,grid,None,Unsatisfactory
+2018,2011,3.9,statn,2011,Very good
+2018,2012,5.4,statn,2012,Very good
+2018,2013,-4.6,statn,2013,Very good
+2018,2014,-29.2,statn,2014,Unsatisfactory
+2018,2015,2.4,statn,2015,Very good
+2018,2016,-10.1,statn,2016,Good
+2018,2017,4.8,statn,2017,Very good
+2018,2018,-14.5,statn,2018,Good
+2018,2019,0,statn,2019,Very good
+2018,2020,-11.1,statn,2020,Good
+2018,None,-9.6,statn,None,Very good
+2019,2011,-7.6,grid,2011,Very good
+2019,2012,-3.2,grid,2012,Very good
+2019,2013,-7.8,grid,2013,Very good
+2019,2014,-19.7,grid,2014,Satisfactory
+2019,2015,3.7,grid,2015,Very good
+2019,2016,-13.9,grid,2016,Good
+2019,2017,4.8,grid,2017,Very good
+2019,2018,-0.4,grid,2018,Very good
+2019,2019,-4.7,grid,2019,Very good
+2019,2020,-7.7,grid,2020,Very good
+2019,None,7.9,grid,None,Very good
+2019,2011,-3.9,statn,2011,Very good
+2019,2012,-2.1,statn,2012,Very good
+2019,2013,-11.5,statn,2013,Good
+2019,2014,-22.1,statn,2014,Satisfactory
+2019,2015,-8.5,statn,2015,Very good
+2019,2016,-8.5,statn,2016,Very good
+2019,2017,1,statn,2017,Very good
+2019,2018,-9.4,statn,2018,Very good
+2019,2019,-7.9,statn,2019,Very good
+2019,2020,-10.6,statn,2020,Good
+2019,None,-4.9,statn,None,Very good
+2020,2011,3.6,grid,2011,Very good
+2020,2012,11.5,grid,2012,Good
+2020,2013,-5.2,grid,2013,Very good
+2020,2014,-9.3,grid,2014,Very good
+2020,2015,5.4,grid,2015,Very good
+2020,2016,-0.1,grid,2016,Very good
+2020,2017,9.4,grid,2017,Very good
+2020,2018,2.5,grid,2018,Very good
+2020,2019,6,grid,2019,Very good
+2020,2020,-2.8,grid,2020,Very good
+2020,None,7.3,grid,None,Very good
+2020,2011,-19.1,statn,2011,Satisfactory
+2020,2012,-19.4,statn,2012,Satisfactory
+2020,2013,-30.7,statn,2013,Unsatisfactory
+2020,2014,-30.8,statn,2014,Unsatisfactory
+2020,2015,-24.7,statn,2015,Satisfactory
+2020,2016,-19.2,statn,2016,Satisfactory
+2020,2017,-15.2,statn,2017,Satisfactory
+2020,2018,-19.6,statn,2018,Satisfactory
+2020,2019,-19.7,statn,2019,Satisfactory
+2020,2020,-29.2,statn,2020,Unsatisfactory
+2020,None,-32.2,statn,None,Unsatisfactory
+All,2020,-0.1,statn,2020,Very good
+All,2018,0.2,statn,2018,Very good
+All,2019,0.4,grid,2019,Very good
+All,2015,-1.2,statn,2015,Very good
+All,2016,-1.4,statn,2016,Very good
+All,None,-1.7,statn,None,Very good
+All,2019,-2.3,statn,2019,Very good
+All,2012,2.5,grid,2012,Very good
+All,2013,-2.5,statn,2013,Very good
+All,2018,2.7,grid,2018,Very good
+All,2012,3.3,statn,2012,Very good
+All,2011,3.6,grid,2011,Very good
+All,2011,3.8,statn,2011,Very good
+All,2016,-4.1,grid,2016,Very good
+All,2017,4.3,statn,2017,Very good
+All,None,4.4,grid,None,Very good
+All,2017,5.4,grid,2017,Very good
+All,2013,5.7,grid,2013,Very good
+All,2015,-7.7,grid,2015,Very good
+All,2014,-8.7,statn,2014,Very good
+All,2014,-8.8,grid,2014,Very good
+All,2020,-9.8,grid,2020,Very good
