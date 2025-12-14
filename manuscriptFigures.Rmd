@@ -1884,8 +1884,9 @@ pbias <- read_csv('./38HRU_oct2025_updates/pbiasCats.csv') %>%
 
 nse <- read_csv('./38HRU_oct2025_updates/nseCats.csv') %>%
   filter(year == c('All')) %>%
-  dplyr::select(input_data, year_missing, nse)
-perf <- left_join(nse, pbias, by = c('input_data',
+  dplyr::select(source, year_missing, nse)
+
+perf <- left_join(nse, pbias, by = c('source',
                                      'year_missing'))
 
 # assign categories
@@ -1895,7 +1896,7 @@ perf <- perf %>%
                                 nse > 0.5 & abs(pbias) >= 25 ~ 'NSE',
                                 nse < 0.5 & abs(pbias) < 25 ~ '% bias satisfactory',
                                 nse > 0.5 & abs(pbias) < 25 ~ 'NSE + % bias satisfactory')) %>%
-  mutate(input_data = if_else(input_data == 'grid',
+  mutate(input_data = if_else(source == 'grid',
                               'Gridded', 'Station'),
          year_missing = if_else(year_missing == 'None',
                                 'all', year_missing))
@@ -1984,13 +1985,13 @@ ggsave('./figures/figure9_oct2025.png',
 ```{r}
 
 
-unburn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_2_unburn.csv') %>%
+unburn <- read_csv('./38HRU_oct2025_updates/HRU/statn_HRU_2_unburn.csv') %>%
   mutate(date = mdy(time),
          year = year(date),
          type = 'unburn') %>%
   filter(year == 2016)
 
-burn <- read_csv('./38HRU_dec2024_updates/HRU/statn_HRU_5_burn.csv') %>%
+burn <- read_csv('./38HRU_oct2025_updates/HRU/statn_HRU_5_burn.csv') %>%
   mutate(date = mdy(time),
          year = year(date),
          type = 'burn') %>%
@@ -2014,6 +2015,9 @@ p <- both %>%
 # soil sat
 soilsat <- both %>%
   dplyr::select(date, type, soilSat)
+
+et <- both %>%
+  dplyr::select(date, type, actET)
 
 # surface runoff
 runoff <- both %>%
@@ -2123,6 +2127,32 @@ soilsat_plot <- ggplot(soilsat, aes(x = date,
 
 soilsat_plot
 
+et_plot <- ggplot(et, aes(x = date,
+                        y = actET, 
+                        color = type)) +
+  geom_line(size=1, alpha=0.7) +
+    scale_color_manual(values = c("burn" = "red", 
+                                  "unburn" = "black")) +
+  scale_x_date(date_labels = "%b") +
+  labs(x = element_blank(),
+       y = 'ET (mm)') +
+  theme_bw(base_size = 20) +
+  theme(legend.position = 'bottom',
+    #legend.position = c(0.24, 0.852), 
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    legend.key.width = unit(1, "cm")
+  ) 
+
+et_plot
+
+
 interflow_plot <- ggplot(interflow, aes(x = date,
                         y = interflow_cum, 
                         color = type)) +
@@ -2206,12 +2236,14 @@ soilsat_plot <- soilsat_plot + theme(legend.position = "none")
 interflow_plot <- interflow_plot + theme(legend.position = "none")
 gw_plot <- gw_plot + theme(legend.position = "none")
 swe_plot <- swe_plot + theme(legend.position = "none")
+et_plot <- et_plot + theme(legend.position = "none")
 
 
-plots <- plot_grid(p_plot,
+plots <- plot_grid( #p_plot,
           int_plot,
           swe_plot,
           soilsat_plot,
+          et_plot,
           interflow_plot,
           gw_plot,
           ncol = 3)
@@ -2225,7 +2257,7 @@ final_plot <- plot_grid(
 
 final_plot
 
-ggsave('./figures/figure10.png',
+ggsave('./figures/figure10_oct2025.png',
        dpi=800,
        bg='white',
        height=8,
@@ -2238,7 +2270,7 @@ ggsave('./figures/figure10.png',
 
 ```{r}
 
-perf <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_dec2024_updates/perf_metrics.csv')
+perf <- read_csv('/Users/megansears/Documents/Repos/fourmile/38HRU_oct2025_updates/perf_metrics.csv')
 
 perf <- perf %>%
   pivot_wider(names_from=metric,
@@ -2273,12 +2305,12 @@ nse_kge <- ggplot(perf1, aes(x=KGE, y=NSE, color=type)) +
 nse_kge
 
 
-pbias_kge <- ggplot(perf1, aes(x=KGE, y=pbias, color=type)) + 
+pbias_kge <- ggplot(perf1, aes(x=KGE, y=Bias, color=type)) + 
   #geom_point(size=4, alpha=0.8) +
   geom_jitter(size = 4, alpha = 0.7, width = 0.001, height = 0.001) +
   theme_bw(base_size=20) +
   scale_color_manual(values = c("#0047AB", "orange")) +
-  labs(y = '% bias') +
+  labs(y = 'Bias') +
   theme(
     legend.position = 'bottom',
     legend.text = element_text(size = 16),
@@ -2304,10 +2336,10 @@ combined_plot <- nse_kge + pbias_kge +
 
 combined_plot
 
-# ggsave('/Users/megansears/Documents/Repos/fourmile/figures/kge_nse_pbias.png',
-#        dpi=600,
-#        width=10,
-#        height=6)
+ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure11_oct2025.png',
+       dpi=600,
+       width=10,
+       height=6)
 
 ```
 
