@@ -1511,6 +1511,40 @@ stats <- gw %>%
   group_by(source, flow_type) %>% 
   summarize(meanPercFlow = mean(fracFlow))
 
+# simple for defense
+flow_box <- ggplot(gw_maxcumsum, aes(x = source, y = flow_cms, fill = source)) +
+  geom_boxplot(outliers=T,width=0.7) + # need to note 1 outlier is removed from RD1 grid and statn (2013 flood) ****
+  facet_wrap(~flow_type, 
+             scales = 'free',
+             labeller = labeller(flow_type = facet_labels)) +
+  labs(y = 'mm of water') + 
+  theme_bw(base_size=20) +
+  scale_fill_manual(values = c("#0047AB", "orange"), guide = 'none') +
+  theme(
+    #legend.position = c(0.94, 0.36),
+    legend.position = 'bottom',
+    legend.text = element_text(size = 16),
+    legend.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    axis.title.x = element_blank(),
+    legend.spacing = unit(0.1, "lines"),
+    legend.margin = margin(t = -8, r = 0, b = -2, l = 0)) +
+    #axis.text.x = element_blank(),
+    #axis.ticks.x = element_blank()) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) 
+
+flow_box
+
+ggsave('./figures/figure6SIMPLE_oct2025.png',
+       dpi=600,
+       width = 12,
+       height = 8)
+
 ```
 
 # Figure 7
@@ -1977,7 +2011,6 @@ ggsave('./figures/figure9_oct2025.png',
        width = 12,
        height = 8)
 
-
 ```
 
 # Figure 10
@@ -2054,7 +2087,7 @@ p_plot <- ggplot(p, aes(x = date,
                         color = type)) +
   geom_line(size=1, alpha=0.8) +
     scale_color_manual(values = c("burn" = "red", 
-                                  "unburn" = "black")) +
+                                  "unburn" = "darkblue")) +
   scale_x_date(date_labels = "%b") +
   labs(x = element_blank(),
        y = 'Precipitation (mm)') +
@@ -2082,7 +2115,7 @@ int_plot <- ggplot(inter, aes(x = date,
                         color = type)) +
   geom_line(size=1, alpha=0.7) +
     scale_color_manual(values = c("burn" = "red", 
-                                  "unburn" = "black")) +
+                                  "unburn" = "darkblue")) +
   scale_x_date(date_labels = "%b") +
   labs(x = element_blank(),
        y = 'Interception (mm)') +
@@ -2107,7 +2140,7 @@ soilsat_plot <- ggplot(soilsat, aes(x = date,
                         color = type)) +
   geom_line(size=1, alpha=0.7) +
     scale_color_manual(values = c("burn" = "red", 
-                                  "unburn" = "black")) +
+                                  "unburn" = "darkblue")) +
   scale_x_date(date_labels = "%b") +
   labs(x = element_blank(),
        y = 'Soil saturation') +
@@ -2132,7 +2165,7 @@ et_plot <- ggplot(et, aes(x = date,
                         color = type)) +
   geom_line(size=1, alpha=0.7) +
     scale_color_manual(values = c("burn" = "red", 
-                                  "unburn" = "black")) +
+                                  "unburn" = "darkblue")) +
   scale_x_date(date_labels = "%b") +
   labs(x = element_blank(),
        y = 'ET (mm)') +
@@ -2158,7 +2191,7 @@ interflow_plot <- ggplot(interflow, aes(x = date,
                         color = type)) +
   geom_line(size=1, alpha=0.7) +
     scale_color_manual(values = c("burn" = "red", 
-                                  "unburn" = "black")) +
+                                  "unburn" = "darkblue")) +
   scale_x_date(date_labels = "%b") +
   labs(x = element_blank(),
        y = 'Interflow (L)') +
@@ -2183,7 +2216,7 @@ gw_plot <- ggplot(gw, aes(x = date,
                         color = type)) +
   geom_line(size=1, alpha=0.7) +
     scale_color_manual(values = c("burn" = "red", 
-                                  "unburn" = "black")) +
+                                  "unburn" = "darkblue")) +
   scale_x_date(date_labels = "%b") +
   labs(x = element_blank(),
        y = 'Shallow groundwater (L)') +
@@ -2208,7 +2241,7 @@ swe_plot <- ggplot(swe, aes(x = date,
                         color = type)) +
   geom_line(size=1, alpha=0.7) +
     scale_color_manual(values = c("burn" = "red", 
-                                  "unburn" = "black")) +
+                                  "unburn" = "darkblue")) +
   scale_x_date(date_labels = "%b") +
   labs(x = element_blank(),
        y = 'SWE (mm)') +
@@ -2244,9 +2277,9 @@ plots <- plot_grid( #p_plot,
           swe_plot,
           soilsat_plot,
           et_plot,
-          interflow_plot,
-          gw_plot,
-          ncol = 3)
+          #interflow_plot,
+          #gw_plot,
+          ncol = 2)
 
 final_plot <- plot_grid(
   plots,
@@ -2257,11 +2290,13 @@ final_plot <- plot_grid(
 
 final_plot
 
-ggsave('./figures/figure10_oct2025.png',
+ggsave('./figures/figure10REDBLUE_oct2025.png',
        dpi=800,
        bg='white',
        height=8,
-       width=12)
+       width=16)
+
+
 
 
 ```
