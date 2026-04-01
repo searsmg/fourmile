@@ -23,6 +23,7 @@ library(ggpubr)
 library(gridExtra)
 library(stringr)
 library(cowplot)
+library(mapview)
 
 ```
 
@@ -574,7 +575,7 @@ ggsave(filename = "./figures/figure3_oct25.pdf",
 ```{r}
 
 # read in KGE values (all_kge also has nse and bias even tho name says otherwise)
-flow_plot <- read_csv('./all_kge.csv') %>%
+flow_plot <- read_csv('./38HRU_oct2025_updates/all_kge.csv') %>%
   filter(metric == 'KGE') %>%
   dplyr::select(-metric) %>%
   rename(kge = value)
@@ -1623,7 +1624,7 @@ tmean <- ggplot(both,
   theme_bw(base_size = 20) +
   theme(legend.position = 'bottom',
     #legend.position = c(0.24, 0.852), 
-    legend.text = element_text(size = 10),
+    legend.text = element_text(size = 18),
     legend.title = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
@@ -1658,7 +1659,7 @@ swe <- ggplot(both,
   theme(
     #legend.position = c(0.89, 0.87),
     legend.position = 'bottom',
-    legend.text = element_text(size = 10),
+    legend.text = element_text(size = 18),
     legend.title = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
@@ -1691,11 +1692,11 @@ p <- both %>%
   scale_x_date(date_labels = "%b") +
   #scale_y_log10() +
   labs(x = element_blank(),
-       y = 'Precip (mm)') +
+       y = 'Cumulative precipitation (mm)') +
   theme_bw(base_size = 20) +
   theme(
     legend.position = 'bottom',
-    #legend.text = element_text(size = 12),
+    legend.text = element_text(size = 18),
     #legend.title = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_rect(fill = "white"),
@@ -1715,13 +1716,19 @@ tmean_noleg <- tmean + theme(legend.position = "none")
 p_noleg <- p + theme(legend.position = "none")
 swe_noleg <- swe + theme(legend.position = "none")
 
-combined <- plot_grid(tmean_noleg, p_noleg, swe_noleg, nrow = 1)
+combined <- plot_grid(tmean_noleg, 
+                      p_noleg, 
+                      swe_noleg, 
+                      nrow = 1,
+                      labels = c("a", "b", "c"),
+                      label_size = 16)
+
 final_plot <- plot_grid(combined, legend, ncol = 1, rel_heights = c(1, 0.1))
 final_plot
 
-ggsave('./figures/figure7_oct2025.png',
-       width = 10,
-       height = 5,
+ggsave('./figures/figure7_updatemar26.png',
+       width = 11,
+       height = 6,
        dpi=800,
        bg='white')
 
