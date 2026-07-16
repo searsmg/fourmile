@@ -17,18 +17,20 @@ library(mapview)
 
 # for CPF only
 dnbr <- read_stars('./data/GIS/co4005110538520100906_20100621_20110624_dnbr.tif')
+dnbr <- read_stars('./data/GIS/mtbs_co4005110538520100906_19153_20100621_20110624_dnbr.tif')
+
 
 burn_cat <- st_apply(dnbr, 1:2, function(x) case_when(
-  x < -251  ~ 6,
-  x > -250 & x < -101 ~ 7,
-  x > -100 & x < 99 ~ 1,
-  x > 100 & x < 269 ~ 2,
-  x > 270 & x < 439 ~ 3,
-  x > 440 & x < 659 ~ 4,
-  x > 600 ~ 5,
+  x < -251 ~ "High Enhanced Regrowth",
+  x >= -250 & x < -100 ~ "Low Enhanced Regrowth",
+  x >= -100 & x < 100 ~ "Unburned",
+  x >= 100 & x < 270 ~ "Low Severity",
+  x >= 270 & x < 440 ~ "Moderate-Low Severity",
+  x >= 440 & x < 660 ~ "Moderate-High Severity",
+  x >= 660 ~ "High Severity",
 ))
  
-#mapview(burn_cat) + mapview(sites)
+mapview(dnbr) + mapview(sites)
 
 sites <- st_read('/Users/megansears/Documents/Repos/fourmile/data/GIS/Fourmile Watershed.shp')
 
@@ -51,7 +53,7 @@ intersect <- st_intersection(burn_cat_poly, sites)
 intersect$area_m2 <- st_area(intersect)
 
 intersect_summ <- intersect %>%
-  group_by(co4005110538520100906_20100621_20110624_dnbr.tif) %>%
+  group_by(mtbs_co4005110538520100906_19153_20100621_20110624_dnbr.tif) %>%
   summarize(sum_area = sum(area_m2)) %>%
   mutate(area_km2 = as.numeric(sum_area) / 1e6) %>%
   as.data.frame() %>% 
@@ -61,7 +63,7 @@ percents <- intersect_summ %>%
   mutate(frac_catchment = area_km2/67.2218) %>% 
   mutate(actual_percent = frac_catchment*100)
 
-write_csv(intersect_summ, './data/final_model_inputs/cpf_burncat_percent.csv')
+write_csv(intersect_summ, './data/burncats_fourmile.csv')
 
 ```
 
