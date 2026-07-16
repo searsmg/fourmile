@@ -237,6 +237,63 @@ ggsave("./figures/quad_20250329_timEdits.png",
 
 ```
 
+Percent difference between station and gridded (tmean, solrad, RH)
+
+```{r}
+
+# monthly percent difference (symmetric): (statn - grid) / mean(statn, grid) * 100
+pct_diff_mo <- catchment_mo_mean %>%
+  pivot_wider(names_from = site, values_from = c(tmean_mean, solrad_mean, rh_mean)) %>%
+  mutate(
+    tmean_pct_diff = (tmean_mean_statn - tmean_mean_grid) /
+      ((tmean_mean_statn + tmean_mean_grid) / 2) * 100,
+    solrad_pct_diff = (solrad_mean_statn - solrad_mean_grid) /
+      ((solrad_mean_statn + solrad_mean_grid) / 2) * 100,
+    rh_pct_diff = (rh_mean_statn - rh_mean_grid) /
+      ((rh_mean_statn + rh_mean_grid) / 2) * 100
+  ) %>%
+  mutate(month_name = factor(month.abb[month], levels = month.abb)) %>%
+  dplyr::select(month, month_name, tmean_pct_diff, solrad_pct_diff, rh_pct_diff) %>%
+  arrange(month)
+
+pct_diff_mo
+
+write_csv(pct_diff_mo,
+          './data/monthly_percent_diff.csv')
+
+# overall percent difference across all months
+pct_diff_overall <- pct_diff_mo %>%
+  summarize(across(c(tmean_pct_diff, solrad_pct_diff, rh_pct_diff),
+                    ~ mean(.x, na.rm = TRUE)))
+
+pct_diff_overall
+
+write_csv(pct_diff_overall,
+          './data/overall_percent_diff.csv')
+
+# annual total precip by site and year
+annual_precip <- catchment_mo_sum %>%
+  group_by(site, year) %>%
+  summarize(p_annual = sum(p_sum, na.rm = TRUE)) %>%
+  ungroup()
+
+annual_precip
+
+write_csv(annual_precip,
+          './data/annual_precip_by_year.csv')
+
+# average annual precip by site (across all years)
+avg_annual_precip <- annual_precip %>%
+  group_by(site) %>%
+  summarize(p_annual_mean = mean(p_annual, na.rm = TRUE))
+
+avg_annual_precip
+
+write_csv(avg_annual_precip,
+          './data/avg_annual_precip.csv')
+
+```
+
 Add in streamflow to 4 panel met
 
 ```{r}
