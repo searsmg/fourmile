@@ -121,7 +121,7 @@ p_box <- catchment_mo_sum2 %>%
   scale_fill_manual(values = c("#0047AB", "orange"),
                     labels = c("Gridded", "Station")) +
   theme_bw(base_size = 20) +
-  labs(y = 'Precipitation (mm)',
+  labs(y = 'P (mm)',
        x = element_blank()) +
     guides(
     fill = guide_legend(
@@ -154,7 +154,7 @@ t_moplot <- ggplot(catchment_mo2, aes(x = month_name,
   scale_fill_manual(values = c("#0047AB", "orange"),
                     labels = c("Gridded", "Station")) +
   theme_bw(base_size=20) +
-  labs(y = expression("Air temperature " ( degree~C)),
+  labs(y = expression("Tair " ( degree~C)),
        x = element_blank()) +
   labs(color = NULL, fill = NULL) +
       theme(
@@ -180,7 +180,7 @@ sol_moplot <- ggplot(catchment_mo2,
   scale_fill_manual(values = c("#0047AB", "orange"),
                     labels = c("Gridded", "Station")) +
   theme_bw(base_size = 20) +
-  labs(y = expression("Solar radiation (MJ/m"^"2" * ")"),
+  labs(y = expression("Srad (MJ/m"^"2" * ")"),
        x = element_blank()) +
   labs(color = NULL, fill = NULL) +
       theme(
@@ -219,20 +219,21 @@ rh_moplot <- ggplot(catchment_mo2,
     strip.text = element_blank())
 
 # pull met panels together
-quad <- ggarrange(p_box, 
+quad <- ggarrange(p_box,
           t_moplot,
           sol_moplot,
           rh_moplot,
           common.legend = T,
           legend = 'bottom',
           ncol=2,
-          nrow=2) 
+          nrow=2,
+          labels = c("b)", "c)", "d)", "e)"))
 
 quad
 
-ggsave("./figures/quad_20250329_timEdits.png", 
-       plot = quad, 
-       dpi = 600)
+# ggsave("./figures/quad_20250329_timEdits.png", 
+#        plot = quad, 
+#        dpi = 600)
 
 
 ```
@@ -358,15 +359,16 @@ Add together streamflow and 4 panel met
 
 # add streamflow to the top of the met 4 panel
 quad_plus <- ggarrange(
-  flow_plot2, 
+  flow_plot2,
   quad,
   nrow = 2,
-  heights = c(1, 2)   # first row gets 1 part, second gets 2 parts
+  heights = c(1, 2),   # first row gets 1 part, second gets 2 parts
+  labels = c("a)", "")
 )
 
 quad_plus
 
-ggsave("./figures/figure2.png", 
+ggsave("./figures/figure2_wlabels.png", 
        plot = quad_plus, 
        dpi = 600,
        width = 14,
@@ -2325,7 +2327,7 @@ swe_plot <- ggplot(swe, aes(x = date,
 
 swe_plot
 
-legend <- cowplot::get_plot_component(p_plot, "guide-box", return_all = TRUE)[[3]]
+legend <- cowplot::get_legend(p_plot)
 
 p_plot <- p_plot + theme(legend.position = "none")
 int_plot <- int_plot + theme(legend.position = "none")
@@ -2336,13 +2338,14 @@ swe_plot <- swe_plot + theme(legend.position = "none")
 et_plot <- et_plot + theme(legend.position = "none")
 
 
-plots <- plot_grid( #p_plot,
+plots <- plot_grid(
+          #p_plot,
           int_plot,
           swe_plot,
           soilsat_plot,
-          et_plot,
-          #interflow_plot,
-          #gw_plot,
+         # et_plot,
+          interflow_plot,
+          gw_plot,
           ncol = 2)
 
 final_plot <- plot_grid(
@@ -2354,14 +2357,11 @@ final_plot <- plot_grid(
 
 final_plot
 
-ggsave('./figures/figure10REDBLUE_oct2025.png',
+ggsave('./figures/figure10_july2026.png',
        dpi=800,
        bg='white',
-       height=8,
-       width=16)
-
-
-
+       height=10,
+       width=12)
 
 ```
 
