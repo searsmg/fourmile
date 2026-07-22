@@ -1628,8 +1628,7 @@ grid_hi <- read_csv('./38HRU_oct2025_updates/HRU/grid_HRU_18.csv') %>%
 both_hi <- bind_rows(statn_hi, grid_hi) %>%
   mutate(year = year(date),
          month = month(date)) %>%
-  filter(year == 2016,
-         month %in% c(4,5,6))
+  filter(year == 2016)
 
 statn_low <- read_csv('./38HRU_oct2025_updates/HRU/statn_HRU_19.csv') %>% 
   mutate(date = mdy(time),
@@ -1644,8 +1643,7 @@ grid_low <- read_csv('./38HRU_oct2025_updates/HRU/grid_HRU_19.csv') %>%
 both_low <- bind_rows(statn_low, grid_low) %>%
   mutate(year = year(date),
          month = month(date)) %>%
-  filter(year == 2016,
-         month %in% c(4,5,6))
+  filter(year == 2016)
 
 ## combine low and high together
 hi <- both_hi %>%
@@ -1664,7 +1662,10 @@ both <- bind_rows(hi, low) %>%
                      source == 'grid' & elevation == 'Low' ~ 'Gridded - Low'))
 
 # figure
-tmean <- ggplot(both,
+tmean <- both %>%    
+  mutate(month = month(date)) %>% 
+  filter(month %in% c(4,5,6)) %>% 
+  ggplot(.,
        aes(x=date, y = tmean, 
            color = elev_source,
            linetype=elev_source)) +
@@ -1697,7 +1698,10 @@ tmean <- ggplot(both,
 
 tmean
 
-swe <- ggplot(both,
+swe <- both %>% 
+  mutate(month = month(date)) %>% 
+  filter(month %in% c(4,5,6)) %>% 
+  ggplot(.,
        aes(x=date, y = snowTotSWE, 
            color = elev_source,
            linetype=elev_source)) +
@@ -1733,8 +1737,11 @@ swe <- ggplot(both,
 swe
 
 p <- both %>%
-  group_by(elev_source) %>%
-  mutate(cumP = cumsum(precip)) %>% 
+  group_by(elev_source,
+           .drop=F) %>%
+  mutate(cumP = cumsum(precip),
+         month = month(date)) %>% 
+  filter(month %in% c(4,5,6)) %>% 
   ggplot(.,
        aes(x=date, y = cumP, 
            color = elev_source,
@@ -1785,7 +1792,7 @@ combined <- plot_grid(tmean_noleg,
 final_plot <- plot_grid(combined, legend, ncol = 1, rel_heights = c(1, 0.1))
 final_plot
 
-ggsave('./figures/figure7_updatemar26.png',
+ggsave('./figures/figure7_july2026.png',
        width = 11,
        height = 6,
        dpi=800,
@@ -1933,13 +1940,18 @@ facet_labels <- c('RD1cumsum' = 'Surface runoff',
 example_yr <- ggplot(example,
        aes(x=date, y = flow_cms, color=source)) +
   geom_line() +
-  facet_wrap(~flow_type, 
+  facet_wrap(~flow_type,
              scales = 'free_y',
              labeller = labeller(flow_type = facet_labels)) +
-   geom_line(size=1, alpha=0.7) +  
+   geom_line(size=1, alpha=0.7) +
+  geom_vline(xintercept = as.Date("2016-04-01"),
+             linetype = "dashed",
+             color = "gray40",
+             linewidth = 0.4) +
   scale_color_manual(values = c("#0047AB", "orange")) +
-    scale_x_date(date_labels = "%b", 
+    scale_x_date(date_labels = "%b",
                date_breaks = "2 month") +
+  coord_cartesian(xlim = c(as.Date("2016-01-01"), as.Date("2016-09-22"))) +
   labs(x=element_blank(),
        y='mm of water') +
   theme_bw(base_size = 16) +
@@ -1962,7 +1974,7 @@ plot_grid(flowEg,
           example_yr,
           ncol=1)
 
-ggsave('./figures/figure8_oct2025.png',
+ggsave('./figures/figure8_july2026.png',
        dpi=800,
        width=10,
        height=8)
