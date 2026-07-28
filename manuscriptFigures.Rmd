@@ -717,6 +717,12 @@ both_kge_plot
 #        width = 10,
 #        height = 6)
 
+# Overall KGE
+flow_plot_updated %>% 
+  filter(!year_excluded == 'All') %>% 
+  group_by(source) %>%
+  summarize(mean_kge = mean(kge))
+
 ```
 
 ### KGE legend
@@ -796,7 +802,7 @@ ggsave('./figures/figure4_kgeLegend.png',
 
 ```{r}
 
-pbiasCats <- read_csv('./pbiasCats.csv') #%>%
+pbiasCats <- read_csv('./38HRU_oct2025_updates/pbiasCats.csv') #%>%
   #rename(source = input_data)
 
 # plot
@@ -847,6 +853,12 @@ both_pbias_plot
 #        dpi=800,
 #        width = 10,
 #        height = 6)
+
+# Overall KGE
+pbiasCats %>% 
+  filter(!year_missing == 'All') %>% 
+  group_by(source) %>%
+  summarize(mean_pbias = mean(pbias))
 
 ```
 
@@ -922,7 +934,7 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure4_biasLegend.pn
 
 ```{r}
 
-nseCats <- read_csv('./nseCats.csv') #%>%
+nseCats <- read_csv('./38HRU_oct2025_updates/nseCats.csv') #%>%
   #rename(source = input_data)
 
 both_nse_plot <- nseCats %>%
@@ -971,6 +983,11 @@ both_nse_plot
 #        dpi=600,
 #        width = 10,
 #        height = 6)
+
+nseCats %>% 
+  filter(!year_missing == 'All') %>% 
+  group_by(source) %>%
+  summarize(mean_nse = mean(nse))
 
 ```
 
@@ -1316,6 +1333,20 @@ ggsave('./figures/figure5_wlimits_oct2025.png',
        height=8,
        bg='white')
 
+################################################################################
+
+# Shapiro-Wilk test per param
+param_sens %>%
+  group_by(param) %>%
+  summarise(shapiro_p = shapiro.test(value)$p.value, n = n())
+
+# Faceted Q-Q plots
+ggplot(param_sens, aes(sample = value)) +
+  stat_qq() +
+  stat_qq_line() +
+  facet_wrap(~ param, scales = "free") +
+  theme_minimal()
+
 ```
 
 ### For Supp
@@ -1604,6 +1635,20 @@ ggsave('./figures/figure6SIMPLE_oct2025.png',
        dpi=600,
        width = 12,
        height = 8)
+
+################################################################################
+
+# Shapiro-Wilk test per param
+gw_maxcumsum %>%
+  group_by(flow_type) %>%
+  summarise(shapiro_p = shapiro.test(flow_cms)$p.value, n = n())
+
+# Faceted Q-Q plots
+ggplot(gw_maxcumsum, aes(sample = flow_cms)) +
+  stat_qq() +
+  stat_qq_line() +
+  facet_wrap(~ flow_type, scales = "free") +
+  theme_minimal()
 
 ```
 
@@ -2088,6 +2133,20 @@ ggsave('./figures/figure9_oct2025.png',
        dpi=800,
        width = 12,
        height = 8)
+
+################################################################################
+
+# Shapiro-Wilk test per param
+combo %>%
+  group_by(param) %>%
+  summarise(shapiro_p = shapiro.test(value)$p.value, n = n())
+
+# Faceted Q-Q plots
+ggplot(combo, aes(sample = value)) +
+  stat_qq() +
+  stat_qq_line() +
+  facet_wrap(~ param, scales = "free") +
+  theme_minimal()
 
 ```
 
