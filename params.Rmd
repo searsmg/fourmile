@@ -379,6 +379,48 @@ tukey_df <- tibble(
 # added tukey letters to parmas_burn_unburn.csv in dec2024 folder
 
 
+################################################################################
+
+library(rcompanion)
+library(FSA)
+library(tidyverse)
+
+results <- combo %>%
+  rename(burn_status = burn) %>%
+  mutate(burn_status = as.factor(burn_status),
+         input_data = as.factor(input_data),
+         group = interaction(burn_status, input_data, sep = "_")) %>%
+  group_split(param) %>%
+  map(function(df) {
+    
+    # Scheirer-Ray-Hare test (main effects + interaction)
+    srh_test <- scheirerRayHare(value ~ burn_status * input_data, data = df)
+    
+    # Dunn's test on the combined group (all 4 combinations)
+    dunn_test <- dunnTest(value ~ group, data = df, method = "bh")
+    
+    # Compact letter display
+    letters <- cldList(P.adj ~ Comparison, data = dunn_test$res, threshold = 0.05)
+    
+    list(
+      parameter = unique(df$param),
+      srh = srh_test,
+      dunn = dunn_test,
+      letters = letters
+    )
+  })
+
+# Pull it all into one tidy dataframe
+letters_df <- map_dfr(results, function(x) {
+  x$letters %>%
+    mutate(param = x$parameter)
+})
+
+# Split the combined group column back into burn_status and input_data
+letters_df <- letters_df %>%
+  separate(Group, into = c("burn_status", "input_data"), sep = "_")
+
+letters_df
 
 ```
 
