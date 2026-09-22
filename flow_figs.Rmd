@@ -15,7 +15,7 @@ library(plotly)
 
 ```{r}
 
-flow <- read_csv('./38HRU_dec2024_updates/discharge_all.csv') %>%
+flow <- read_csv('./38HRU_oct2025_updates/discharge_all.csv') %>%
   replace(.==-9999, NA) %>%
   rename(date = time) %>%
   mutate(date = mdy(date)) %>%
@@ -69,6 +69,35 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/2016_flowEg.png',
        dpi=600,
        width = 12,
        height = 8)
+
+#####
+# mean kge for manuscript
+# reshape from wide to long: one row per date x model_run
+flow_long <- flow %>%
+  pivot_longer(
+    cols = -c(date, obs),
+    names_to = "model_run",
+    values_to = "sim"
+  ) %>%
+  mutate(source = case_when(
+    grepl("^grid", model_run) ~ "grid",
+    grepl("^statn", model_run) ~ "statn"
+  ))
+
+# calculate KGE for each model_run against obs
+kge_by_run <- flow_long %>%
+  group_by(model_run, source) %>%
+  summarize(
+    kge = KGE(sim = sim, obs = obs, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+kge_by_run
+
+# mean KGE by source (grid vs station), across all runs including "_all"
+kge_by_run %>%
+  group_by(source) %>%
+  summarize(mean_kge = mean(kge, na.rm = TRUE))
 
 
 ```
