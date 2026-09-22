@@ -24,6 +24,7 @@ library(gridExtra)
 library(stringr)
 library(cowplot)
 library(mapview)
+library(patchwork)
 
 ```
 
@@ -327,6 +328,31 @@ flow_plot2 <- ggplot(flow, aes(x = date, y = obs)) +
     axis.text = element_text(color = "black"),
     strip.text = element_text(color = "black"))
 
+flow_plot2 <- ggplot(flow, aes(x = date, y = obs)) +
+  geom_line(size = 1.1) +
+annotate(
+  "point",
+  x = as.Date("2013-09-11"),
+  y = 0.8,
+  shape = 1,
+  size = 6,
+  stroke = 1.2,
+  color = 'red'# controls the thickness of the outline line
+) +
+  theme_bw(base_size = 20) +
+  labs(y = 'Streamflow (cms)', x = element_blank()) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black"),
+    strip.text = element_text(color = "black"))
+
 flow_plot2
 
 ggsave("./figures/flow_obs_plot2_eachyrlabel.png", 
@@ -376,7 +402,7 @@ quad_plus <- ggarrange(
 
 quad_plus
 
-ggsave("./figures/figure2_wlabels_Aug2026.png", 
+ggsave("./figures/figure2_wlabels_sep2026.png", 
        plot = quad_plus, 
        dpi = 600,
        width = 14,
@@ -933,7 +959,7 @@ scale_fill_manual(
   ) +
   labs(y = "Year excluded",
        x = 'Year',
-       fill = 'Bias')
+       fill = 'Pbias')
 
 bias_leg
 
@@ -946,7 +972,7 @@ leg_gg <- ggpubr::as_ggplot(leg)
 # Plot it
 print(leg_gg)
 
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure4_biasLegend.png',
+ggsave('./figures/figure4_PbiasLegend.png',
        dpi=800,
        width = 12,
        height = 8,
@@ -1073,7 +1099,7 @@ leg_gg <- ggpubr::as_ggplot(leg)
 # Plot it
 print(leg_gg)
 
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure4_nseLegend.png',
+ggsave('./figures/figure4_nseLegend.png',
        dpi=800,
        width = 12,
        height = 8,
@@ -1085,61 +1111,190 @@ ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure4_nseLegend.png
 
 ```{r}
 
-# Top plot - KGE
-top_plot <- both_kge_plot +
+# =========================================================
+# Shared theme elements
+# =========================================================
+
+tight_theme <- theme(
+  panel.spacing = unit(0.15, "lines"),
+  plot.margin = margin(t = 14, r = 4, b = 2, l = 14),   # more left margin for the tag
+  legend.key.size = unit(0.4, "cm"),
+  legend.spacing.y = unit(0.05, "cm"),
+  legend.box.margin = margin(0, 0, 0, 0),
+  legend.margin = margin(t = 0, b = 0, l = 2, r = 0, unit = "pt"),
+  plot.tag = element_text(size = 14, face = "bold"),
+  plot.tag.position = "topleft"     # <- keyword instead of numeric coords; avoids clipping
+)
+
+no_xaxis_theme <- theme(
+  axis.text.x = element_blank(),
+  axis.title.x = element_blank(),
+  axis.ticks.x = element_blank()
+)
+
+no_strip_theme <- theme(
+  strip.text = element_blank(),
+  strip.background = element_blank()
+)
+
+new_facet_titles <- c(
+  "grid" = "Gridded",
+  "statn" = "Station"
+)
+
+# =========================================================
+# KGE panel (top — keeps facet strip labels)
+# =========================================================
+
+flow_plot <- read_csv('./38HRU_oct2025_updates/all_kge.csv') %>%
+  filter(metric == 'KGE') %>%
+  dplyr::select(-metric) %>%
+  rename(kge = value)
+
+flow_plot_updated <- flow_plot %>%
+  mutate(source = case_when(
+    grepl("grid", model_run) ~ "grid",
+    grepl("statn", model_run) ~ "statn"),
+    year_excluded = str_extract(model_run, "\\d{4}$")) %>%
+  mutate(year_excluded = if_else(model_run %in% c('gridall', 'statnall'),
+                                  'None', year_excluded)) %>%
+  mutate(kge_revise_bins = cut(kge,
+                               breaks = c(-Inf, 0.0, 0.2, 0.4, 0.6, 0.8, 1),
+                               include.lowest = TRUE,
+                               labels = c("< 0.0", "0.0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "> 0.8")))
+
+both_kge_plot <- flow_plot_updated %>%
+  ggplot(aes(x = year, y = year_excluded, fill = kge_revise_bins)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  scale_fill_manual(values = c(
+    "< 0.0" = "#DCBE9BFF",
+    "0.0-0.2" = "#EFDDCFFF",
+    "0.2-0.4" = "#F1F4EEFF",
+    "0.4-0.6" = "#72E1E1FF",
+    "0.6-0.8" = "#11C2B5FF",
+    "> 0.8" = "#009474FF"),
+    guide = guide_legend(ncol = 1)) +
+  geom_text(aes(label = sprintf("%.2f", kge), color = kge_revise_bins), size = 3) +
+  scale_color_manual(values = c(
+    "< 0.0" = "black", "0.0-0.2" = "black", "0.2-0.4" = "black",
+    "0.4-0.6" = "black", "0.6-0.8" = "black", "> 0.8" = "white"
+  ), guide = "none") +
+  theme_bw(base_size = 18) +
+  labs(y = "Year excluded", x = "Year", fill = "KGE", tag = "a) KGE") +
   theme(
-    axis.title.x = element_blank(),
-    axis.text.x  = element_blank(),
-    axis.ticks.x = element_blank(),
-    legend.position = "none",
-    plot.margin = margin(5, 5, 5, 40)   # add space on the left
-  )
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'right',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(.6, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  ) +
+  tight_theme +
+  no_xaxis_theme
+  # strip labels intentionally kept on this panel
 
-# Middle plot - Bias
-middle_plot <- both_pbias_plot +
+# =========================================================
+# Pbias panel (middle — no strip labels, no x-axis)
+# =========================================================
+
+pbiasCats <- read_csv('./38HRU_oct2025_updates/pbiasCats.csv')
+
+both_pbias_plot <- pbiasCats %>%
+  ggplot(aes(x = year, y = year_missing, fill = pbiasCat)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  scale_fill_manual(
+    breaks = c("Very good", "Good", "Satisfactory", "Unsatisfactory"),
+    values = c(
+      "Unsatisfactory" = "#F1F4EEFF",
+      "Satisfactory"   = "#EFDDCFFF",
+      "Good"           = "#72E1E1FF",
+      "Very good"      = "#009474FF")) +
+  geom_text(aes(label = sprintf("%0.1f", pbias), color = pbiasCat), size = 2.75) +
+  scale_color_manual(values = c(
+    "Unsatisfactory" = "black", "Satisfactory" = "black",
+    "Good" = "black", "Very good" = "white"
+  ), guide = "none") +
+  theme_bw(base_size = 18) +
+  labs(y = "Year excluded", x = "Year", fill = "Pbias", tag = "b) Pbias") +
   theme(
-    strip.text = element_blank(),
-    axis.title.x = element_blank(),
-    axis.text.x  = element_blank(),
-    axis.ticks.x = element_blank(),
-    legend.position = "none",
-    plot.margin = margin(5, 5, 5, 40)   # add space on the left
-  )
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'right',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  ) +
+  tight_theme +
+  no_xaxis_theme +
+  no_strip_theme
 
-# Bottom plot - NSE
-bottom_plot <- both_nse_plot +
+# =========================================================
+# NSE panel (bottom — keeps x-axis, no strip labels)
+# =========================================================
+
+nseCats <- read_csv('./38HRU_oct2025_updates/nseCats.csv')
+
+both_nse_plot <- nseCats %>%
+  ggplot(aes(x = year, y = year_missing, fill = nseCat)) +
+  geom_tile(color = "white") +
+  facet_wrap(~source, labeller = labeller(source = new_facet_titles)) +
+  scale_fill_manual(
+    breaks = c("Very good", "Good", "Satisfactory", "Unsatisfactory"),
+    values = c(
+      "Unsatisfactory" = "#F1F4EEFF",
+      "Satisfactory"   = "#EFDDCFFF",
+      "Good"           = "#72E1E1FF",
+      "Very good"      = "#009474FF")) +
+  geom_text(aes(label = sprintf("%.2f", nse), color = nseCat), size = 2.75) +
+  scale_color_manual(values = c(
+    "Unsatisfactory" = "black", "Satisfactory" = "black",
+    "Good" = "black", "Very good" = "white"
+  ), guide = "none") +
+  theme_bw(base_size = 18) +
+  labs(y = "Year excluded", x = "Year", fill = "NSE", tag = "c) NSE") +
   theme(
-    strip.text = element_blank(),
-    legend.position = "none",
-    plot.margin = margin(5, 5, 5, 40)   # add space on the left
-  )
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = 'right',
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1, "cm"),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    strip.background = element_blank(),
+    text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.text = element_text(color = "black")
+  ) +
+  tight_theme +
+  no_strip_theme
 
-# Combine plots
-final_grid <- plot_grid(
-  top_plot,
-  middle_plot,
-  bottom_plot,
-  ncol = 1,
-  labels = c("a) KGE", "b) Bias", "c) NSE"),
-  label_size = 16,
-  label_fontface = "bold",
-  label_x = -0.03,
-  label_y = 1.04,
-  rel_heights = c(1.1, 1, 1.2),
-  align = "v",
-  axis = "l"
-) 
+# =========================================================
+# Combine
+# =========================================================
 
-final_grid_add <- final_grid +
-  theme(plot.margin = margin(20, 5, 5, 5))
+combined_fig <- both_kge_plot / both_pbias_plot / both_nse_plot +
+  plot_layout(heights = c(1, 1, 1))
 
-final_grid_add
-  
-ggsave('/Users/megansears/Documents/Repos/fourmile/figures/figure4_main_oct2025.pdf',
-       dpi=800,
-       width = 10,
-       height = 14,
-       bg='white')
+combined_fig
+
+ggsave('./figures/figure4_combined.png',
+       plot = combined_fig,
+       dpi = 800,
+       width = 14,
+       height = 18,
+       bg = "white")
 
 ```
 
